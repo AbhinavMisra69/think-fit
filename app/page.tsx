@@ -40,7 +40,7 @@ export default function Home() {
         <CardContent className="space-y-4">
           <Textarea 
             placeholder="I sleep 6 hours a day, want to lose 10kg, my knees hurt when I run, and I'm a vegetarian..." 
-            className="min-h-[150px] resize-none focus-visible:ring-zinc-400"
+            className="min-h-37.5 resize-none focus-visible:ring-zinc-400"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
           />
