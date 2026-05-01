@@ -91,7 +91,7 @@ export default function MealSection() {
     setSearchQuery(query);
     if (query.trim().length > 1) {
       try {
-        const res = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`http://127.0.0.1:5001/api/food/search?q=${encodeURIComponent(query)}`);
         if (res.ok) {
           const data = await res.json();
           setSearchResults(data);

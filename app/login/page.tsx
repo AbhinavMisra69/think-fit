@@ -139,10 +139,10 @@ export default function LoginPage() {
       {/* ---------------- RIGHT SIDE: VISUAL PANEL ---------------- */}
       <div
         className="hidden lg:flex flex-col justify-between p-12 text-white relative overflow-hidden bg-cover bg-center"
-        style={{ backgroundImage: "url('/public/uploads/login.jpg')" }} 
+        style={{ backgroundImage: "url('/uploads/login.jpg')" }} 
       >
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-slate-950/60" />
+        <div className="absolute inset-0 bg-slate-950/35" />
 
         {/* Branding Top Left */}
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold tracking-tight">

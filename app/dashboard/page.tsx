@@ -18,6 +18,7 @@ import StreakCalendar from "@/components/StreakCalendar";
 import ExerciseCard, { type ExerciseData } from "@/components/ExerciseCard";
 import RestDayCard from "@/components/RestDayCard";
 import exerciseDataset from "@/data/exercises_enriched.json";
+import { Navigation } from '@/components/Navigation';
 
 // --- Helper to get clean YYYY-MM-DD strings for state tracking ---
 const toDateString = (date: Date) => {
@@ -104,7 +105,9 @@ export default function Page() {
     : `${selectedDate.toLocaleDateString('en-US', { weekday: 'long' })}'s Protocol`;
 
   return (
+
     <div>
+      <Navigation/>
       {/* RIGHT SIDE: Dynamic Info Panel vs Calendar */}
       <section className="fixed top-0 right-0 w-1/3 h-screen bg-zinc-50 border-l border-zinc-200 overflow-hidden font-sans shadow-lg hidden md:block">
         {activeExercise ? (

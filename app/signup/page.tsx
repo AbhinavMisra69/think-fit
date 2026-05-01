@@ -59,7 +59,7 @@ export default function SignupPage() {
       // Auto-login after signup (Adjust based on your auth logic)
       await login(formData.email, formData.password);
       toast.success("Account created successfully!");
-      router.push("/dashboard");
+      router.push("/manual-onboarding");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Signup failed";
       toast.error(message);
@@ -191,10 +191,10 @@ export default function SignupPage() {
       {/* ---------------- RIGHT SIDE: VISUAL PANEL ---------------- */}
       <div
         className="hidden lg:flex flex-col justify-between p-12 text-white relative overflow-hidden bg-cover bg-center"
-        style={{ backgroundImage: "url('/public/uploads/signup.jpg')" }} // Update this image path!
+        style={{ backgroundImage: "url('/uploads/signup.jpg')" }}
       >
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-slate-950/60" />
+        <div className="absolute inset-0 bg-slate-950/35" />
 
         {/* Branding Top Left */}
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold tracking-tight">

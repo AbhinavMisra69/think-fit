@@ -38,7 +38,7 @@ export default function ProgressDashboard() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch("/api/progress");
+      const res = await fetch("http://127.0.0.1:5001/api/progress");
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       
@@ -74,7 +74,7 @@ export default function ProgressDashboard() {
     };
 
     try {
-      const res = await fetch("/api/progress/update", {
+      const res = await fetch("http://127.0.0.1:5001/api/progress/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

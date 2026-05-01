@@ -51,8 +51,8 @@ export default function NutritionPage({ descriptions = defaultDescriptions }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const dailyRes = await fetch('/api/nutrition/today');
-        const weeklyRes = await fetch('/api/nutrition/weekly');
+        const dailyRes = await fetch('http://127.0.0.1:5001/api/nutrition/today');
+        const weeklyRes = await fetch('http://127.0.0.1:5001/api/nutrition/weekly');
   
         // If Flask sends a 500 error, this text() check will show you the HTML error
         if (!dailyRes.ok) {
