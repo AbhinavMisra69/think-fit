@@ -1,10 +1,23 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, User, Dumbbell, BatteryCharging } from 'lucide-react';
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  User, 
+  Dumbbell, 
+  BatteryCharging,
+  X,
+  Target,
+  Activity,
+  Settings2,
+  Info,
+  VideoOff
+} from 'lucide-react';
 import StreakCalendar from "@/components/StreakCalendar";
-import ExerciseCard from "@/components/ExerciseCard";
+import ExerciseCard, { type ExerciseData } from "@/components/ExerciseCard";
 import RestDayCard from "@/components/RestDayCard";
+import exerciseDataset from "@/data/exercises_enriched.json";
 
 // --- Helper to get clean YYYY-MM-DD strings for state tracking ---
 const toDateString = (date: Date) => {
@@ -52,6 +65,9 @@ export default function Page() {
     };
   });
 
+  // 4. NEW STATE: Tracks which exercise is open on the right side
+  const [activeExercise, setActiveExercise] = useState<ExerciseData | null>(null);
+
   const handlePrevWeek = () => setCurrentWeekStart(prev => new Date(prev.setDate(prev.getDate() - 7)));
   const handleNextWeek = () => setCurrentWeekStart(prev => new Date(prev.setDate(prev.getDate() + 7)));
 
@@ -81,7 +97,7 @@ export default function Page() {
   const selectedStr = toDateString(selectedDate);
   const selectedData = dayDataMap[selectedStr] || { type: 'workout', progress: 0 };
   
-  // Format the title dynamically (e.g. "Today's Protocol" or "Monday's Protocol")
+  // Format the title dynamically
   const isSelectedToday = selectedStr === toDateString(new Date());
   const protocolTitle = isSelectedToday 
     ? "Today's Protocol" 
@@ -89,14 +105,23 @@ export default function Page() {
 
   return (
     <div>
-      {/* RIGHT SIDE: Calendar */}
-      <section className="fixed top-0 right-0 w-1/3 h-screen bg-zinc-50 border-l border-zinc-200 overflow-y-auto font-sans shadow-lg hidden md:block">
-        <h2 className="text-2xl font-semibold tracking-tight text-gray-800 mb-4 ml-6 mt-8">
-          Monthly Progress
-        </h2>
-        <div className="px-6">
-          <StreakCalendar />
-        </div>
+      {/* RIGHT SIDE: Dynamic Info Panel vs Calendar */}
+      <section className="fixed top-0 right-0 w-1/3 h-screen bg-zinc-50 border-l border-zinc-200 overflow-hidden font-sans shadow-lg hidden md:block">
+        {activeExercise ? (
+          <ExerciseDetailPanel 
+            exercise={activeExercise} 
+            onClose={() => setActiveExercise(null)} 
+          />
+        ) : (
+          <div className="h-full overflow-y-auto pt-8">
+            <h2 className="text-2xl font-semibold tracking-tight text-gray-800 mb-4 ml-6">
+              Monthly Progress
+            </h2>
+            <div className="px-6">
+              <StreakCalendar />
+            </div>
+          </div>
+        )}
       </section>
 
       {/* LEFT SIDE: Weekly Progress & Protocol */}
@@ -147,14 +172,11 @@ export default function Page() {
                 <div 
                   key={day.dateStr} 
                   className="relative flex-1 min-w-[60px] flex flex-col items-center group cursor-pointer" 
-                  onClick={() => setSelectedDate(day.date)} // Updated: Now selects the day
+                  onClick={() => setSelectedDate(day.date)}
                 >
-                  {/* Background continuous streak pill */}
                   <div className={`absolute top-0 bottom-[36px] w-full transition-all duration-300 ease-in-out ${streakBgClass}`} />
 
-                  {/* The Circular Progress & Day Label */}
                   <div className={`relative z-10 pt-2 transform transition-transform ${isRest ? '' : 'group-hover:scale-105 active:scale-95'}`}>
-                    {/* Ring to show which day is currently selected */}
                     <div className={`rounded-full transition-all duration-200 ${day.isSelected ? 'ring-4 ring-slate-100 shadow-sm scale-105' : ''}`}>
                       <CircularProgress 
                         progress={day.progress} 
@@ -165,7 +187,6 @@ export default function Page() {
                     </div>
                   </div>
 
-                  {/* Icon below the circle */}
                   <div className="mt-4 relative z-10">
                     {isRest ? (
                       <BatteryCharging className={`w-5 h-5 transition-colors duration-300 ${isComplete ? 'text-emerald-500 fill-emerald-500' : 'text-slate-300 fill-slate-300'}`} />
@@ -179,6 +200,7 @@ export default function Page() {
           </div>
 
           {/* Dynamic Protocol Area */}
+          {/* Dynamic Protocol Area */}
           <div className="mt-12 border-t border-zinc-100 pt-8">
             <h3 className="text-xl font-bold text-zinc-900 mb-6">{protocolTitle}</h3>
             
@@ -187,8 +209,16 @@ export default function Page() {
                 <RestDayCard />
               ) : (
                 <>
-                  <ExerciseCard />
-                  {/* You can add more cards here */}
+                  {/* We convert your JSON object into an array and map over it! */}
+                  {/* Note: I added a .slice(0, 5) just so it doesn't render all 60 exercises at once while testing! */}
+                  {Object.values(exerciseDataset).slice(0, 5).map((exerciseData: any) => (
+                    <ExerciseCard 
+                      key={exerciseData.exercise_id} 
+                      // We pass the data down as a prop, exactly as you suggested
+                      exercise={exerciseData} 
+                      onOpenDetails={() => setActiveExercise(exerciseData)} 
+                    />
+                  ))}
                 </>
               )}
             </div>
@@ -200,7 +230,118 @@ export default function Page() {
   );
 }
 
-// --- SVG Circular Progress Component (Unchanged) ---
+// --- The NEW Exercise Detail Panel ---
+// Make sure to add 'Info' and 'VideoOff' to your lucide-react imports at the top of the file!
+// import { X, Target, Activity, Settings2, Info, VideoOff } from 'lucide-react';
+
+function ExerciseDetailPanel({ exercise, onClose }: { exercise: ExerciseData; onClose: () => void }) {
+  // 1. Safely check if we have a real YouTube ID yet
+  const isMissingVideo = !exercise.youtube_id || exercise.youtube_id === "REPLACE_ME";
+  const youtubeEmbedUrl = `https://www.youtube.com/embed/${exercise.youtube_id}?rel=0`;
+
+  return (
+    <div className="h-full flex flex-col bg-zinc-50 animate-in slide-in-from-right-4 duration-300">
+      
+      {/* Header with Close Button */}
+      <div className="flex items-center justify-between p-6 border-b border-zinc-200 bg-white shadow-sm z-10 shrink-0">
+        <h2 className="text-xl font-bold text-zinc-900 tracking-tight">{exercise.exercise_name}</h2>
+        <button 
+          onClick={onClose}
+          className="p-2 hover:bg-zinc-100 rounded-full text-zinc-500 hover:text-zinc-800 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-20">
+        
+        {/* NEW: Overview / Description Section */}
+        {exercise.description && (
+          <div className="space-y-3">
+             <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+              <Info className="w-4 h-4" /> Overview
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed bg-white p-5 rounded-xl border border-zinc-200 shadow-sm">
+              {exercise.description}
+            </p>
+          </div>
+        )}
+
+        {/* UPGRADED: YouTube Video Player */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+            <Settings2 className="w-4 h-4" /> Demonstration
+          </h3>
+          
+          <div className="w-full aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-inner relative flex items-center justify-center">
+            {isMissingVideo ? (
+              // Sleek fallback state for exercises that still have "REPLACE_ME"
+              <div className="flex flex-col items-center text-zinc-500">
+                <VideoOff className="w-8 h-8 mb-2 opacity-50" />
+                <span className="text-sm font-medium">Video tutorial coming soon</span>
+              </div>
+            ) : (
+              // Real YouTube iframe
+              <iframe 
+                src={youtubeEmbedUrl}
+                title={`${exercise.exercise_name} execution video`}
+                className="w-full h-full absolute top-0 left-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            )}
+          </div>
+          {!isMissingVideo && <p className="text-xs text-zinc-500 text-center">Source: YouTube</p>}
+        </div>
+
+        {/* Biomechanics & Specs */}
+        <div className="space-y-4">
+           <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+            <Activity className="w-4 h-4" /> Biomechanics
+          </h3>
+          <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-sm space-y-3">
+            <div className="flex justify-between items-center border-b border-zinc-100 pb-2">
+              <span className="text-sm text-zinc-500">Movement Pattern</span>
+              <span className="text-sm font-semibold text-zinc-800 capitalize">{exercise.muscle_data.movement_pattern.replace(/_/g, ' ')}</span>
+            </div>
+            <div className="flex justify-between items-center border-b border-zinc-100 pb-2">
+              <span className="text-sm text-zinc-500">Joint Stress</span>
+              <span className="text-sm font-semibold text-orange-600 capitalize text-right">
+                {exercise.biomechanics.joint_stress.length > 0 ? exercise.biomechanics.joint_stress.join(', ').replace(/_/g, ' ') : 'None'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-zinc-500">Facility Needs</span>
+              <span className="text-sm font-semibold text-zinc-800 capitalize text-right">
+                {exercise.facility_requirements.specific_tools.join(', ').replace(/_/g, ' ')}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Hypertrophy Profile */}
+        {exercise.periodization_tags?.hypertrophy_tiers && (
+          <div className="space-y-4">
+             <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+              <Target className="w-4 h-4" /> Hypertrophy Profile
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(exercise.periodization_tags.hypertrophy_tiers).map(([muscle, tier]) => (
+                <div key={muscle} className="flex flex-col bg-white border border-zinc-200 px-3 py-2 rounded-lg shadow-sm flex-1 min-w-[100px]">
+                  <span className="text-xs text-zinc-500 capitalize">{muscle.replace(/_/g, ' ')}</span>
+                  <span className="text-sm font-bold text-blue-600">{tier as React.ReactNode}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+// --- SVG Circular Progress Component ---
 function CircularProgress({ progress, label, isToday, theme }: { progress: number; label: string; isToday: boolean; theme: 'blue' | 'green' }) {
   const radius = 24; 
   const circumference = 2 * Math.PI * radius;

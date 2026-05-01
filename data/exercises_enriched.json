@@ -1,0 +1,5125 @@
+{
+    "walking_lunges": {
+        "exercise_id": "EX_101",
+        "exercise_name": "Walking Lunges",
+        "youtube_id": "dlkuCygIEAA",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "quads"
+            ],
+            "secondary_muscles": [
+                "hamstrings",
+                "core"
+            ],
+            "movement_pattern": "unilateral_leg",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "peak_metabolic"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "S_Plus",
+                "quads": "B_Tier"
+            }
+        },
+        "description": "The walking lunge is a lower-body exercise that targets the glutes, quads, and hamstrings while challenging stability and balance. It can be performed for reps, time, or distance in the lower-body portion of any workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "machine_hip_abduction": {
+        "exercise_id": "EX_102",
+        "exercise_name": "Machine Hip Abduction",
+        "youtube_id": "GpwSQE2F400",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "glute_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "pro_gym",
+            "specific_tools": [
+                "abduction_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "S_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "deficit_lunges": {
+        "exercise_id": "EX_103",
+        "exercise_name": "Deficit Lunges (Front Foot Elevated)",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "quads"
+            ],
+            "secondary_muscles": [
+                "hamstrings"
+            ],
+            "movement_pattern": "unilateral_leg",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "dumbbells",
+                "step_platform"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "knee_torque",
+                "hip_flexor_stretch"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "S_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "45_degree_back_extension": {
+        "exercise_id": "EX_104",
+        "exercise_name": "45\u00b0 Back Extension",
+        "youtube_id": "ph3pddpKzzw",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "hamstrings"
+            ],
+            "secondary_muscles": [
+                "lower_back"
+            ],
+            "movement_pattern": "hinge_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "back_extension_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear"
+            ],
+            "pre_hab_for": [
+                "lower_back_strengthening"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "S_Tier"
+            }
+        },
+        "description": "The back extension is an exercise used to build lower back strength that also targets the hamstrings and glutes. It is often performed on a 45-degree bench with the feet anchored. Unweighted back extensions are often performed for high reps, such as 15-20 reps or more, but the movement can also be performed with added weight in lower rep ranges, such as 8-12 reps per set.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "hack_squat": {
+        "exercise_id": "EX_105",
+        "exercise_name": "Hack Squat",
+        "youtube_id": "rYgF8A4RM_E",
+        "muscle_data": {
+            "primary_targets": [
+                "quads"
+            ],
+            "secondary_muscles": [
+                "glutes"
+            ],
+            "movement_pattern": "squat_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "pro_gym",
+            "specific_tools": [
+                "hack_squat_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "high_knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "S_Tier"
+            }
+        },
+        "description": "The hack squat is a machine-based exercise that targets the muscles of the legs, particularly the quadriceps. It is often used as an accessory for squats, but can also be the main lower-body movement in a workout. It is often performed for moderate to high reps, such as 8-12 reps per set or more.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "barbell_back_squat": {
+        "exercise_id": "EX_106",
+        "exercise_name": "Barbell Back Squat (High Bar)",
+        "youtube_id": "1kq6r83K3u4",
+        "muscle_data": {
+            "primary_targets": [
+                "quads",
+                "glutes"
+            ],
+            "secondary_muscles": [
+                "core",
+                "lower_back"
+            ],
+            "movement_pattern": "squat_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "squat_rack",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "spinal_compression",
+                "high_knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "S_Tier",
+                "glutes": "A_Tier"
+            }
+        },
+        "description": "The barbell back squat to box is a popular version of a classic lower-body exercise that utilizes a box at the bottom position of the movement. This allows the lifter to customize the depth of the squat, as well as limit the stretch reflex at the bottom of the squat. The movement targets the quadriceps, glutes, and hamstrings. The squat to box can be performed for low reps to build strength or power, or for higher reps to build muscle.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "bulgarian_split_squat": {
+        "exercise_id": "EX_107",
+        "exercise_name": "Bulgarian Split Squat",
+        "youtube_id": "2C-uNgKwPLE",
+        "muscle_data": {
+            "primary_targets": [
+                "quads",
+                "glutes"
+            ],
+            "secondary_muscles": [
+                "hamstrings",
+                "core"
+            ],
+            "movement_pattern": "unilateral_leg",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "high_knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "S_Tier",
+                "glutes": "A_Tier"
+            }
+        },
+        "description": "The dumbbell Bulgaria split squat is a single-leg exercise targeting the quads, glutes, and hamstrings.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "pendulum_squat": {
+        "exercise_id": "EX_108",
+        "exercise_name": "Pendulum Squat",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "quads"
+            ],
+            "secondary_muscles": [
+                "glutes"
+            ],
+            "movement_pattern": "squat_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "pro_gym",
+            "specific_tools": [
+                "pendulum_squat_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "extreme_knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "S_Tier"
+            }
+        },
+        "description": "The jump squat is an explosive bodyweight exercise targeting the quads, hamstrings, and glutes. It is also a serious cardiovascular challenge when done for reps. It can be performed as a power exercise to build jumping power, or in any fat-loss or athleticism-focused workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "smith_machine_squat": {
+        "exercise_id": "EX_109",
+        "exercise_name": "Smith Machine Squat",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "quads",
+                "glutes"
+            ],
+            "secondary_muscles": [
+                "core"
+            ],
+            "movement_pattern": "squat_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "smith_machine",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "spinal_compression",
+                "knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "S_Tier",
+                "glutes": "A_Tier"
+            }
+        },
+        "description": "The Smith machine box squat is a machine-based exercise targeting the quads, glutes, and hamstrings. The Smith machine mimics a barbell but provides more stability. This movement can be programmed in low reps for strength or power or higher reps for muscle and strength endurance. It is often performed for moderate to high reps, such as 8-12 reps per set or more, as part of a full-body or lower-body workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "hip_thrust_machine": {
+        "exercise_id": "EX_110",
+        "exercise_name": "Hip Thrust Machine",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes"
+            ],
+            "secondary_muscles": [
+                "hamstrings"
+            ],
+            "movement_pattern": "glute_isolation",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "pro_gym",
+            "specific_tools": [
+                "hip_thrust_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "A_Tier"
+            }
+        },
+        "description": "The dip machine is a machine exercise that mimics a triceps dip, a bodyweight exercise performed on parallel bars or on a pull-up and dip station. It targets the triceps first, but also stretches and strengthens the chest and shoulders. Dips with a triceps focus are usually performed with an upright torso, the knees bent and crossed, and the arms close to the body. Dips can be performed for low reps for strength or higher reps for muscle growth.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "single_leg_db_hip_thrust": {
+        "exercise_id": "EX_111",
+        "exercise_name": "Single Leg Dumbbell Hip Thrust",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes"
+            ],
+            "secondary_muscles": [
+                "hamstrings"
+            ],
+            "movement_pattern": "glute_isolation",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_kickback": {
+        "exercise_id": "EX_112",
+        "exercise_name": "Cable Kickback",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "glute_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "ankle_strap"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "step_up": {
+        "exercise_id": "EX_113",
+        "exercise_name": "Step Up",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "quads"
+            ],
+            "secondary_muscles": [
+                "core"
+            ],
+            "movement_pattern": "unilateral_leg",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "plyo_box"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "peak_metabolic"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "smith_machine_lunge": {
+        "exercise_id": "EX_114",
+        "exercise_name": "Smith Machine Lunge",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "quads"
+            ],
+            "secondary_muscles": [
+                "hamstrings"
+            ],
+            "movement_pattern": "unilateral_leg",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "smith_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "A_Tier"
+            }
+        },
+        "description": "The Smith machine lunge squat is an exercise targeting the quads, glutes, and hamstrings. Using added weight allows you to overload the exercise beyond body weight and perform the movement in strength ranges. The Smith machine mimics a barbell but provides more stability.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "romanian_deadlift": {
+        "exercise_id": "EX_115",
+        "exercise_name": "Romanian Deadlift (RDL)",
+        "youtube_id": "hCDzSR6bW10",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "hamstrings"
+            ],
+            "secondary_muscles": [
+                "lower_back",
+                "core"
+            ],
+            "movement_pattern": "hinge_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "spinal_compression",
+                "lumbar_shear"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "A_Tier"
+            }
+        },
+        "description": "The barbell stiff-legged deadlift targets the hamstrings, glutes, lower and upper back, as well as the core. It is a popular accessory movement for the deadlift, but also a muscle-building hamstring movement.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "leg_extension": {
+        "exercise_id": "EX_116",
+        "exercise_name": "Leg Extension",
+        "youtube_id": "m0FOpMEjcKc",
+        "muscle_data": {
+            "primary_targets": [
+                "quads"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "quad_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "leg_extension_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "patellar_tendon_stress"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "A_Tier"
+            }
+        },
+        "description": "The leg extension is a popular machine-based exercise for the legs, particularly the quadriceps. It is usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of a leg pre-exhaust or as a muscle-building movement for lower-body training.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "barbell_front_squat": {
+        "exercise_id": "EX_117",
+        "exercise_name": "Barbell Front Squat",
+        "youtube_id": "v-mQsAWEhKc",
+        "muscle_data": {
+            "primary_targets": [
+                "quads",
+                "core"
+            ],
+            "secondary_muscles": [
+                "glutes",
+                "upper_back"
+            ],
+            "movement_pattern": "squat_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "squat_rack",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "spinal_compression",
+                "wrist_strain",
+                "knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "A_Tier"
+            }
+        },
+        "description": "The barbell front squat is a compound movement that emphasizes building the lower-body muscle groups. With the barbell racked in front of the body on the anterior delts, the front squat emphasizes the quads and glutes, but also upper back and core strength to remain upright. Front squats can be trained as an alternative to back squats, as an accessory movement for either squats or deadlifts, or for strength and muscle on their own. Many lifters and athletes prefer them to back squats, although they can be uncomfortable and difficult to learn at first.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "low_bar_back_squat": {
+        "exercise_id": "EX_118",
+        "exercise_name": "Low Bar Back Squat",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "quads",
+                "glutes",
+                "lower_back"
+            ],
+            "secondary_muscles": [
+                "hamstrings",
+                "core"
+            ],
+            "movement_pattern": "squat_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "squat_rack",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "spinal_compression",
+                "shoulder_mobility_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "A_Tier"
+            }
+        },
+        "description": "The barbell back squat is a popular compound movement that emphasizes building the lower-body muscle groups and overall strength. It's the classic way to start a leg day, and is a worthy centerpiece to a lower-body training program. The squat is a competitive lift in the sport of powerlifting, but is also a classic measurement of lower-body strength. With the barbell racked on the traps or upper back, the emphasis is placed on the posterior chain but the entire body gets worked. The back squat can be trained in everything from heavy singles to sets of 20 reps or higher.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "45_degree_leg_press": {
+        "exercise_id": "EX_119",
+        "exercise_name": "45\u00b0 Leg Press",
+        "youtube_id": "yZmx_Ac3880",
+        "muscle_data": {
+            "primary_targets": [
+                "quads",
+                "glutes"
+            ],
+            "secondary_muscles": [
+                "hamstrings"
+            ],
+            "movement_pattern": "squat_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "leg_press_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_flexion_if_deep"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "A_Tier"
+            }
+        },
+        "description": "The leg press is a machine exercise targeting the quadriceps. It\u2019s favorite among lifters who prefer the seated position to standing with a load on the spine.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "reverse_nordic": {
+        "exercise_id": "EX_120",
+        "exercise_name": "Reverse Nordic",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "quads"
+            ],
+            "secondary_muscles": [
+                "core"
+            ],
+            "movement_pattern": "quad_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "high_knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "A_Tier"
+            }
+        },
+        "description": "The reverse lunge is a lower-body exercise targeting the quads, glutes, and hamstrings. The reverse lunge places more emphasis on the glutes than other lunge variations.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "barbell_hip_thrust": {
+        "exercise_id": "EX_121",
+        "exercise_name": "Barbell Hip Thrust",
+        "youtube_id": "EF7mHEm4eYI",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes"
+            ],
+            "secondary_muscles": [
+                "hamstrings"
+            ],
+            "movement_pattern": "glute_isolation",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "bench",
+                "bar_pad"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "pelvic_pressure"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "B_Tier"
+            }
+        },
+        "description": "The barbell hip thrust is an exercise that engages the posterior chain, particular the glutes. It involves fully extending your hips while holding a weighted barbell across the midsection.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "glute_bridge": {
+        "exercise_id": "EX_122",
+        "exercise_name": "Glute Bridge",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes"
+            ],
+            "secondary_muscles": [
+                "lower_back"
+            ],
+            "movement_pattern": "glute_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "lower_back_activation"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "peak_recomposition"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "B_Tier"
+            }
+        },
+        "description": "The glute bridge is a popular lower-body bodyweight exercise that primarily targets the glutes, but also activates the lower back and hamstrings. It can be performed with body weight alone, or with added resistance such as barbells, dumbbells, or bands. It can be performed for time or reps and works perfectly in a dynamic warm-up for lower-body training, but can also be performed for glute activation anytime.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_hip_abduction": {
+        "exercise_id": "EX_123",
+        "exercise_name": "Cable Hip Abduction",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "glute_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "ankle_strap"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "curtsy_lunge": {
+        "exercise_id": "EX_124",
+        "exercise_name": "Curtsy Lunge",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "quads"
+            ],
+            "secondary_muscles": [
+                "adductors"
+            ],
+            "movement_pattern": "unilateral_leg",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lateral_knee_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "peak_metabolic"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "B_Tier"
+            }
+        },
+        "description": "The curtsy lunge is a lower-body bodyweight movement that targets the muscles of the hips and glutes. It is usually performed for moderate to high reps, at least 8-12 reps per leg.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "conventional_deadlift": {
+        "exercise_id": "EX_125",
+        "exercise_name": "Conventional Deadlift",
+        "youtube_id": "wYREQkVtvEc",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "hamstrings",
+                "lower_back"
+            ],
+            "secondary_muscles": [
+                "lats",
+                "core",
+                "forearms"
+            ],
+            "movement_pattern": "hinge_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "spinal_compression",
+                "lumbar_shear"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "B_Tier"
+            }
+        },
+        "description": "The barbell deadlift is a compound exercise used to develop overall strength and size in the posterior chain. It is a competition lift in the sport of powerlifting, but is also considered a classic benchmark of overall strength. When performed with the hands outside the knees, it is often called a \"conventional\" deadlift. When the feet are wide and the hands are inside the knees, it is a sumo deadlift.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "sumo_deadlift": {
+        "exercise_id": "EX_126",
+        "exercise_name": "Sumo Deadlift",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "quads",
+                "adductors"
+            ],
+            "secondary_muscles": [
+                "lower_back",
+                "core"
+            ],
+            "movement_pattern": "hinge_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "hip_mobility_strain",
+                "lumbar_shear"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "B_Tier"
+            }
+        },
+        "description": "The sumo deadlift is a compound movement in which the feet are set in a wide stance with toes pointed out and grip is placed inside of the legs. It is allowed to be performed instead of conventional deadlifts in most powerlifting competitions. The sumo deadlift targets the hamstrings, glutes, and upper back/traps, but also has a greater emphasis on stretching and strengthening the adductor and hip muscles due to the wide stance.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_pull_through": {
+        "exercise_id": "EX_127",
+        "exercise_name": "Cable Pull-Through",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "glutes",
+                "hamstrings"
+            ],
+            "secondary_muscles": [
+                "lower_back"
+            ],
+            "movement_pattern": "hinge_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "rope_attachment"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "glutes": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "lunge": {
+        "exercise_id": "EX_128",
+        "exercise_name": "Stationary Lunge",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "quads",
+                "glutes"
+            ],
+            "secondary_muscles": [
+                "core"
+            ],
+            "movement_pattern": "unilateral_leg",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "knee_torque"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "B_Tier"
+            }
+        },
+        "description": "The stationary bike is a popular cardio machine found in most commercial gyms. Along with burning a ton of calories, the stationary bike also helps develop the lower body. Stationary bikes come in multiple variations, ranging from ones that resemble riding a bike, to recumbent bikes, to fan bikes that work both the arms and the legs. No matter the variation, a stationary bike can work well at higher speeds for interval-style conditioning training, but also works well at slower paces for steady-state cardio.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "goblet_squat": {
+        "exercise_id": "EX_129",
+        "exercise_name": "Goblet Squat",
+        "youtube_id": "M_XieR6VvSg",
+        "muscle_data": {
+            "primary_targets": [
+                "quads"
+            ],
+            "secondary_muscles": [
+                "core",
+                "glutes"
+            ],
+            "movement_pattern": "squat_pattern",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "squat_mechanics_training"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "peak_recomposition"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "B_Tier"
+            }
+        },
+        "description": "The goblet squat is a popular lower-body exercise where you hold a kettlebell or dumbbell in front of your chest as if you are supporting a heavy cup or goblet. It can help lifters of all levels improve their squat technique and hip mobility, but can also work as a muscle-building or strength accessory movement for experienced athletes. It also works well in combinations, complexes, and flows with other kettlebell movements like swings, presses, and cleans.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "sissy_squat": {
+        "exercise_id": "EX_130",
+        "exercise_name": "Sissy Squat",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "quads"
+            ],
+            "secondary_muscles": [
+                "core"
+            ],
+            "movement_pattern": "quad_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "sissy_squat_bench"
+            ]
+        },
+        "biomechanics": {
+            "extreme_knee_torque": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "quads": "B_Tier"
+            }
+        },
+        "description": "The sissy squat is a bodyweight squat variation that involves letting the knees travel far over the toes, placing an extreme stretch on the quads. This movement targets the quad muscles directly and can be performed in partial or full ranges of motion based on knee health and pain.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "machine_chest_press": {
+        "exercise_id": "EX_201",
+        "exercise_name": "Machine Chest Press",
+        "youtube_id": "xUm0BiZCWlQ",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [
+                "front_delts",
+                "triceps"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "chest_press_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "S_Plus"
+            }
+        },
+        "description": "The machine chest press is a machine-based exercise targeting the chest. It approximates the motion of a bench press but is usually performed facing forward and seated upright. Many machines offer multiple grip options, such as overhand, neutral (palms facing), or underhand. The chest press is often performed for moderate to high reps, such as 8-12 reps per set or more, as part of a pre-exhaust or muscle-building upper-body workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "seated_cable_pec_fly": {
+        "exercise_id": "EX_202",
+        "exercise_name": "Seated Cable Pec Fly",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "chest_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "S_Tier"
+            }
+        },
+        "description": "The seated cable chest fly is an isolation movement that uses a cable stack and an upright bench to target the pectoral muscles. Being able to brace against a seat can help you stabilize your torso and focus on isolating the pecs, feeling them stretch and contract. It is usually used in combination with other presses or flyes to target the chest from different angles.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "flat_bench_press": {
+        "exercise_id": "EX_203",
+        "exercise_name": "Flat Bench Press",
+        "youtube_id": "vcBig73ojpE",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [
+                "front_delts",
+                "triceps"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "bench",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "The bench press is a popular barbell exercise that builds strength and muscle in the chest, triceps, and shoulders. It is a popular way to measure overall upper-body strength, and is contested in the sport of powerlifting. When many people think of lifting, the bench press is often the first exercise that comes to mind. It can be performed for low reps for strength, higher reps for muscle, or for higher reps to build or measure strength endurance, like in the 225-pound bench press rep test in the NFL combine.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "incline_bench_press": {
+        "exercise_id": "EX_204",
+        "exercise_name": "Incline Bench Press",
+        "youtube_id": "SrqOu55lrOU",
+        "muscle_data": {
+            "primary_targets": [
+                "upper_chest",
+                "front_delts"
+            ],
+            "secondary_muscles": [
+                "triceps"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "incline_bench",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier",
+                "front_delts": "A_Tier"
+            }
+        },
+        "description": "The incline bench press is a popular barbell exercise targeting the chest muscles, particularly the upper pectoral muscles. While it can be a strength-focused movement, it is usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of upper-body or chest-focused training.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "flat_db_press": {
+        "exercise_id": "EX_205",
+        "exercise_name": "Flat Dumbbell Press",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [
+                "front_delts",
+                "triceps"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "The seated dumbbell shoulder pressis an exercise for building muscle and strengthening the shoulders, particularly but not exclusively the front heads. The triceps also assist. Some lifters feel that using dumbbells versus a barbell reduced injury risk.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "incline_db_press": {
+        "exercise_id": "EX_206",
+        "exercise_name": "Incline Dumbbell Press",
+        "youtube_id": "8iPEnn-ltC8",
+        "muscle_data": {
+            "primary_targets": [
+                "upper_chest",
+                "front_delts"
+            ],
+            "secondary_muscles": [
+                "triceps"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "incline_bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier",
+                "front_delts": "A_Tier"
+            }
+        },
+        "description": "The incline dumbbell bench press is an upper body exercise targeting the upper pectoral muscles.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "dips": {
+        "exercise_id": "EX_207",
+        "exercise_name": "Chest Dips (Leaning Forward)",
+        "youtube_id": "2z8JmcrW-As",
+        "muscle_data": {
+            "primary_targets": [
+                "chest",
+                "lower_chest"
+            ],
+            "secondary_muscles": [
+                "triceps",
+                "front_delts"
+            ],
+            "movement_pattern": "vertical_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "dip_station"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior",
+                "sternum_pressure"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "smith_machine_press_flat_incline": {
+        "exercise_id": "EX_208",
+        "exercise_name": "Smith Machine Press (Flat & Incline)",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [
+                "front_delts",
+                "triceps"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "smith_machine",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "The Smith machine leg press is a machine-based movement that targets the quads, glutes, and hamstrings. It can serve as a substitute for the leg press or be programmed similarly to the leg press. It is usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of lower-body training. If your Smith machine has safety bars, set them at a height that allows you a full range of motion while giving adequate protection from the weight potentially falling.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_crossover": {
+        "exercise_id": "EX_209",
+        "exercise_name": "Cable Crossover",
+        "youtube_id": "taI4XduLpTk",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "chest_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior_stretch"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "The cable cross-over is an isolation movement that uses a cable stack to build bigger and stronger pectoral muscles. Since it's done using adjustable pulleys, you can target different parts of your chest by setting the pulleys at different levels. It is common in upper body and chest-focused muscle-building workouts, often as a pre-exhaust at the beginning of a workout, or a finishing movement at the end. It is often in combination with other presses or flyes to target the chest from different angles.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "pec_deck_machine": {
+        "exercise_id": "EX_210",
+        "exercise_name": "Pec Deck Machine",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "chest_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "pec_deck_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior_stretch"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "The dip machine is a machine exercise that mimics a triceps dip, a bodyweight exercise performed on parallel bars or on a pull-up and dip station. It targets the triceps first, but also stretches and strengthens the chest and shoulders. Dips with a triceps focus are usually performed with an upright torso, the knees bent and crossed, and the arms close to the body. Dips can be performed for low reps for strength or higher reps for muscle growth.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "db_fly": {
+        "exercise_id": "EX_211",
+        "exercise_name": "Dumbbell Fly",
+        "youtube_id": "eozdVDA78K0",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "chest_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior_stretch",
+                "bicep_tendon_stretch"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "The dumbbell chest fly is a popular exercise that targets the pectoral or chest muscles. It attempts to isolate the chest muscles, stretching and contracting them while limiting involvement of the shoulders. Unlike a press, where the elbows bend and flex, flyes should keep a relatively consistent elbow angle. The motion is sometimes compared to \"hugging a tree.\" Dumbbell flyes are usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of a chest or upper-body focused workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "deficit_push_up": {
+        "exercise_id": "EX_212",
+        "exercise_name": "Deficit Push-Up",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [
+                "triceps",
+                "front_delts"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "push_up_handles_or_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior_stretch"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "peak_metabolic"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "The feet-elevated push-up is a variation on the push-up, a body-weight standard. The feet are elevated, so that your body is aligned at an angle to the floor rather than parallel.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_press_around": {
+        "exercise_id": "EX_213",
+        "exercise_name": "Cable Press Around",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "chest_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "The standing calf raise is a popular movement to target the calf muscles of the lower leg, and in particular the gastrocnemius muscles. When unweighted, it is usually performed for high reps or for time.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "guillotine_press_db": {
+        "exercise_id": "EX_214",
+        "exercise_name": "Guillotine Press (Dumbbell Version)",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "upper_chest"
+            ],
+            "secondary_muscles": [
+                "front_delts"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_impingement"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "A_Tier"
+            }
+        },
+        "description": "The incline dumbbell row is an upper-body exercise targeting the lats (latissimus dorsi) and upper-back muscles, as well as the biceps. Performing it on an incline bench helps target the lower lats in particular. Dumbbell row variations are usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of the upper-body or back-focused portion of a workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "decline_bench_press": {
+        "exercise_id": "EX_215",
+        "exercise_name": "Decline Bench Press (Barbell & Dumbbell)",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "lower_chest"
+            ],
+            "secondary_muscles": [
+                "triceps"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "decline_bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "banded_push_up": {
+        "exercise_id": "EX_216",
+        "exercise_name": "Banded Push-Up",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "chest"
+            ],
+            "secondary_muscles": [
+                "triceps",
+                "core"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "resistance_bands"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition"
+            ],
+            "hypertrophy_tiers": {
+                "chest": "B_Tier"
+            }
+        },
+        "description": "The band push-up is a progression of the popular bodyweight version of the exercise commonly used in military and tactical physical fitness tests. Adding the dynamic resistance of the band matches the strength curve of the push-up and helps build upper-body muscle and strength, emphasizing the chest, triceps, and shoulders, but also working the upper back and core.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "overhead_cable_triceps_extension": {
+        "exercise_id": "EX_217",
+        "exercise_name": "Overhead Cable Triceps Extension",
+        "youtube_id": "1u18yJFLhQ4",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "S_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "skull_crusher": {
+        "exercise_id": "EX_218",
+        "exercise_name": "Skull Crusher",
+        "youtube_id": "d_KZxkY_0cM",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "ez_bar",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "S_Tier"
+            }
+        },
+        "description": "The EZ-bar skullcrusher is a popular exercise targeting the triceps muscles. The EZ-bar is used more often than a straight bar. As for the name, that\u2019s worst-case scenario. The bar should actually come down behind the head. It is usually performed for moderate to high reps as part of an upper body or arms-focused workout. No need to chase a 1RM on this move!",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "bar_press_down": {
+        "exercise_id": "EX_219",
+        "exercise_name": "Bar Press Down",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "straight_bar"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "wrist_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "one_arm_db_triceps_extension": {
+        "exercise_id": "EX_220",
+        "exercise_name": "One-Arm Dumbbell Triceps Extension",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_strain",
+                "shoulder_mobility_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "A_Tier"
+            }
+        },
+        "description": "The single-arm dumbbell triceps extension is a popular exercise targeting the triceps one side at a time. It targets all three heads of the triceps, but when performed with the arm overhead, it can be especially effective at building the long head of the triceps. This exercise is usually performed for moderate to high reps, at least 8-12 reps per set, as part of the upper-body or arm-focused portion of a workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "katana_triceps_extension": {
+        "exercise_id": "EX_221",
+        "exercise_name": "Katana Triceps Extension",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "A_Tier"
+            }
+        },
+        "description": "The machine triceps extension is an isolation exercise targeting the tricep muscles.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "overhead_cable_extension_rope": {
+        "exercise_id": "EX_222",
+        "exercise_name": "Overhead Cable Extension (Rope)",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "rope_attachment"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "close_grip_bench_press": {
+        "exercise_id": "EX_223",
+        "exercise_name": "Close Grip Bench Press",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [
+                "chest",
+                "front_delts"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "bench",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "wrist_strain",
+                "shoulder_anterior"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "A_Tier"
+            }
+        },
+        "description": "The close-grip bench press is a popular exercise targeting the triceps and chest. The main difference between this exercise and the standard bench press is that the hands and elbows are placed closer together, which places more of an emphasis on the triceps. The close-grip bench press is often used as an accessory movement for the traditional bench press, or as a triceps builder for arm training. Similar to the bench press, it can be trained in low reps for strength or higher reps for muscle or strength endurance.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_triceps_kickback": {
+        "exercise_id": "EX_224",
+        "exercise_name": "Cable Triceps Kickback",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "A_Tier"
+            }
+        },
+        "description": "The double-arm triceps kick-back is a popular movement to increase size and strength of the triceps. It is usually performed for moderate to high reps, at least 8-12 reps, as part of an upper-body or arm-focused workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "smith_machine_jm_press": {
+        "exercise_id": "EX_225",
+        "exercise_name": "Smith Machine JM Press",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [
+                "chest"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "smith_machine",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "A_Tier"
+            }
+        },
+        "description": "The Smith machine leg press is a machine-based movement that targets the quads, glutes, and hamstrings. It can serve as a substitute for the leg press or be programmed similarly to the leg press. It is usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of lower-body training. If your Smith machine has safety bars, set them at a height that allows you a full range of motion while giving adequate protection from the weight potentially falling.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "db_skull_crusher": {
+        "exercise_id": "EX_226",
+        "exercise_name": "Dumbbell Skull Crusher",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "A_Tier"
+            }
+        },
+        "description": "The dumbbell skullcrusher is a triceps exercise that has been a staple of bodybuilders for decades. Skullcrushers are usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of an upper-body or arm-focused workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "rope_press_down": {
+        "exercise_id": "EX_227",
+        "exercise_name": "Rope Press Down",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "rope_attachment"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "db_french_press": {
+        "exercise_id": "EX_228",
+        "exercise_name": "Dumbbell French Press",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "tricep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "B_Tier"
+            }
+        },
+        "description": "The dumbbell bench press is a mainstay of workout enthusiasts worldwide. It\u2019s a classic move for building a bigger, stronger chest. As such, it\u2019s often placed first in mass-building chest workouts.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "jm_press_barbell": {
+        "exercise_id": "EX_229",
+        "exercise_name": "JM Press (Barbell)",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [
+                "chest"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "bench",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "severe_elbow_strain",
+                "wrist_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "close_grip_dip": {
+        "exercise_id": "EX_230",
+        "exercise_name": "Close Grip Dip (Upright Torso)",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [
+                "chest",
+                "front_delts"
+            ],
+            "movement_pattern": "vertical_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "dip_station"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior",
+                "sternum_pressure"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "diamond_push_up": {
+        "exercise_id": "EX_231",
+        "exercise_name": "Diamond Push-Up",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps"
+            ],
+            "secondary_muscles": [
+                "chest",
+                "core"
+            ],
+            "movement_pattern": "horizontal_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": []
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "wrist_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "peak_metabolic"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "B_Tier"
+            }
+        },
+        "description": "The diamond push-up is an advanced variation of the push-up exercise performed with the hands in a diamond shape. It increases the challenge to the triceps, but also targets the chest and shoulders.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "machine_dip": {
+        "exercise_id": "EX_232",
+        "exercise_name": "Machine Dip",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "triceps",
+                "chest"
+            ],
+            "secondary_muscles": [
+                "front_delts"
+            ],
+            "movement_pattern": "vertical_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "dip_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "triceps": "B_Tier"
+            }
+        },
+        "description": "The chest dip is a bodyweight exercise performed on parallel bars or on a pull-up and dip station. It targets the chest, triceps, and shoulders. Dips with a chest focus are usually performed with the torso leaning forward and the elbows angled out from the torso. Dips can be performed for low reps for strength or higher reps for muscle growth.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "chest_supported_row": {
+        "exercise_id": "EX_301",
+        "exercise_name": "Chest Supported Row",
+        "youtube_id": "0BmV4cbH52Q",
+        "muscle_data": {
+            "primary_targets": [
+                "back",
+                "rear_delts"
+            ],
+            "secondary_muscles": [
+                "biceps",
+                "traps"
+            ],
+            "movement_pattern": "horizontal_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "dumbbells",
+                "incline_bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "posture_correction"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "back": "S_Plus"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "wide_grip_lat_pull_down": {
+        "exercise_id": "EX_302",
+        "exercise_name": "Wide Grip Lat Pull Down",
+        "youtube_id": "CAwf7n6Luuc",
+        "muscle_data": {
+            "primary_targets": [
+                "lats"
+            ],
+            "secondary_muscles": [
+                "biceps",
+                "rear_delts"
+            ],
+            "movement_pattern": "vertical_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "lat_pulldown_machine",
+                "wide_bar"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_impingement_if_behind_neck"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "back": "S_Tier"
+            }
+        },
+        "description": "The lat pull-down is a cable-based exercise machine that\u2019s ubiquitous in gyms around the world. This back builder is easy to learn and highly effective, allowing for variable resistance depending on where you place the pin in the stack.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "neutral_grip_pull_down": {
+        "exercise_id": "EX_303",
+        "exercise_name": "Neutral Grip Pull Down",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "lats",
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "rhomboids"
+            ],
+            "movement_pattern": "vertical_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "lat_pulldown_machine",
+                "v_bar_or_neutral_attachment"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "back": "S_Tier"
+            }
+        },
+        "description": "The neutral-grip lat pull-down is a variation on the lat pull-down that uses a handle with a neutral (palms facing in) grip. This arrangement helps to build lat width and target the upper lats. This movement is usually performed for moderate to high reps, such as 8-12 per set or higher, as part of an upper-body or back-focused workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "half_kneeling_one_arm_lat_pull_down": {
+        "exercise_id": "EX_304",
+        "exercise_name": "Half Kneeling One Arm Lat Pull Down",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "lats"
+            ],
+            "secondary_muscles": [
+                "core",
+                "biceps"
+            ],
+            "movement_pattern": "vertical_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "d_handle"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "core_stability"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "back": "S_Tier"
+            }
+        },
+        "description": "The kneeling lat pull-down is a variation of the lat pull-down exercise performed with the knees on the ground rather than sitting on a bench or machine. It has all of the same benefits of a lat pull-down performed on a bench or machine, in addition to providing further activation to the core and lower body.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "meadows_row": {
+        "exercise_id": "EX_305",
+        "exercise_name": "Meadows Row",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "upper_back",
+                "lats"
+            ],
+            "secondary_muscles": [
+                "biceps",
+                "rear_delts",
+                "grip"
+            ],
+            "movement_pattern": "horizontal_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "landmine_attachment"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear_if_unsupported"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "back": "S_Tier"
+            }
+        },
+        "description": "The machine low row is an exercise targeting the back muscles.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_row": {
+        "exercise_id": "EX_306",
+        "exercise_name": "Cable Row (Close & Wide Grip)",
+        "youtube_id": "UCXxvVItLoM",
+        "muscle_data": {
+            "primary_targets": [
+                "back",
+                "rhomboids"
+            ],
+            "secondary_muscles": [
+                "biceps",
+                "rear_delts"
+            ],
+            "movement_pattern": "horizontal_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_row_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_flexion_if_rounded"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "back": "S_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "wide_grip_pull_up": {
+        "exercise_id": "EX_307",
+        "exercise_name": "Wide Grip Pull-Up",
+        "youtube_id": "eGo4IYb0OqQ",
+        "muscle_data": {
+            "primary_targets": [
+                "lats"
+            ],
+            "secondary_muscles": [
+                "biceps",
+                "core"
+            ],
+            "movement_pattern": "vertical_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "pull_up_bar"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_impingement_if_poor_mobility"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "back": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "neutral_grip_pull_up": {
+        "exercise_id": "EX_308",
+        "exercise_name": "Neutral Grip Pull-Up",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "lats",
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "core",
+                "brachialis"
+            ],
+            "movement_pattern": "vertical_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "pull_up_bar_with_neutral_grips"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "peak_metabolic"
+            ],
+            "hypertrophy_tiers": {
+                "back": "A_Tier"
+            }
+        },
+        "description": "The neutral-grip pull-up is a multijoint bodyweight exercise in which the reps are performed with the palms facing one another. Like other pull-up variations, it builds strength and muscle in the upper back, biceps, and core. It can be used as a more shoulder-friendly alternative to straight-bar pull-ups, or to help perform more reps than you can perform overhand.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cross_body_lat_pull_around": {
+        "exercise_id": "EX_309",
+        "exercise_name": "Cross Body Lat Pull Around",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "lats"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "vertical_pull",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "d_handle"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "back": "A_Tier"
+            }
+        },
+        "description": "The cross-body plank march is an exercise targeting the entire core but especially the obliques. It\u2019s more difficult than a standard plank, with the extra stabilization challenge of bringing one knee at a time off the ground toward the opposing elbow. This will increase the challenge to the core and shoulder muscles, but also present a coordination and balance challenge.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "deficit_pendlay_row": {
+        "exercise_id": "EX_310",
+        "exercise_name": "Deficit Penlay Row",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "back",
+                "rhomboids"
+            ],
+            "secondary_muscles": [
+                "lower_back",
+                "hamstrings"
+            ],
+            "movement_pattern": "horizontal_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "weight_plates",
+                "step_platform"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "back": "A_Tier"
+            }
+        },
+        "description": "The Pendlay row, named after the well-known strength coach Glenn Pendlay, is a bent-over row variation where each rep starts with the barbell resting on the ground. This eliminates the stretch reflex and forces the lifter to pull with power and a bent-over spine. The Pendlay row can be performed heavy for low reps, but is usually performed for moderate reps, such as 5-8 per set.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "one_arm_db_row": {
+        "exercise_id": "EX_311",
+        "exercise_name": "One Arm Dumbbell Row",
+        "youtube_id": "pYcpY20QaE8",
+        "muscle_data": {
+            "primary_targets": [
+                "lats",
+                "upper_back"
+            ],
+            "secondary_muscles": [
+                "biceps",
+                "core"
+            ],
+            "movement_pattern": "horizontal_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_torsion_if_twisted"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "back": "A_Tier"
+            }
+        },
+        "description": "The single-arm bench dumbbell row is a popular exercise for building the latissimus dorsi, or lat, muscles of the back. The bench is used for support during the rowing motion.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "croc_row": {
+        "exercise_id": "EX_312",
+        "exercise_name": "Croc Row",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "upper_back",
+                "grip"
+            ],
+            "secondary_muscles": [
+                "lats",
+                "biceps",
+                "core"
+            ],
+            "movement_pattern": "horizontal_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "heavy_dumbbells",
+                "bench_or_rack_for_support"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear",
+                "shoulder_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "strength_block",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "back": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "lying_or_seated_face_pull": {
+        "exercise_id": "EX_313",
+        "exercise_name": "Lying or Seated Face Pull",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "rear_delts",
+                "traps"
+            ],
+            "secondary_muscles": [
+                "rhomboids"
+            ],
+            "movement_pattern": "rear_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "bench",
+                "rope_attachment"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "shoulder_posture",
+                "rotator_cuff_health"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "back": "A_Tier"
+            }
+        },
+        "description": "The seated face pull is a cable exercise targeting the shoulder muscles, particularly the rear delts, and the muscles of the upper back. This can help build healthier shoulders and posture, and increase shoulder stability. It is usually performed for moderate to high reps as part of a dynamic warm-up for an upper-body workout or in the main part of a shoulder-focused workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "lat_prayer": {
+        "exercise_id": "EX_314",
+        "exercise_name": "Lat Prayer (Cable Lat Pullover)",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "lats"
+            ],
+            "secondary_muscles": [
+                "triceps_long_head"
+            ],
+            "movement_pattern": "vertical_pull",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "straight_bar_or_rope"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "back": "A_Tier"
+            }
+        },
+        "description": "The straight-arm cable pull-over is an exercise that focuses on the muscles of the lats (latissimus dorsi) and chest using a cable stack and a flat bench. It is most commonly used for higher reps, such as 10-15 or more, in muscle-building workouts. It is also an effective substitute for dumbbell pull-overs or a pull-over machine, if you don't have access to them or they aggravate your shoulders.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "db_lat_pullover": {
+        "exercise_id": "EX_315",
+        "exercise_name": "Dumbbell Lat Pullover",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "lats",
+                "chest"
+            ],
+            "secondary_muscles": [
+                "triceps",
+                "serratus"
+            ],
+            "movement_pattern": "vertical_pull",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior_stretch"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "back": "A_Tier"
+            }
+        },
+        "description": "The dumbbell pull-over is a popular muscle and strength-building exercise that targets the muscles of the chest, upper back, lats, and the serratus anterior. It was a favorite of old-school bodybuilders, who believed high-rep pull-overs helped build a V-taper shape in the torso.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "chin_ups": {
+        "exercise_id": "EX_316",
+        "exercise_name": "Chin-Ups",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "lats",
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "core"
+            ],
+            "movement_pattern": "vertical_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "pull_up_bar"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_strain",
+                "wrist_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "strength_block",
+                "peak_metabolic"
+            ],
+            "hypertrophy_tiers": {
+                "back": "B_Tier",
+                "biceps": "B_Tier"
+            }
+        },
+        "description": "The a chin-up is a variation of the pull-up exercise in which the reps are performed with the palms facing toward the body, in an underhand position, with a grip that is narrower than shoulder-width. Like other pull-up variations, it builds strength and muscle in the upper back, biceps, and core, but it utilizes the biceps slightly more than overhand pull-ups. It can be used as a more shoulder-friendly alternative to straight-bar pull-ups, or to help perform more reps than you can perform overhand.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "standard_barbell_row": {
+        "exercise_id": "EX_317",
+        "exercise_name": "Standard Barbell Row",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "back",
+                "rhomboids"
+            ],
+            "secondary_muscles": [
+                "lower_back",
+                "biceps",
+                "hamstrings"
+            ],
+            "movement_pattern": "horizontal_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "back": "B_Tier"
+            }
+        },
+        "description": "The barbell bent-over row is a compound exercise used to build strength and size in both the lower and upper back. It targets nearly all of the muscles in the back, but particularly the lats, rhomboids, and lower back. It is commonly utilized as an accessory movement for the deadlift in powerlifting, but is also popular in strength and muscle-focused upper-body workouts.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "pendlay_row": {
+        "exercise_id": "EX_318",
+        "exercise_name": "Penlay Row",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "back",
+                "rhomboids"
+            ],
+            "secondary_muscles": [
+                "lower_back",
+                "core"
+            ],
+            "movement_pattern": "horizontal_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "back": "B_Tier"
+            }
+        },
+        "description": "The Pendlay row, named after the well-known strength coach Glenn Pendlay, is a bent-over row variation where each rep starts with the barbell resting on the ground. This eliminates the stretch reflex and forces the lifter to pull with power and a bent-over spine. The Pendlay row can be performed heavy for low reps, but is usually performed for moderate reps, such as 5-8 per set.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "freestanding_t_bar_row": {
+        "exercise_id": "EX_319",
+        "exercise_name": "Freestanding T-Bar Row",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "back"
+            ],
+            "secondary_muscles": [
+                "lower_back",
+                "biceps"
+            ],
+            "movement_pattern": "horizontal_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "v_bar_handle"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "back": "B_Tier"
+            }
+        },
+        "description": "The standing EZ-bar curl is a popular exercise targeting the biceps. It is commonly performed for moderate to high reps as part of an upper-body or arm-focused workout. Many gyms even have EZ-bars at fixed weights, allowing for easy weight changes.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "standing_rope_face_pull": {
+        "exercise_id": "EX_320",
+        "exercise_name": "Standing Rope Face Pull",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "rear_delts",
+                "traps"
+            ],
+            "secondary_muscles": [
+                "rhomboids"
+            ],
+            "movement_pattern": "rear_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "rope_attachment"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear_if_heavy"
+            ],
+            "pre_hab_for": [
+                "posture_correction"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition"
+            ],
+            "hypertrophy_tiers": {
+                "back": "B_Tier"
+            }
+        },
+        "description": "The standing face pull is an isolation exercise primarily targeting the rear deltoids, traps, and upper back. It is most often performed with a rope attachment.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "face_away_bayesian_cable_curl": {
+        "exercise_id": "EX_321",
+        "exercise_name": "Face-Away Bayesian Cable Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "d_handle"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior_stretch"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "S_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "45_degree_preacher_curl": {
+        "exercise_id": "EX_322",
+        "exercise_name": "45\u00b0 Preacher Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "preacher_bench",
+                "ez_bar"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_tendon_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "S_Tier"
+            }
+        },
+        "description": "The EZ-bar preacher curl is a classic exercise for building bigger biceps. This move is all about isolation. With the back of the upper arms against the pad, it\u2019s next to impossible to cheat. Go light, get a great pump, and build that peak!",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "machine_preacher_curl": {
+        "exercise_id": "EX_323",
+        "exercise_name": "Machine Preacher Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "bicep_curl_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "S_Tier"
+            }
+        },
+        "description": "The machine preacher curl is a popular exercise to build size and strength in the biceps. It approximates the motion of a free-weight preacher curl, but uses a selectorized weight stack or plate-loaded machine. Many such machines offer different grips and grip widths. Machine biceps curls are often done for moderate to high reps, such as 8-12 reps per set or more, as part of the upper-body or arm-focused portion of a workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "hammer_grip_preacher_curl": {
+        "exercise_id": "EX_324",
+        "exercise_name": "Hammer Grip Preacher Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "brachialis",
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "forearms"
+            ],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "preacher_bench",
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_tendon_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "S_Tier"
+            }
+        },
+        "description": "The EZ-bar preacher curl is a classic exercise for building bigger biceps. This move is all about isolation. With the back of the upper arms against the pad, it's next to impossible to use momentum which forces the muscles to work harder.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "ez_bar_curl": {
+        "exercise_id": "EX_325",
+        "exercise_name": "EZ Bar Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "forearms"
+            ],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "ez_bar",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "The standing EZ-bar curl is an immensely popular exercise targeting the biceps. It is commonly performed for moderate to high reps as part of an upper body or arms-focused workout. Many gyms even have EZ-bars at fixed weights, allowing for easy weight changes.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "dumbbell_hammer_curl": {
+        "exercise_id": "EX_326",
+        "exercise_name": "Dumbbell Hammer Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "brachialis",
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "forearms"
+            ],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "elbow_health"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "This curl is performed simultaneously with dumbbells but without wrist supination. Throughout each rep, the wrists remain neutral, like a carpenter hammering a nail.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "incline_dumbbell_curl": {
+        "exercise_id": "EX_327",
+        "exercise_name": "Incline Dumbbell Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps_long_head"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "incline_bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior_stretch"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "The incline dumbbell biceps curl is an isolation exercise targeting the biceps. This variation targets the long head of the biceps more than a traditional curl and there is more overall tension to this muscle.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "standing_dumbbell_curl": {
+        "exercise_id": "EX_328",
+        "exercise_name": "Standing Dumbbell Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "forearms"
+            ],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "With the reverse-grip dumbbell curl, the palms face down, not up. This unorthodox wrist position simultaneously targets the biceps while also building forearm and grip strength. The move can performed standing or seated.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "lying_dumbbell_curl": {
+        "exercise_id": "EX_329",
+        "exercise_name": "Lying Dumbbell Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_curl": {
+        "exercise_id": "EX_330",
+        "exercise_name": "Cable Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "straight_bar_or_rope"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "The leg curl is a popular machine-based exercise for the legs, particularly the hamstrings. It comes in seated and lying varieties, but the seated leg curl machine is more common in commercial gyms. Leg curl variations are usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of a leg pre-exhaust or as a muscle-building movement for lower-body training.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "inverse_zottman_curl": {
+        "exercise_id": "EX_331",
+        "exercise_name": "Inverse Zottman Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps",
+                "brachioradialis"
+            ],
+            "secondary_muscles": [
+                "forearms"
+            ],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "wrist_strain_if_heavy"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "strict_curl": {
+        "exercise_id": "EX_332",
+        "exercise_name": "Strict Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "wall_for_support"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "elbow_tendon_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "The lying leg curl is a popular machine-based exercise for the legs, particularly the hamstrings. It is similar to the seated leg curl, but the open hip angle in the lying leg curl may incorporate more glute and calf activation. It is usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of a leg pre-exhaust or as a muscle-building movement for lower-body training.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "modified_21s": {
+        "exercise_id": "EX_333",
+        "exercise_name": "Modified 21s",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "forearms"
+            ],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell_or_dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cheat_curl": {
+        "exercise_id": "EX_334",
+        "exercise_name": "Cheat Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "forearms",
+                "core"
+            ],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "A_Tier"
+            }
+        },
+        "description": "The EZ-bar preacher curl is a classic exercise for building bigger biceps. This move is all about isolation. With the back of the upper arms against the pad, it\u2019s next to impossible to cheat. Go light, get a great pump, and build that peak!",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "barbell_curl": {
+        "exercise_id": "EX_335",
+        "exercise_name": "Barbell Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [
+                "forearms"
+            ],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "wrist_strain",
+                "elbow_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "B_Tier"
+            }
+        },
+        "description": "The barbell curl is an arm exercise that is also one of the most recognizable movements in all of bodybuilding and fitness. It helps build sleeve-popping biceps and allows heavier loading than many other curl variations. It is usually performed in moderate to high reps, such as 8-12 reps per set, as part of the arm-focused portion of any workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "flat_bench_curl": {
+        "exercise_id": "EX_336",
+        "exercise_name": "Flat Bench Curl",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "biceps"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "bicep_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior_stretch"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "biceps": "B_Tier"
+            }
+        },
+        "description": "The lying leg lift is a popular bodyweight exercise targeting the muscles of the abs, the rectus abdominis or \u201csix-pack\u201d muscles in particular. It can be performed for time or reps in the core-focused portion of any workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_lateral_raise": {
+        "exercise_id": "EX_401",
+        "exercise_name": "Cable Lateral Raise",
+        "youtube_id": "PPrzBWZDOhA",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts"
+            ],
+            "secondary_muscles": [
+                "front_delts"
+            ],
+            "movement_pattern": "side_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "d_handle"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "S_Tier"
+            }
+        },
+        "description": "The lying cable lateral raise is an isolation exercise that targets the medial or middle deltoid muscle of the shoulders. It is most common in muscle-building shoulder or upper-body workouts, usually in higher rep ranges of at least 8-12 reps per set.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "reverse_cable_crossover": {
+        "exercise_id": "EX_402",
+        "exercise_name": "Reverse Cable Crossover",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "rear_delts"
+            ],
+            "secondary_muscles": [
+                "rhomboids",
+                "traps"
+            ],
+            "movement_pattern": "rear_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "posture_correction"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "S_Tier"
+            }
+        },
+        "description": "The cable cross-over is an isolation movement that uses a cable stack to build bigger and stronger pectoral muscles. Since it's done using adjustable pulleys, you can target different parts of your chest by setting the pulleys at different levels. It is common in upper body and chest-focused muscle-building workouts, often as a pre-exhaust at the beginning of a workout, or a finishing movement at the end. It is often in combination with other presses or flyes to target the chest from different angles.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "cable_y_raise": {
+        "exercise_id": "EX_403",
+        "exercise_name": "Cable Y-Raise",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts",
+                "lower_traps"
+            ],
+            "secondary_muscles": [
+                "front_delts"
+            ],
+            "movement_pattern": "side_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_impingement_if_poor_mobility"
+            ],
+            "pre_hab_for": [
+                "scapular_stability"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "S_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "behind_the_back_cuffed_lateral_raise": {
+        "exercise_id": "EX_404",
+        "exercise_name": "Behind-the-Back Cuffed Lateral Raise",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "side_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "pro_gym",
+            "specific_tools": [
+                "cable_machine",
+                "cuff_attachment"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "S_Tier"
+            }
+        },
+        "description": "The single-arm cable lateral raise is an isolation exercise targeting the shoulders, specifically the medial deltoid. This movement also hits the traps and upper back and allows you to focus on each side independently. Because grip is a limitation, it is usually performed for moderate to high reps, at least 8-12 reps per set, as part of an upper-body or shoulder-focused workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "reverse_pec_deck": {
+        "exercise_id": "EX_405",
+        "exercise_name": "Reverse Pec Deck (Sideways)",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "rear_delts"
+            ],
+            "secondary_muscles": [
+                "rhomboids",
+                "traps"
+            ],
+            "movement_pattern": "rear_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "pec_deck_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "S_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "machine_shoulder_press": {
+        "exercise_id": "EX_406",
+        "exercise_name": "Machine Shoulder Press",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "front_delts"
+            ],
+            "secondary_muscles": [
+                "triceps",
+                "upper_chest"
+            ],
+            "movement_pattern": "vertical_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "shoulder_press_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "A_Tier"
+            }
+        },
+        "description": "The machine shoulder press is a machine-based exercise targeting the deltoid muscles. It approximates the motion of a free-weight shoulder press, but uses a selectorized weight-stack or plate-loaded machine. Many such machines also allow you to choose between different grips and grip widths. Machine shoulder presses are often done for moderate to high reps, such as 8-12 reps per set or more, as part of the upper-body or shoulder-focused portion of a workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "atlantis_standing_machine_lateral_raise": {
+        "exercise_id": "EX_407",
+        "exercise_name": "Atlantis Standing Machine Lateral Raise",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "side_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "pro_gym",
+            "specific_tools": [
+                "lateral_raise_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "seated_db_shoulder_press": {
+        "exercise_id": "EX_408",
+        "exercise_name": "Seated Dumbbell Shoulder Press",
+        "youtube_id": "qEwKCR5JCog",
+        "muscle_data": {
+            "primary_targets": [
+                "front_delts"
+            ],
+            "secondary_muscles": [
+                "triceps",
+                "upper_chest"
+            ],
+            "movement_pattern": "vertical_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_impingement_if_flared",
+                "lumbar_compression"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "foundation",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "A_Tier"
+            }
+        },
+        "description": "The seated dumbbell shoulder press is a popular exercise for building muscle and strength in the shoulders. The triceps also work hard in this lift. Many lifters find using dumbbells to be more comfortable and shoulder-friendly for this press variation than a barbell. This can be the primary pressing movement on an upper-body or shoulder day, or an effective accessory movement later in a workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "leaning_in_db_lateral_raise": {
+        "exercise_id": "EX_409",
+        "exercise_name": "Leaning-In Dumbbell Lateral Raise",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "side_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "pole_or_rack_for_support"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "A_Tier"
+            }
+        },
+        "description": "The seated dumbbell lateral raise is an exercise that targets the shoulder muscles, particularly the medial or middle head of the deltoids. Performing it on a bench helps enforce strict form and eliminate swinging or using momentum to move the weights. Lateral raise variations are usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of the upper-body or shoulder-focused portion of a workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "arnold_style_side_lying_db_raise": {
+        "exercise_id": "EX_410",
+        "exercise_name": "Arnold-Style Side Lying Dumbbell Raise",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts"
+            ],
+            "secondary_muscles": [
+                "rear_delts"
+            ],
+            "movement_pattern": "side_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells",
+                "incline_bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "rope_face_pull_shoulders": {
+        "exercise_id": "EX_411",
+        "exercise_name": "Rope Face Pull",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "rear_delts",
+                "traps"
+            ],
+            "secondary_muscles": [
+                "rhomboids"
+            ],
+            "movement_pattern": "rear_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "cable_machine",
+                "rope_attachment"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "shoulder_posture",
+                "rotator_cuff_health"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "A_Tier",
+                "back": "A_Tier"
+            }
+        },
+        "description": "The standing face pull is an isolation exercise primarily targeting the rear deltoids, traps, and upper back. It is most often performed with a rope attachment.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "barbell_overhead_press": {
+        "exercise_id": "EX_412",
+        "exercise_name": "Barbell Overhead Press",
+        "youtube_id": "2yjwXTZAkQ0",
+        "muscle_data": {
+            "primary_targets": [
+                "front_delts"
+            ],
+            "secondary_muscles": [
+                "triceps",
+                "core",
+                "upper_chest"
+            ],
+            "movement_pattern": "vertical_press",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell",
+                "squat_rack",
+                "weight_plates"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "spinal_compression",
+                "lumbar_shear",
+                "shoulder_impingement"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "recomposition",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "standing_db_lateral_raise": {
+        "exercise_id": "EX_413",
+        "exercise_name": "Standing Dumbbell Lateral Raise",
+        "youtube_id": "WJm942Nm1KU",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts"
+            ],
+            "secondary_muscles": [
+                "traps"
+            ],
+            "movement_pattern": "side_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_impingement_if_internally_rotated"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "peak_metabolic"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "B_Tier"
+            }
+        },
+        "description": "The standing dumbbell calf raise is a popular exercise to target the calf muscles of the lower leg, and in particular the gastrocnemius muscles. It can be performed for time or for reps, either two dumbbells, or one if balance is a problem and you would like to use your free hand to hold a fixed object.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "super_rom_lateral_raise": {
+        "exercise_id": "EX_414",
+        "exercise_name": "Super ROM Lateral Raise",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts"
+            ],
+            "secondary_muscles": [
+                "traps"
+            ],
+            "movement_pattern": "side_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_impingement_at_top"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "B_Tier"
+            }
+        },
+        "description": "The dumbbell lateral raise is an upper body isolation exercise for building shoulder strength and muscle. It's a staple strength training move and is a great option for accessory work on upper body training days. This exercise particularly focuses on the lateral or medial head of the deltoid, making them appear wider and more developed.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "upright_row": {
+        "exercise_id": "EX_415",
+        "exercise_name": "Upright Row",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts",
+                "traps"
+            ],
+            "secondary_muscles": [
+                "biceps"
+            ],
+            "movement_pattern": "vertical_pull",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "barbell_or_ez_bar"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "severe_shoulder_impingement",
+                "wrist_strain"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "B_Tier"
+            }
+        },
+        "description": "The barbell upright row is a barbell exercise that builds stronger and bigger traps. Many lifters combine this move with either their back or shoulder workout since it involves both body parts.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "bent_over_reverse_db_fly": {
+        "exercise_id": "EX_416",
+        "exercise_name": "Bent-Over Reverse Dumbbell Fly",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "rear_delts"
+            ],
+            "secondary_muscles": [
+                "rhomboids"
+            ],
+            "movement_pattern": "rear_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "dumbbells"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "seated_machine_lateral_raise": {
+        "exercise_id": "EX_417",
+        "exercise_name": "Seated Machine Lateral Raise",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "side_delts"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "side_delt_isolation",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "lateral_raise_machine"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "shoulders": "B_Tier"
+            }
+        },
+        "description": "The seated dumbbell lateral raiseis an iconic exercise for developing the shoulders. If you\u2019ve ever worked out with weights, chances are you\u2019ve done this move at some point. Proper execution is paramount to avoid injury.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "hollow_body_crunch": {
+        "exercise_id": "EX_501",
+        "exercise_name": "Hollow Body Crunch",
+        "youtube_id": "yRMvUqL_lK4",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "hip_flexors"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "lumbar_stability"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "core": "S_Tier"
+            }
+        },
+        "description": "The elbow-to-knee crunch is a bodyweight exercise targeting the ab muscles, the obliques and rectus abdominis or \"six-pack\" muscles in particular. It can be performed for time or reps as part of the ab-focused portion of any workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "long_lever_plank": {
+        "exercise_id": "EX_502",
+        "exercise_name": "Long Lever Plank",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "shoulders",
+                "lats"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_anterior_stretch"
+            ],
+            "pre_hab_for": [
+                "anti_extension"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "core": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "knee_raises": {
+        "exercise_id": "EX_503",
+        "exercise_name": "Knee Raises",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "hip_flexors"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition"
+            ],
+            "hypertrophy_tiers": {
+                "core": "A_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "side_plank_raise": {
+        "exercise_id": "EX_504",
+        "exercise_name": "Side Plank / Side Plank Raise",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "obliques",
+                "core"
+            ],
+            "secondary_muscles": [
+                "shoulders"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "shoulder_strain_if_weak"
+            ],
+            "pre_hab_for": [
+                "lateral_stability"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "core": "A_Tier"
+            }
+        },
+        "description": "The side plank lateral raise is an exercise that combines an isometric side plank hold with a dumbbell raise to target both the core and the shoulders. You probably won't be able to use much weight without disrupting your balance, but even at light weight, this is a movement that can help address multiple muscle groups in a time-efficient workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "reverse_crunch": {
+        "exercise_id": "EX_505",
+        "exercise_name": "Reverse Crunch",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "hip_flexors"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "pelvic_control"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "core": "A_Tier"
+            }
+        },
+        "description": "The reverse crunch is a popular exercise targeting the abdominals, particularly the lower half. It\u2019s easy to perform on either the floor or a flat bench. Many lifters think of this as a companion to the crunch, which targets the upper abdominals more than the lower.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "dead_bug": {
+        "exercise_id": "EX_506",
+        "exercise_name": "Dead Bug",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "hip_flexors"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "lumbar_stability",
+                "coordination"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition"
+            ],
+            "hypertrophy_tiers": {
+                "core": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "mountain_climbers": {
+        "exercise_id": "EX_507",
+        "exercise_name": "Mountain Climbers",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "shoulders",
+                "cardio_system"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "peak_metabolic"
+            ],
+            "hypertrophy_tiers": {
+                "core": "B_Tier"
+            }
+        },
+        "description": "The mountain climber is a popular bodyweight exercise targeting the muscles of the core, as well as the shoulders, hips, and cardiovascular system. It involves lifting one knee to the chest at a time from a straight-arm plank position. It can be performed for time or reps as part of a dynamic warm-up, for bodyweight cardio or conditioning, or as no-equipment dynamic core training.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "basic_plank": {
+        "exercise_id": "EX_508",
+        "exercise_name": "Basic Plank",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "shoulders"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": [
+                "anti_extension"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn"
+            ],
+            "hypertrophy_tiers": {
+                "core": "B_Tier"
+            }
+        },
+        "description": "The side plank is a popular isometric abdominal exercise focusing on the oblique muscles, as well as the transversus abdominis or deep core muscles. It is sometimes paired with the curl up and bird dog as the \u201cMcGill big three\u201d for core strength and stability. It is performed for time and can work in a warm-up or in the core-focused portion of any workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "leg_raises": {
+        "exercise_id": "EX_509",
+        "exercise_name": "Leg Raises",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "hip_flexors"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_shear_if_arched"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "core": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "heel_taps": {
+        "exercise_id": "EX_510",
+        "exercise_name": "Heel Taps",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "obliques",
+                "core"
+            ],
+            "secondary_muscles": [],
+            "movement_pattern": "core_stabilization",
+            "is_compound": false
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn"
+            ],
+            "hypertrophy_tiers": {
+                "core": "B_Tier"
+            }
+        },
+        "description": "Description coming soon.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "candle_raise": {
+        "exercise_id": "EX_511",
+        "exercise_name": "Candle Raise",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "hip_flexors",
+                "lower_back"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "neck_strain_if_unsupported"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume"
+            ],
+            "hypertrophy_tiers": {
+                "core": "B_Tier"
+            }
+        },
+        "description": "The plank leg raise is an isometric abdominal exercise that targets the muscles of the core, the deep core or transversus abdominis in particular. It also targets the muscles of the glutes and hips. It can be performed for time or reps in the ab-focused portion of any workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "russian_twist": {
+        "exercise_id": "EX_512",
+        "exercise_name": "Russian Twist",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "obliques",
+                "core"
+            ],
+            "secondary_muscles": [
+                "hip_flexors"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_torsion_if_weighted_heavily"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "foundation",
+                "build_and_burn",
+                "recomposition"
+            ],
+            "hypertrophy_tiers": {
+                "core": "B_Tier"
+            }
+        },
+        "description": "The Russian twist is an exercise targeting the abdominals and the obliques. Beginning from a position that resembles stopping midway through a sit-up, it involves twisting side to side. It can be performed with body weight alone or while holding a weight plate or other object. It is performed by alternating sides with each rep and can be done for time or for a specific number of reps as part of the ab-focused portion of any workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "dragon_flag": {
+        "exercise_id": "EX_513",
+        "exercise_name": "Dragon Flag",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "lats",
+                "hip_flexors"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "basic_gym",
+            "specific_tools": [
+                "bench"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "cervical_spine_pressure"
+            ],
+            "pre_hab_for": []
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "core": "B_Tier"
+            }
+        },
+        "description": "The drag curl is a biceps exercise that attempts to remove the influence of the front deltoids on the classic curl. With the elbows kept back, the barbell \"drags\" up the torso. It is usually performed for moderate to high reps, such as 8-15 reps per set, as part of an upper-body or arms-focused workout.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    },
+    "rollout": {
+        "exercise_id": "EX_514",
+        "exercise_name": "Rollout",
+        "youtube_id": "REPLACE_ME",
+        "muscle_data": {
+            "primary_targets": [
+                "core"
+            ],
+            "secondary_muscles": [
+                "lats",
+                "shoulders"
+            ],
+            "movement_pattern": "core_stabilization",
+            "is_compound": true
+        },
+        "facility_requirements": {
+            "facility_tier": "home",
+            "specific_tools": [
+                "ab_wheel",
+                "mat"
+            ]
+        },
+        "biomechanics": {
+            "joint_stress": [
+                "lumbar_extension_strain_if_weak"
+            ],
+            "pre_hab_for": [
+                "anti_extension"
+            ]
+        },
+        "periodization_tags": {
+            "allowed_phases": [
+                "build_and_burn",
+                "recomposition",
+                "hypertrophy_volume",
+                "strength_block"
+            ],
+            "hypertrophy_tiers": {
+                "core": "B_Tier"
+            }
+        },
+        "description": "The barbell roll-out is an abdominal exercise that utilizes a barbell in the place of an ab roller. It is best performed with a barbell that has rotating collars, and is considered more difficult than other ab roller variations. Many lifters may not be able to perform a single rep at first, but once they can perform these for reps, they'll be rewarded with a seriously strong core.",
+        "card_image": "https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending"
+    }
+}

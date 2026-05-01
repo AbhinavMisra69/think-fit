@@ -35,13 +35,13 @@ export async function POST(req: Request) {
 
     // 4. Set secure cookie
     const cookieStore = await cookies();
-cookieStore.set('auth_token', token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
-  maxAge: 60 * 60 * 24 * 7,
-  path: '/',
-});
+    cookieStore.set('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
 
     return NextResponse.json({ 
       user: { id: user.id, name: user.name, email: user.email } 
