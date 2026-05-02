@@ -4,14 +4,27 @@ from .database import  blueprint_library, phase_parameters_kb, macrocycle_kb
 import os
 
 # 2. Build the path to the JSON file
-# 1. Get the directory where THIS Python file lives (e.g., your_project/api)
+import json
+import os
+
+# 1. Get the directory where THIS Python file lives (...\think-fit\exercise_engine)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 2. Go UP one folder to the main project root (e.g., your_project/)
+# 2. Step UP one folder to the main project root (...\think-fit)
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 
-# 3. Build the exact path to the JSON file
+# 3. Look directly into the 'data' folder from the project root
 EXERCISE_DATA_PATH = os.path.join(PROJECT_ROOT, 'data', 'exercises_enriched.json')
+print(f"Exercise data path is: {EXERCISE_DATA_PATH}")
+
+# 3. Load the file into a Python dictionary
+try:
+    with open(EXERCISE_DATA_PATH, 'r') as f:
+        exercise_dataset = json.load(f)
+    print(f"Successfully loaded {len(exercise_dataset)} exercises from JSON.")
+except FileNotFoundError:
+    print(f"CRITICAL ERROR: Could not find {EXERCISE_DATA_PATH}. Make sure the file exists!")
+    exercise_dataset = {} # Fallback to prevent immediate crashes
 
 # 3. Load the file into a Python dictionary
 try:
@@ -392,18 +405,24 @@ def schedule_weekly_blueprints(working_memory, assigned_split):
 # ==========================================
 # 2. THE ELIMINATION FILTERS
 # ==========================================
+
 def apply_rule_W1_equipment(memory, raw_dataset):
     tier_hierarchy = {"home": 1, "basic_gym": 2, "pro_gym": 3}
     user_tier = tier_hierarchy.get(memory.get("facility_type", "home"), 1)
     user_tools = set(memory.get("owned_equipment", []))
+    
+    # THE OVERRIDE: If they are at a pro gym or passed "all", they have everything.
+    has_all_equipment = (user_tier == 3) or ("all" in user_tools)
     
     safe_db = {}
     for ex_name, details in raw_dataset.items():
         req_tier = tier_hierarchy.get(details.get("facility_requirements", {}).get("facility_tier", "home"), 1)
         req_tools = set(details.get("facility_requirements", {}).get("specific_tools", []))
         
-        if user_tier >= req_tier and req_tools.issubset(user_tools):
+        # Allow the exercise if the tier is high enough AND (they have the override OR the specific tools)
+        if user_tier >= req_tier and (has_all_equipment or req_tools.issubset(user_tools)):
             safe_db[ex_name] = details
+            
     return safe_db
 
 def apply_rule_W2_injuries(user_injuries, safe_db):

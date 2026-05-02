@@ -635,14 +635,24 @@ def log_scanned_meal():
 # 6. WORKOUT EXPERT ROUTES
 # ---------------------------------------------------------
 
-# 1. Get the directory where THIS Python file lives (e.g., your_project/api)
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+import json
+import os
 
-# 2. Go UP one folder to the main project root (e.g., your_project/)
-PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+# 1. Get the directory where THIS Python file lives (which is the think-fit folder)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 3. Build the exact path to the JSON file
-EXERCISE_DATA_PATH = os.path.join(PROJECT_ROOT, 'data', 'exercises_enriched.json')
+# 2. Look directly into the 'data' folder right next to it
+EXERCISE_DATA_PATH = os.path.join(BASE_DIR, 'data', 'exercises_enriched.json')
+print(f"exercise data path is: {EXERCISE_DATA_PATH}")
+
+# 3. Load the file into a Python dictionary
+try:
+    with open(EXERCISE_DATA_PATH, 'r') as f:
+        exercise_dataset = json.load(f)
+    print(f"Successfully loaded {len(exercise_dataset)} exercises from JSON.")
+except FileNotFoundError:
+    print(f"CRITICAL ERROR: Could not find {EXERCISE_DATA_PATH}. Make sure the file exists!")
+    exercise_dataset = {} # Fallback to prevent immediate crashes
 
 try:
     with open(EXERCISE_DATA_PATH, 'r') as f:
@@ -852,9 +862,31 @@ def generate_week():
         
         cursor.execute("""
             UPDATE exercise_state 
-            SET active_phase = %s, last_assigned_split = %s, split_rotation_index = %s, updated_at = CURRENT_TIMESTAMP
+            SET 
+                active_phase = %s, 
+                last_assigned_split = %s, 
+                split_rotation_index = %s, 
+                current_goal = %s,
+                preferred_duration_weeks = %s,
+                program_ended = %s,
+                updated_at = CURRENT_TIMESTAMP
             WHERE user_id = %s;
-        """, (working_memory['active_phase'], working_memory['last_assigned_split'], working_memory['split_rotation_index'], user_id))
+        """, (
+            working_memory.get('active_phase'), 
+            working_memory.get('last_assigned_split'), 
+            working_memory.get('split_rotation_index'),
+            working_memory.get('primary_goal'),             # <-- NEW: Handles Goal changes
+            working_memory.get('preferred_duration_weeks'), # <-- NEW: Handles 4-week extensions
+            working_memory.get('program_ended', False),     # <-- NEW: Resets the end flag
+            user_id
+        ))
+
+        # Optional but highly recommended: Keep the `users` table synced if the engine changes their goal or duration
+        cursor.execute("""
+            UPDATE users 
+            SET goal = %s, duration_weeks = %s 
+            WHERE id = %s
+        """, (working_memory.get('primary_goal'), working_memory.get('preferred_duration_weeks'), user_id))
         
         conn.commit()
         return jsonify({"status": "success", "program": weekly_plan}), 201
