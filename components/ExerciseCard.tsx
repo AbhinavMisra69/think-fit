@@ -77,7 +77,17 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
   ]);
 
   // --- PROGRESS TRACKER LOGIC ---
-  
+  useEffect(() => {
+    if (onProgressUpdate) {
+      const filled = sets.filter(s => {
+        const hasBasic = s.reps !== '' && s.weight !== '';
+        const hasDropset = s.isDropset ? s.dropEndWeight !== '' : true;
+        return hasBasic && hasDropset;
+      }).length;
+      
+      onProgressUpdate(filled / sets.length);
+    }
+  }, [sets, onProgressUpdate]);
 
   const handleInputChange = (id: number, field: string, value: string) => {
     const numericValue = value.replace(/[^0-9.]/g, ''); 
