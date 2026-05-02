@@ -49,6 +49,33 @@ macrocycle_kb = {
     }
 }
 
+PHASE_UI_META = {
+    # Recomposition
+    "strength_foundation": {"name": "Strength Foundation", "focus": "Establishing core strength, movement proficiency, and joint integrity.", "theme": "blue"},
+    "recomposition": {"name": "Body Recomposition", "focus": "Simultaneous fat loss and muscle gain through moderate volume.", "theme": "orange"},
+    "recomposition_1": {"name": "Recomposition Block I", "focus": "Initial phase of simultaneous fat loss and muscle gain.", "theme": "orange"},
+    "recomposition_2": {"name": "Recomposition Block II", "focus": "Increasing volume to push past early adaptation plateaus.", "theme": "emerald"},
+    "peak_recomposition": {"name": "Peak Recomposition", "focus": "Maximal effort to finalize body composition shifts.", "theme": "purple"},
+    
+    # Build Muscle
+    "foundation_hypertrophy": {"name": "Foundation Hypertrophy", "focus": "Building initial muscle mass and work capacity.", "theme": "blue"},
+    "volume_surge": {"name": "Volume Surge", "focus": "Pushing boundaries with high-volume muscle building.", "theme": "orange"},
+    "strength_block": {"name": "Strength Block", "focus": "Converting new muscle into maximal force production.", "theme": "emerald"},
+    "peak_volume": {"name": "Peak Volume", "focus": "Maximizing muscular fatigue for ultimate growth.", "theme": "purple"},
+    
+    # Lose Fat
+    "foundation": {"name": "Foundation", "focus": "Building base conditioning and movement mechanics.", "theme": "blue"},
+    "build_and_burn": {"name": "Build & Burn", "focus": "Simultaneous fat oxidation and muscle retention.", "theme": "orange"},
+    "intensify": {"name": "Intensification", "focus": "Elevating heart rate and caloric expenditure.", "theme": "emerald"},
+    "metabolic_conditioning": {"name": "Metabolic Conditioning", "focus": "Maximizing fat loss through high-intensity efforts.", "theme": "purple"},
+    
+    # General Health
+    "active_lifestyle": {"name": "Active Lifestyle", "focus": "Enhancing daily energy levels and functional fitness.", "theme": "orange"},
+    "endurance_and_strength": {"name": "Endurance & Strength", "focus": "Building cardiovascular health and skeletal resilience.", "theme": "emerald"},
+    "sustain": {"name": "Sustain & Maintain", "focus": "Solidifying healthy habits for long-term well-being.", "theme": "purple"}
+}
+
+
 blueprint_library = {
     # ---------------------------------------------------------
     # 1. FULL BODY SPLITS (Used in Foundation & Active Lifestyle)
