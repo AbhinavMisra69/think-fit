@@ -634,8 +634,15 @@ def log_scanned_meal():
 # ---------------------------------------------------------
 # 6. WORKOUT EXPERT ROUTES
 # ---------------------------------------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-EXERCISE_DATA_PATH = os.path.join(BASE_DIR, 'data', 'exercises_enriched.json')
+
+# 1. Get the directory where THIS Python file lives (e.g., your_project/api)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 2. Go UP one folder to the main project root (e.g., your_project/)
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
+# 3. Build the exact path to the JSON file
+EXERCISE_DATA_PATH = os.path.join(PROJECT_ROOT, 'data', 'exercises_enriched.json')
 
 try:
     with open(EXERCISE_DATA_PATH, 'r') as f:

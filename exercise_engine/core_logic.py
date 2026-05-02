@@ -2,11 +2,16 @@
 import json
 from .database import  blueprint_library, phase_parameters_kb, macrocycle_kb
 import os
-# 1. Figure out exactly where we are on the computer
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 2. Build the path to the JSON file
-EXERCISE_DATA_PATH = os.path.join(BASE_DIR, 'data', 'exercises_enriched.json')
+# 1. Get the directory where THIS Python file lives (e.g., your_project/api)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 2. Go UP one folder to the main project root (e.g., your_project/)
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
+# 3. Build the exact path to the JSON file
+EXERCISE_DATA_PATH = os.path.join(PROJECT_ROOT, 'data', 'exercises_enriched.json')
 
 # 3. Load the file into a Python dictionary
 try:
