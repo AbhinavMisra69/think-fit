@@ -1,7 +1,7 @@
 import { X, Target, Activity, Settings2 } from 'lucide-react';
 import type { ExerciseData } from '@/components/ExerciseCard'; // Adjust path if needed
 
-function ExerciseDetailPanel({ exercise, onClose }: { exercise: ExerciseData; onClose: () => void }) {
+export default function ExerciseDetailPanel({ exercise, onClose }: { exercise: ExerciseData; onClose: () => void }) {
   // Format the M&S URL (e.g., "Walking Lunges" -> "walking-lunges")
   const urlSafeName = exercise.exercise_name.toLowerCase().replace(/\s+/g, '-');
   const msUrl = `https://www.muscleandstrength.com/exercises/${urlSafeName}.html`;

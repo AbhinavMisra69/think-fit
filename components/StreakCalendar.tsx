@@ -1,93 +1,82 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 
-type Goal = {
-  id: string;
-  title: string;
-};
-
-const DUMMY_GOALS: Goal[] = [
-  { id: '1', title: 'Read for 30 minutes' },
-  { id: '2', title: '45-minute Workout' },
-  { id: '3', title: 'Meditate' },
-];
-
-export default function StreakCalendar() {
-  const [currentDate, setCurrentDate] = useState(new Date(2022, 0, 1)); // Starting at Jan 2022 to match the image
-  const [selectedGoal, setSelectedGoal] = useState<string>(DUMMY_GOALS[0].id);
+export default function StreakCalendar({ history = {} }: { history: any }) {
+  // Default to today's date instead of Jan 2022
+  const [currentDate, setCurrentDate] = useState(new Date());
   
-  // Storing completed dates as a Set of 'YYYY-MM-DD' strings for O(1) lookup
-  const [completedDates, setCompletedDates] = useState<Record<string, Set<string>>>({
-    '1': new Set(['2022-01-04', '2022-01-08', '2022-01-12', '2022-01-17', '2022-01-18', '2022-01-19', '2022-01-20', '2022-01-21', '2022-01-22', '2022-01-23', '2022-01-24', '2022-01-25', '2022-01-27', '2022-01-29']),
-  });
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  // Adjusting so Monday is the first day of the week (0 = Mon, 6 = Sun)
   const firstDayOfMonth = (new Date(year, month, 1).getDay() + 6) % 7; 
 
   const handlePrevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const handleNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
 
-  const toggleDate = (day: number) => {
+  const getStatus = (day: number) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dayData = history[dateStr];
+    const checkDate = new Date(year, month, day);
     
-    setCompletedDates(prev => {
-      const goalDates = new Set(prev[selectedGoal] || []);
-      if (goalDates.has(dateStr)) {
-        goalDates.delete(dateStr);
-      } else {
-        goalDates.add(dateStr);
-      }
-      return { ...prev, [selectedGoal]: goalDates };
-    });
-  };
+    // Logic: 80% or 100% completion (Rest days are auto-100)
+    const isFulfilled = dayData && dayData.progress >= 80;
+    const isPast = checkDate < today;
+    const isToday = checkDate.getTime() === today.getTime();
 
-  const isCompleted = (day: number) => {
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return completedDates[selectedGoal]?.has(dateStr);
+    return { isFulfilled, isPast, isToday };
   };
 
   const monthName = currentDate.toLocaleString('default', { month: 'short' }).toUpperCase();
 
-  // Generate grid items
   const blanks = Array.from({ length: firstDayOfMonth }, (_, i) => <div key={`blank-${i}`} className="h-10 w-10" />);
   
   const days = Array.from({ length: daysInMonth }, (_, i) => {
-    const day = i + 1;
-    const completed = isCompleted(day);
-    const prevCompleted = isCompleted(day - 1);
-    const nextCompleted = isCompleted(day + 1);
+    const dayNum = i + 1;
+    const { isFulfilled, isPast, isToday } = getStatus(dayNum);
+    
+    const prev = getStatus(dayNum - 1);
+    const next = getStatus(dayNum + 1);
 
-    // Logic to determine if we need the connecting "pill" background
-    const isStartOfStreak = completed && !prevCompleted && nextCompleted;
-    const isEndOfStreak = completed && prevCompleted && !nextCompleted;
-    const isMiddleOfStreak = completed && prevCompleted && nextCompleted;
-    const isIsolated = completed && !prevCompleted && !nextCompleted;
+    // Pill background logic only for streaks of Fire
+    const isStartOfStreak = isFulfilled && !prev.isFulfilled && next.isFulfilled;
+    const isEndOfStreak = isFulfilled && prev.isFulfilled && !next.isFulfilled;
+    const isMiddleOfStreak = isFulfilled && prev.isFulfilled && next.isFulfilled;
 
-    // Tailwind classes for the pill background connections
-    let wrapperClass = "relative flex h-10 items-center justify-center";
+    let wrapperClass = "relative flex h-12 items-center justify-center";
     if (isStartOfStreak) wrapperClass += " bg-orange-100 rounded-l-full ml-1 w-[calc(100%-4px)]";
     else if (isEndOfStreak) wrapperClass += " bg-orange-100 rounded-r-full mr-1 w-[calc(100%-4px)]";
     else if (isMiddleOfStreak) wrapperClass += " bg-orange-100 w-full";
-    else if (isIsolated) wrapperClass += " bg-transparent";
 
     return (
-      <div key={`day-${day}`} className={wrapperClass}>
-        <button
-          onClick={() => toggleDate(day)}
-          className={`h-8 w-8 rounded-full flex items-center justify-center transition-all duration-200 z-10 ${
-            completed 
+      <div key={`day-${dayNum}`} className={wrapperClass}>
+        <div
+          className={`h-9 w-9 rounded-full flex items-center justify-center transition-all duration-200 z-10 ${
+            isFulfilled 
               ? 'bg-amber-400 shadow-sm' 
-              : 'bg-zinc-100 hover:bg-zinc-200'
+              : isToday 
+                ? 'bg-blue-50 border-2 border-blue-200' 
+                : 'bg-zinc-50'
           }`}
         >
-          {completed && <Flame className="h-4 w-4 text-orange-600 fill-orange-500" />}
-        </button>
+          {isFulfilled ? (
+            <Flame className="h-5 w-5 text-orange-600 fill-orange-500 animate-in zoom-in duration-300" />
+          ) : isPast ? (
+            <span className="text-lg grayscale opacity-60">😢</span>
+          ) : (
+            <span className={`text-[10px] font-bold ${isToday ? 'text-blue-600' : 'text-zinc-400'}`}>
+              {dayNum}
+            </span>
+          )}
+        </div>
+        {isToday && !isFulfilled && (
+          <div className="absolute bottom-1 w-1 h-1 bg-blue-500 rounded-full" />
+        )}
       </div>
     );
   });
@@ -95,30 +84,25 @@ export default function StreakCalendar() {
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-3xl shadow-sm border border-zinc-100 p-6 font-sans">
       
-      {/* Header / Month Navigation */}
       <div className="flex items-center justify-between mb-6 px-2">
-        <button onClick={handlePrevMonth} className="p-2 text-zinc-400 hover:text-zinc-700 transition-colors">
+        <button onClick={handlePrevMonth} className="p-2 text-zinc-400 hover:text-zinc-700">
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h2 className="text-lg font-semibold tracking-wide text-slate-800">
+        <h2 className="text-sm font-bold tracking-widest text-slate-800">
           {monthName} {year}
         </h2>
-        <button onClick={handleNextMonth} className="p-2 text-zinc-400 hover:text-zinc-700 transition-colors">
+        <button onClick={handleNextMonth} className="p-2 text-zinc-400 hover:text-zinc-700">
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
-      <div className="w-full h-px bg-zinc-100 mb-6" />
-
-      {/* Days of Week Header */}
-      <div className="grid grid-cols-7 gap-y-4 mb-4">
+      <div className="grid grid-cols-7 gap-y-4">
         {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day) => (
-          <div key={day} className="text-center text-xs font-semibold text-slate-800 tracking-wider">
+          <div key={day} className="text-center text-[10px] font-bold text-zinc-400 tracking-wider">
             {day}
           </div>
         ))}
 
-        {/* Calendar Grid */}
         {blanks}
         {days}
       </div>

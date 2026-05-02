@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight } from 'lucide-react';
+import data from '@/data/exercises_enriched.json';
 
-// 1. Define the exact shape of the data coming from your Python dataset
+// 1. Types
 export type ExerciseData = {
   exercise_id: string;
   exercise_name: string;
   youtube_id: string;
   description?: string;
-  card_image?: string;
+  animation_frames?: string[];
   muscle_data: {
     primary_targets: string[];
     secondary_muscles: string[];
@@ -26,81 +27,151 @@ export type ExerciseData = {
   };
   periodization_tags: {
     allowed_phases: string[];
-    hypertrophy_tiers: Record<string, string>; // This handles the dynamic "glutes": "S_Plus" mapping
+    hypertrophy_tiers: Record<string, string>; 
   };
 };
 
-// 2. Tell the Component to expect this data
-export default function ExerciseCard({ exercise , onOpenDetails }: { exercise: ExerciseData ; onOpenDetails: () => void; }) {
+type ExerciseCardProps = {
+  exercise: ExerciseData;
+  onOpenDetails: () => void;
+  onProgressUpdate?: (ratio: number) => void; 
+};
+
+// 2. Animation Component (Lives outside to prevent re-render flickers)
+function ExerciseAnimation({ frames }: { frames: string[] }) {
+  const [currentFrame, setCurrentFrame] = useState(0);
+  
+  useEffect(() => {
+    if (!frames || frames.length !== 2) return;
+    const interval = setInterval(() => {
+      setCurrentFrame((prev) => (prev === 0 ? 1 : 0));
+    }, 800);
+    return () => clearInterval(interval);
+  }, [frames]);
+
+  if (!frames || frames.length === 0) {
+    return (
+      <div className="w-full aspect-square bg-slate-50 flex items-center justify-center rounded-xl border border-slate-200">
+        <span className="text-slate-400 font-bold text-xs uppercase tracking-widest">Image Pending</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full aspect-square bg-white rounded-xl border border-slate-200 overflow-hidden relative p-1">
+      <img
+        src={frames[currentFrame]}
+        alt="Exercise Demonstration"
+        className="w-full h-full object-cover object-center scale-[1.05] mix-blend-multiply transition-opacity duration-200"
+      />
+    </div>
+  );
+}
+
+// 3. Main Exercise Card Component
+export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate }: ExerciseCardProps) {
   const [sets, setSets] = useState([
     { id: 1, reps: '', weight: '', isDropset: false, dropEndWeight: '' },
     { id: 2, reps: '', weight: '', isDropset: false, dropEndWeight: '' },
     { id: 3, reps: '', weight: '', isDropset: false, dropEndWeight: '' },
   ]);
 
+  // --- PROGRESS TRACKER LOGIC ---
+  // Inside ExerciseCard.tsx
+
+const lastReportedProgress = React.useRef<number>(-1); // Track previous value
+
+useEffect(() => {
+  const filled = sets.filter(s => {
+    const hasBasic = s.reps !== '' && s.weight !== '';
+    const hasDropset = s.isDropset ? s.dropEndWeight !== '' : true;
+    return hasBasic && hasDropset;
+  }).length;
+  
+  const currentRatio = filled / sets.length;
+
+  // ONLY call the parent if the ratio is actually different
+  if (onProgressUpdate && currentRatio !== lastReportedProgress.current) {
+    lastReportedProgress.current = currentRatio;
+    onProgressUpdate(currentRatio);
+  }
+}, [sets, onProgressUpdate]);
+
   const handleInputChange = (id: number, field: string, value: string) => {
-    const numericValue = value.replace(/[^0-9.]/g, ''); // Allowed decimals just in case
-    setSets(prev => prev.map(set => 
-      set.id === id ? { ...set, [field]: numericValue } : set
-    ));
+    const numericValue = value.replace(/[^0-9.]/g, ''); 
+    setSets(prev => prev.map(s => s.id === id ? { ...s, [field]: numericValue } : s));
   };
 
   const toggleDropset = (id: number) => {
-    setSets(prev => prev.map(set => 
-      set.id === id ? { ...set, isDropset: !set.isDropset, dropEndWeight: '' } : set
+    setSets(prev => prev.map(s => 
+      s.id === id ? { ...s, isDropset: !s.isDropset, dropEndWeight: '' } : s
     ));
   };
 
   const getStatus = () => {
-    let filledSets = 0;
-    sets.forEach(set => {
-      const hasBasicData = set.reps !== '' && set.weight !== '';
-      const hasDropsetData = set.isDropset ? set.dropEndWeight !== '' : true;
-      if (hasBasicData && hasDropsetData) filledSets += 1;
-    });
-
-    if (filledSets === 0) return { label: 'Not Done', style: 'bg-zinc-100 text-zinc-500', icon: <CircleDashed className="w-4 h-4" /> };
-    if (filledSets > 0 && filledSets < sets.length) return { label: 'Partially Done', style: 'bg-amber-100 text-amber-700', icon: <CircleDashed className="w-4 h-4" /> };
+    const filled = sets.filter(s => s.reps !== '' && s.weight !== '').length;
+    if (filled === 0) return { label: 'Not Done', style: 'bg-zinc-100 text-zinc-500', icon: <CircleDashed className="w-4 h-4" /> };
+    if (filled < sets.length) return { label: 'Partially Done', style: 'bg-amber-100 text-amber-700', icon: <CircleDashed className="w-4 h-4" /> };
     return { label: 'Completed', style: 'bg-blue-600 text-white shadow-md', icon: <CheckCircle2 className="w-4 h-4" /> };
   };
 
   const status = getStatus();
+  const nameStr = exercise.exercise_name || "Unknown Exercise";
 
-  // 3. Dynamically format the Pelank Image URL
-  // "Walking Lunges" -> "walking-lunges" and "Walking-Lunges"
-  const folderName = exercise.exercise_name.toLowerCase().replace(/\s+/g, '-');
-  const fileName = exercise.exercise_name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-');
-  const imageUrl = `https://pelank.com/exercises/${folderName}/${fileName}.gif`;
+  // --- BULLETPROOF JSON FALLBACK PARSER ---
+  const getLocalFrames = () => {
+    if (!data) return [];
+    let exerciseList: any[] = [];
+    
+    if (Array.isArray(data)) {
+      exerciseList = data;
+    } else if ('exercises' in data && Array.isArray((data as any).exercises)) {
+      exerciseList = (data as any).exercises;
+    } else {
+      exerciseList = Object.values(data);
+    }
+
+    const match = exerciseList.find((ex: any) => 
+      ex?.exercise_id === exercise.exercise_id || 
+      ex?.exercise_name?.toLowerCase() === exercise.exercise_name?.toLowerCase()
+    );
+    
+    return match?.animation_frames || [];
+  };
+
+  const finalAnimationFrames = (exercise.animation_frames && exercise.animation_frames.length === 2) 
+    ? exercise.animation_frames 
+    : getLocalFrames();
 
   return (
     <div className="w-full bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden font-sans">
       
-      {/* Top Header - Now Dynamic */}
+      {/* Header */}
       <div className="bg-slate-50 border-b border-zinc-100 px-5 py-4 flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Dumbbell className="w-5 h-5 text-blue-600" />
             </div>
-            <h3 className="font-semibold text-lg text-slate-800 tracking-tight">{exercise.exercise_name}</h3>
+            <h3 className="font-semibold text-lg text-slate-800 tracking-tight">{nameStr}</h3>
           </div>
           <button 
             onClick={onOpenDetails}
             className="text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
           >
             <Info className="w-3.5 h-3.5" />
-            View Deep Dive
+            View Details
           </button>
         </div>
         
-        {/* Dynamic Badges based on Python muscle_data */}
+        {/* Badges */}
         <div className="flex gap-2 ml-12">
-          {exercise.muscle_data.primary_targets.map(muscle => (
+          {exercise.muscle_data?.primary_targets?.map((muscle: string) => (
             <span key={muscle} className="px-2 py-0.5 bg-slate-200 text-slate-600 text-xs font-semibold rounded-md capitalize">
-              {muscle}
+              {muscle.replace(/_/g, ' ')}
             </span>
           ))}
-          {exercise.muscle_data.is_compound && (
+          {exercise.muscle_data?.is_compound && (
             <span className="px-2 py-0.5 bg-indigo-100 text-indigo-600 text-xs font-semibold rounded-md">
               Compound
             </span>
@@ -109,59 +180,46 @@ export default function ExerciseCard({ exercise , onOpenDetails }: { exercise: E
       </div>
 
       <div className="p-5 flex flex-col md:flex-row gap-6">
-        {/* Left Side: Dynamic Image */}
-        <div className="w-full md:w-1/3 shrink-0 flex flex-col gap-2">
-        <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200 overflow-hidden flex items-center justify-center relative">
-            <img 
-              // 1. Try to load the Wger image first
-              // 2. If it's blank, fall back to a sleek placeholder
-              src={exercise.card_image || 'https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending'} 
-              alt={exercise.exercise_name} 
-              className="w-full h-full object-contain p-2 mix-blend-multiply opacity-90 transition-opacity duration-300"
-              onError={(e) => {
-                 // 3. Safety net: If the Wger link ever breaks, it safely defaults to the placeholder
-                 // instead of showing a broken image icon.
-                (e.target as HTMLImageElement).src = 'https://placehold.co/400x400/f8fafc/94a3b8?text=Illustration+Pending';
-              }}
-            />
-          </div>
+        {/* Animation */}
+        <div className="w-full md:w-1/3 shrink-0">
+           <ExerciseAnimation frames={finalAnimationFrames} />
         </div>
 
         <div className="w-full md:w-2/3 flex flex-col">
-          {/* Tips Section - Dynamically pulling from biomechanics */}
-          {exercise.biomechanics.joint_stress.length > 0 && (
+          {/* Biomechanics Warning */}
+          {exercise.biomechanics?.joint_stress?.length > 0 && (
             <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
               <div className="flex items-center gap-2 mb-1">
                 <Info className="w-4 h-4 text-blue-500" />
-                <h4 className="font-medium text-blue-900 text-sm">Form & Joint Stress Warning</h4>
+                <h4 className="font-medium text-blue-900 text-sm">Form Warning</h4>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed capitalize">
-                Be mindful of: {exercise.biomechanics.joint_stress.join(', ').replace('_', ' ')}.
+                Focus on: {exercise.biomechanics.joint_stress.join(', ').replace(/_/g, ' ')}.
               </p>
             </div>
           )}
 
-          {/* Sets Tracking (Remains the same) */}
+          {/* Sets Tracking */}
           <div className="space-y-3 mb-6">
             <div className="flex items-center px-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
               <div className="w-10">Set</div>
               <div className="w-20 text-center">Reps</div>
-              <div className="flex-1 px-4">Weight (kg)</div>
-              <div className="w-20 text-center">Dropset</div>
+              <div className="flex-1 px-4 text-center">Weight (kg)</div>
+              <div className="w-20 text-center">Drop</div>
             </div>
 
             {sets.map((set, index) => (
               <div key={set.id} className="flex items-center bg-slate-50 border border-slate-100 rounded-lg p-2 focus-within:bg-white focus-within:border-blue-200 focus-within:shadow-sm">
                 <div className="w-10 flex justify-center"><span className="font-medium text-slate-500">{index + 1}</span></div>
                 <div className="w-20">
-                  <input type="text" inputMode="numeric" placeholder="0" value={set.reps} onChange={(e) => handleInputChange(set.id, 'reps', e.target.value)} className="w-full text-center bg-transparent font-semibold text-slate-700 outline-none placeholder:text-slate-300" />
+                  <input type="text" inputMode="numeric" placeholder="0" value={set.reps} onChange={(e) => handleInputChange(set.id, 'reps', e.target.value)} className="w-full text-center bg-transparent font-semibold text-slate-700 outline-none" />
                 </div>
                 <div className="flex-1 flex items-center justify-center px-2">
-                  <input type="text" inputMode="numeric" placeholder="Start" value={set.weight} onChange={(e) => handleInputChange(set.id, 'weight', e.target.value)} className="w-16 text-center bg-white border border-slate-200 rounded-md py-1 font-medium text-slate-700 outline-none focus:border-blue-400 placeholder:text-slate-300" />
+                  <input type="text" inputMode="numeric" placeholder="kg" value={set.weight} onChange={(e) => handleInputChange(set.id, 'weight', e.target.value)} className="w-16 text-center bg-white border border-slate-200 rounded-md py-1 font-medium text-slate-700 outline-none" />
                   {set.isDropset && (
                     <div className="flex items-center animate-in fade-in slide-in-from-left-2 duration-200">
                       <ChevronRight className="w-4 h-4 mx-1 text-slate-400" />
-                      <input type="text" inputMode="numeric" placeholder="End" value={set.dropEndWeight} onChange={(e) => handleInputChange(set.id, 'dropEndWeight', e.target.value)} className="w-16 text-center bg-white border border-orange-200 rounded-md py-1 font-medium text-orange-700 outline-none focus:border-orange-400 placeholder:text-orange-300" />
+                      <input type="text" inputMode="numeric" placeholder="End" value={set.dropEndWeight} onChange={(e) => handleInputChange(set.id, 'dropEndWeight', e.target.value)} className="w-16 text-center bg-white border border-orange-200 rounded-md py-1 font-medium text-orange-700 outline-none" />
                     </div>
                   )}
                 </div>

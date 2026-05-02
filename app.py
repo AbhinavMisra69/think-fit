@@ -14,7 +14,9 @@ from core.tracking import DailyTracker
 from core.nutrition import NutritionCalculator
 from core.ocr_engine import PackagedFoodEngine
 import psycopg2
+from psycopg2.extras import RealDictCursor
 from core.planning import AdaptiveCoach 
+import json
 
 
 app = Flask(__name__)
@@ -136,6 +138,21 @@ def save_onboarding():
             body_type, activity_level, experience_level, days_available, facility_type,
             soreness_recovery, medical_conditions, available_equipment, goal_main, bf_pct
         ))
+
+        cur.execute("""
+        INSERT INTO measurement_logs 
+        (user_id, weight_kg, body_fat_pct, waist_cm, chest_cm, arm_cm)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+        user_id, 
+        weight, 
+        bf_pct, 
+        waist, 
+        chest, 
+        arm, 
+        ))
+
+        conn.commit()
         
         conn.commit()
         cur.close()
@@ -192,29 +209,38 @@ def get_weekly_progress():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Helper functions to sanitize incoming React JSON and Database NULLs
+def safe_float(val, default=0.0):
+    try:
+        if val is None or val == "": 
+            return float(default)
+        return float(val)
+    except (ValueError, TypeError):
+        return float(default)
+
+def safe_str(val, default=""):
+    if val is None or val == "":
+        return str(default)
+    return str(val).strip()
+
 @app.route('/api/progress/update', methods=['POST'])
 def update_progress():
-    auth_header = request.headers.get('Authorization')
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return jsonify({"error": "No valid login token found"}), 401
-    
-    token = auth_header.split(" ")[1]
+    session_str = request.headers.get('X-Session')
+    if not session_str:
+        return jsonify({"error": "No valid login session found"}), 401
 
     try:
-        # 1. Authenticate User
-        decoded = jwt.decode(token, os.environ.get("JWT_SECRET"), algorithms=["HS256"])
-        user_id = decoded.get('id')
+        session_data = json.loads(session_str)
+        user_id = session_data.get('id')
         data = request.json
         
-        # 2. Extract incoming measurements
-        current_weight = float(data.get('weight') or 0)
-        current_waist = float(data.get('waist') or 0)
-        current_chest = float(data.get('chest') or 0)
-        current_arm = float(data.get('arm') or 0)
-        current_thigh = float(data.get('thigh') or 0)
+        # 1. Bulletproof the incoming React data
+        current_weight = safe_float(data.get('weight'))
+        current_waist = safe_float(data.get('waist'))
+        current_chest = safe_float(data.get('chest'))
+        current_arm = safe_float(data.get('arm'))
+        current_thigh = safe_float(data.get('thigh')) # Safely handles the missing thigh data!
         
-        # Calculate new body fat % using the ML engine
-        # We need gender, height, neck, hip from the users table first!
         conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
@@ -227,13 +253,24 @@ def update_progress():
         if not user_data:
             return jsonify({"error": "User profile not found"}), 404
 
-        # Calculate new BF%
+        # 2. Bulletproof the Database strings (Fixes the .lower() error!)
+        db_gender = safe_str(user_data.get('gender'), default="male")
+        db_goal = safe_str(user_data.get('goal'), default="maintain")
+
+        # 3. Bulletproof the Database numbers
+        db_height = safe_float(user_data.get('height_cm'))
+        db_neck = safe_float(user_data.get('neck'))
+        db_hip = safe_float(user_data.get('hip'))
+        db_weight = safe_float(user_data.get('weight_kg'))
+        db_bf_pct = safe_float(user_data.get('body_fat_pct'))
+
+        # Calculate new BF% using the perfectly sanitized data
         current_bf_pct = PhysiqueAnalyzer.predict_body_fat(
-            user_data['gender'], current_weight, user_data['height_cm'], 
-            current_waist, user_data['neck'], current_chest, current_arm, user_data['hip']
+            db_gender, current_weight, db_height, 
+            current_waist, db_neck, current_chest, current_arm, db_hip
         )
 
-        # 3. Save the new log to the database
+        # Save the new log
         cur.execute("""
             INSERT INTO measurement_logs 
             (user_id, weight_kg, body_fat_pct, waist_cm, chest_cm, arm_cm, thigh_cm)
@@ -241,7 +278,7 @@ def update_progress():
             RETURNING id, log_date
         """, (user_id, current_weight, current_bf_pct, current_waist, current_chest, current_arm, current_thigh))
         
-        # 4. Fetch the PREVIOUS log (the one right before this new one)
+        # Fetch the PREVIOUS log
         cur.execute("""
             SELECT weight_kg, body_fat_pct, waist_cm, chest_cm, arm_cm, thigh_cm 
             FROM measurement_logs 
@@ -253,13 +290,13 @@ def update_progress():
 
         coach_result = None
 
-        # 5. Run the Adaptive Coach (ONLY if we have a previous log to compare against)
         if prev_log:
+            # Bulletproof the previous measurements (safely handling your NULL onboarding thigh)
             prev_measurements = {
-                "waist_cm": prev_log['waist_cm'] or 0,
-                "chest_cm": prev_log['chest_cm'] or 0,
-                "arm_cm": prev_log['arm_cm'] or 0,
-                "thigh_cm": prev_log['thigh_cm'] or 0
+                "waist_cm": safe_float(prev_log.get('waist_cm')),
+                "chest_cm": safe_float(prev_log.get('chest_cm')),
+                "arm_cm": safe_float(prev_log.get('arm_cm')),
+                "thigh_cm": safe_float(prev_log.get('thigh_cm'))
             }
             
             curr_measurements = {
@@ -269,43 +306,39 @@ def update_progress():
                 "thigh_cm": current_thigh
             }
 
+            prev_weight = safe_float(prev_log.get('weight_kg'), default=db_weight)
+            prev_bf = safe_float(prev_log.get('body_fat_pct'), default=db_bf_pct)
+            current_cals = safe_float(user_data.get('target_calories'), default=2000.0)
+
+            # Pass everything cleanly into the Coach
             coach_result = AdaptiveCoach.weekly_check_in(
-                previous_weight=prev_log['weight_kg'] or user_data['weight_kg'], 
+                previous_weight=prev_weight, 
                 current_weight=current_weight, 
-                previous_bf_pct=prev_log['body_fat_pct'] or user_data['body_fat_pct'], 
+                previous_bf_pct=prev_bf, 
                 current_bf_pct=current_bf_pct,
                 previous_measurements=prev_measurements, 
                 current_measurements=curr_measurements,
-                current_daily_cals=user_data['target_calories'], 
-                goal=user_data['goal'], 
-                expected_loss_rate="moderate" # You can make this dynamic later
+                current_daily_cals=current_cals, 
+                goal=db_goal, 
+                expected_loss_rate="moderate"
             )
 
-            # 6. Apply Coach Adjustments to the Users Table
-            if coach_result['adjustment_made']:
-                new_cals = coach_result['new_daily_calories']
-                # Recalculate macros based on new calories (assuming you have this function)
-                # For now, we will just update the calories
+            # Apply Coach Adjustments
+            if coach_result and coach_result.get('adjustment_made'):
+                new_cals = safe_float(coach_result.get('new_daily_calories'), default=current_cals)
                 cur.execute("""
                     UPDATE users 
-                    SET target_calories = %s,
-                        weight_kg = %s,
-                        body_fat_pct = %s,
-                        updated_at = CURRENT_TIMESTAMP
+                    SET target_calories = %s, weight_kg = %s, body_fat_pct = %s, updated_at = CURRENT_TIMESTAMP
                     WHERE id = %s
                 """, (new_cals, current_weight, current_bf_pct, user_id))
             else:
-                # Just update the latest stats
                 cur.execute("""
                     UPDATE users 
-                    SET weight_kg = %s,
-                        body_fat_pct = %s,
-                        updated_at = CURRENT_TIMESTAMP
+                    SET weight_kg = %s, body_fat_pct = %s, updated_at = CURRENT_TIMESTAMP
                     WHERE id = %s
                 """, (current_weight, current_bf_pct, user_id))
                 
         else:
-            # First log ever, just update users table with latest weight/bf
             cur.execute("""
                 UPDATE users 
                 SET weight_kg = %s, body_fat_pct = %s, updated_at = CURRENT_TIMESTAMP
@@ -316,7 +349,6 @@ def update_progress():
         cur.close()
         conn.close()
 
-        # 7. Return the data, including the coach's feedback so React can show it!
         return jsonify({
             "status": "success", 
             "message": "Progress logged successfully",
@@ -331,22 +363,41 @@ def update_progress():
 # ---------------------------------------------------------
 @app.route('/api/progress', methods=['GET'])
 def get_progress_history():
-    user_id = "user_123" 
+    # Read custom session header
+    session_str = request.headers.get('X-Session')
+    if not session_str:
+        return jsonify({"error": "Unauthorized"}), 401
+        
+    try:
+        session_data = json.loads(session_str)
+        user_id = session_data.get('id')
+    except Exception:
+        return jsonify({"error": "Invalid session"}), 401
+
     query = "SELECT * FROM measurement_logs WHERE user_id = %s ORDER BY log_date ASC;"
     
     try:
-        with get_db_connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(query, (user_id,))
-                history = cursor.fetchall()
-                
+        # Assuming you have a get_db_connection() helper defined
+        conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        
+        cursor.execute(query, (user_id,))
+        history = cursor.fetchall()
+        
+        # Convert rows to dicts for JSON serialization
+        history_list = []
         for entry in history:
-            entry['log_date'] = entry['log_date'].strftime('%Y-%m-%d')
+            entry_dict = dict(entry)
+            entry_dict['log_date'] = entry_dict['log_date'].strftime('%Y-%m-%d')
+            history_list.append(entry_dict)
             
-        return jsonify({"history": history})
+        cursor.close()
+        conn.close()
+            
+        return jsonify({"history": history_list})
     except Exception as e:
+        print(f"Fetch Error: {e}")
         return jsonify({"error": str(e)}), 500
-
 
 # ---------------------------------------------------------
 # 4. NUTRITION DATABASE & SEARCH
@@ -472,6 +523,411 @@ def log_manual_meal():
         print(f"🔥 CRASH IN MANUAL LOG: {str(e)}")
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+    
+
+# ---------------------------------------------------------
+# WORKOUT EXPERT ROUTES
+# ---------------------------------------------------------
+
+# 1. Figure out exactly where we are on the computer
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 2. Build the path to the JSON file
+EXERCISE_DATA_PATH = os.path.join(BASE_DIR, 'data', 'exercises_enriched.json')
+CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+# 3. Load the file into a Python dictionary
+try:
+    with open(EXERCISE_DATA_PATH, 'r') as f:
+        exercise_dataset = json.load(f)
+    print(f"Successfully loaded {len(exercise_dataset)} exercises from JSON.")
+except FileNotFoundError:
+    print(f"CRITICAL ERROR: Could not find {EXERCISE_DATA_PATH}. Make sure the file exists!")
+    exercise_dataset = {} # Fallback to prevent immediate crashes
+
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+
+# def get_db_connection():
+#     """Helper function to get a database connection."""
+#     conn = psycopg2.connect(DATABASE_URL)
+#     return conn
+
+def get_db_connection():
+    print("\n" + "="*50)
+    print("🔄 TEST: Attempting database connection...")
+    
+    # Check if the URL is even loaded
+    url = os.environ.get("DATABASE_URL")
+    if not url:
+        print("❌ FATAL: Python cannot find DATABASE_URL. It is None.")
+
+    try:
+        # The actual connection attempt
+        conn = psycopg2.connect(url)
+        print("✅ SUCCESS: Connected to the Neon database perfectly!")
+        print("="*50 + "\n")
+        return conn
+        
+    except Exception as e:
+        # If it crashes, catch it and print the exact reason
+        print("❌ FAILED: The connection crashed.")
+        print(f"⚠️ Exact Error: {e}")
+        print("="*50 + "\n")
+        raise e
+    
+@app.route('/api/debug/both_columns', methods=['GET'])
+def debug_both_columns():
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    cursor.execute("""
+        SELECT table_name, column_name 
+        FROM information_schema.columns 
+        WHERE table_name IN ('users', 'exercise_state')
+        ORDER BY table_name, ordinal_position
+    """)
+    columns = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify({"columns": columns})
+
+
+
+@app.route('/api/workout/generate_week', methods=['POST'])
+def generate_week():
+    #data = request.json
+    data = request.get_json(force=True)  # force=True ignores Content-Type header
+    user_id = data.get('user_id')
+    
+    if not user_id:
+        return jsonify({"error": "user_id is required"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+
+        cursor.execute("""
+            SELECT exercise_name, sets_completed, reps_achieved, weight_used
+            FROM (
+                SELECT exercise_name, sets_completed, reps_achieved, weight_used,
+                       ROW_NUMBER() OVER(PARTITION BY exercise_name ORDER BY log_date DESC) as rn
+                FROM workout_history
+                WHERE user_id = %s
+            ) tmp 
+            WHERE rn = 1;
+        """, (user_id,))
+        
+        history_rows = cursor.fetchall()
+        user_workout_history = {}
+        for r in history_rows:
+            user_workout_history[r['exercise_name']] = {
+                "sets": r['sets_completed'],
+                "reps_achieved": r['reps_achieved'],
+                "weight": r['weight_used']
+            }
+        # ---------------------------------------------------------
+        
+        cursor.execute("""
+            SELECT u.goal, u.experience_level as user_exp, u.workout_days, u.available_equipment, u.facility_type, u.injuries,
+                   e.weeks_in_program, e.active_phase, e.last_assigned_split, e.split_rotation_index, e.last_workout_date
+            FROM users u
+            JOIN exercise_state e ON u.id = e.user_id
+            WHERE u.id = %s
+        """, (user_id,))
+        row = cursor.fetchone()
+        if not row:
+            return jsonify({"error": "User or exercise state not found."}), 404
+
+        # Convert the VARCHAR schedule "Monday,Tuesday" into a Python list
+        raw_schedule = row['workout_days']
+        if isinstance(raw_schedule, list):
+            user_schedule = raw_schedule
+        elif isinstance(raw_schedule, str):
+            user_schedule = [d.strip() for d in raw_schedule.split(',')]
+        else:
+            user_schedule = ["Monday", "Wednesday", "Friday"]  # fallback
+
+        # 2. CONSTRUCT WORKING MEMORY
+        working_memory = {
+            "user_id": user_id,
+            "primary_goal": row['goal'],
+            "experience_level": row['user_exp'],
+            "facility_type": row['facility_type'],
+            "owned_equipment": row['available_equipment'] or [],
+            "medical_issues": row['injuries'] or [],
+            "schedule": user_schedule,
+            "weeks_in_program": row['weeks_in_program'],
+            "active_phase": row['active_phase'],
+            "last_assigned_split": row['last_assigned_split'],
+            "split_rotation_index": row['split_rotation_index'],
+            "weeks_off": calculate_dynamic_weeks_off(row['last_workout_date'])
+        }
+        
+        # 3. RUN THE ENGINE PIPELINE EXACTLY AS YOU WROTE IT
+        active_phase = determine_active_phase(working_memory, macrocycle_kb)
+        working_memory["active_phase"] = active_phase
+        
+        phase_params = phase_parameters_kb.get(active_phase, phase_parameters_kb["foundation"])
+        base_split = phase_params.get("recommended_split", "full_body")
+        
+        # Adapt split to days available
+        assigned_split = determine_weekly_split(working_memory, base_split)
+        working_memory["last_assigned_split"] = assigned_split
+
+        
+        # Schedule the blueprints (passing the 2 required arguments)
+        calendar = schedule_weekly_blueprints(working_memory, assigned_split)
+        
+        # 4. GENERATE DAILY WORKOUTS
+        weekly_plan = {}
+        for day_name, day_type in calendar.items():
+            library_category = assigned_split.replace("_repeated", "").replace("_full", "")
+            if day_type in ["upper_day", "lower_day"]: library_category = "upper_lower"
+            elif day_type in ["push_day", "pull_day", "leg_day"]: library_category = "push_pull_legs"
+            elif "full_body" in day_type: library_category = "full_body"
+            
+            blueprint = blueprint_library[library_category][day_type]
+            
+            daily_plan = generate_daily_workout(
+            working_memory, 
+            exercise_dataset, 
+            blueprint, 
+            phase_params, 
+            user_workout_history
+        )
+            
+            # Map "Monday" back to "Day_1" format for your frontend, or use day_name directly
+            day_index = {"Sunday":7, "Monday":1, "Tuesday":2, "Wednesday":3, "Thursday":4, "Friday":5, "Saturday":6}.get(day_name, 1)
+            weekly_plan[f"Day_{day_index}"] = daily_plan
+
+        # 5. SAVE TO DATABASE
+        cursor.execute("""
+            INSERT INTO generated_programs (user_id, week_number, workout_json) 
+            VALUES (%s, %s, %s::jsonb)
+            ON CONFLICT (user_id, week_number) 
+            DO UPDATE SET workout_json = EXCLUDED.workout_json, generated_at = CURRENT_TIMESTAMP;
+        """, (user_id, working_memory['weeks_in_program'], json.dumps(weekly_plan)))
+        
+        cursor.execute("""
+            UPDATE exercise_state 
+            SET active_phase = %s, last_assigned_split = %s, split_rotation_index = %s, updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = %s;
+        """, (working_memory['active_phase'], working_memory['last_assigned_split'], working_memory['split_rotation_index'], user_id))
+        
+        conn.commit()
+        return jsonify({"status": "success", "program": weekly_plan}), 201
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+import json
+from flask import request, jsonify
+# Make sure RealDictCursor is imported at the top of your app.py
+
+@app.route('/api/workout/today', methods=['GET'])
+def get_today_workout():
+    user_id = request.args.get('user_id')
+    day_key = request.args.get('day_key') 
+    
+    if not user_id or not day_key:
+        return jsonify({"error": "user_id and day_key are required"}), 400
+        
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+        # 1. Fetch the user's current week
+        cursor.execute("SELECT weeks_in_program FROM exercise_state WHERE user_id = %s", (user_id,))
+        state_record = cursor.fetchone()
+        
+        if not state_record:
+            return jsonify({"error": "User exercise state not found."}), 404
+            
+        current_week = state_record['weeks_in_program']
+        
+        # 2. Fetch the generated program for that week
+        cursor.execute("""
+            SELECT workout_json FROM generated_programs 
+            WHERE user_id = %s AND week_number = %s
+        """, (user_id, current_week))
+        program_record = cursor.fetchone()
+        
+        if not program_record:
+            return jsonify({"error": "not_generated"}), 404
+            
+        raw_json = program_record['workout_json']
+        
+        # 3. SAFETY CHECK: Ensure it is a dictionary, not a string
+        if isinstance(raw_json, str):
+            workout_json = json.loads(raw_json)
+        else:
+            workout_json = raw_json
+            
+        # 4. Check if today is a rest day
+        if day_key not in workout_json:
+            return jsonify({
+                "status": "success", 
+                "is_rest_day": True, 
+                "today_workout": None
+            })
+            
+        # 5. Return the workout
+        return jsonify({
+            "status": "success",
+            "week_number": current_week,
+            "is_rest_day": False,
+            "today_workout": workout_json[day_key]
+        })
+        
+    except Exception as e:
+        # THE FIX: Catch the error and return it cleanly to React
+        print(f"Error in /api/workout/today: {str(e)}")
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+        
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/workout/regenerate_day', methods=['POST'])
+def regenerate_day():
+    data = request.json
+    user_id = data.get('user_id')
+    day_key = data.get('day_key') 
+    day_name = data.get('day_name') 
+    day_type = data.get('day_type') 
+    temporary_equipment = data.get('temporary_equipment', [])
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+        # 1. Fetch exact same fusion of state
+        cursor.execute("""
+            SELECT u.goal, u.experience_level, u.injuries, e.weeks_in_program, e.active_phase 
+            FROM users u JOIN exercise_state e ON u.id = e.user_id WHERE u.id = %s
+        """, (user_id,))
+        row = cursor.fetchone()
+        
+        working_memory = {
+            "primary_goal": row['goal'],
+            "experience_level": row['experience_level'],
+            "medical_issues": row['injuries'] or [],
+            "weeks_in_program": row['weeks_in_program'],
+            "active_phase": row['active_phase'],
+            "available_equipment": temporary_equipment 
+        }
+        
+        phase_params = phase_parameters_kb.get(row['active_phase'])
+        
+        library_category = "full_body"
+        if day_type in ["upper_day", "lower_day"]: library_category = "upper_lower"
+        elif day_type in ["push_day", "pull_day", "leg_day"]: library_category = "push_pull_legs"
+        
+        blueprint = blueprint_library[library_category][day_type]
+
+        # --- THE MISSING FIX: FETCH HISTORY BEFORE GENERATING ---
+        cursor.execute("""
+            SELECT exercise_name, sets_completed, reps_achieved, weight_used
+            FROM (
+                SELECT exercise_name, sets_completed, reps_achieved, weight_used,
+                       ROW_NUMBER() OVER(PARTITION BY exercise_name ORDER BY log_date DESC) as rn
+                FROM workout_history
+                WHERE user_id = %s
+            ) tmp 
+            WHERE rn = 1;
+        """, (user_id,))
+        
+        history_rows = cursor.fetchall()
+        user_workout_history = {}
+        for r in history_rows:
+            user_workout_history[r['exercise_name']] = {
+                "sets": r['sets_completed'],
+                "reps_achieved": r['reps_achieved'],
+                "weight": r['weight_used']
+            }
+        # ---------------------------------------------------------
+        
+        # 3. Generate the single day (NOW WITH ALL 5 ARGUMENTS!)
+        new_daily_plan = generate_daily_workout(
+            working_memory, 
+            exercise_dataset, 
+            blueprint, 
+            phase_params, 
+            user_workout_history
+        )
+        
+        # 4. Fetch, Update, and Save JSONB
+        cursor.execute("SELECT workout_json FROM generated_programs WHERE user_id = %s AND week_number = %s", (user_id, row['weeks_in_program']))
+        workout_json = cursor.fetchone()['workout_json']
+        
+        workout_json[day_key] = new_daily_plan
+        
+        cursor.execute("""
+            UPDATE generated_programs SET workout_json = %s::jsonb, generated_at = CURRENT_TIMESTAMP
+            WHERE user_id = %s AND week_number = %s
+        """, (json.dumps(workout_json), user_id, row['weeks_in_program']))
+        
+        conn.commit()
+        return jsonify({"status": "success", "updated_day": new_daily_plan})
+
+    except Exception as e:
+        conn.rollback()
+        print(f"Error in regenerate_day: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+@app.route('/api/workout/complete', methods=['POST'])
+def complete_workout():
+    data = request.json
+    user_id = data.get('user_id')
+    exercises_completed = data.get('exercises', []) 
+    
+    conn = get_db_connection()
+    cursor = conn.cursor() 
+    
+    try:
+        # Reset the detraining clock in the dynamic state table
+        cursor.execute("""
+            UPDATE exercise_state 
+            SET last_workout_date = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = %s
+        """, (user_id,))
+        
+        # Save the historical data for the progression engine
+        insert_history_query = """
+            INSERT INTO workout_history (user_id, exercise_name, sets_completed, reps_achieved, weight_used) 
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        history_records = [
+            (user_id, ex.get('name'), ex.get('sets'), ex.get('reps'), ex.get('weight', 0.0))
+            for ex in exercises_completed
+        ]
+        
+        cursor.executemany(insert_history_query, history_records)
+        conn.commit()
+        
+        return jsonify({"status": "success"})
+
+    except Exception as e:
+        conn.rollback() 
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 
 
 if __name__ == '__main__':

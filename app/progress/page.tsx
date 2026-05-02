@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area 
 } from 'recharts';
-import { Activity, ArrowUpRight, ArrowDownRight, Scale, Dumbbell, Target, Loader2 } from "lucide-react";
+import { Activity, ArrowUpRight, ArrowDownRight, Scale, Dumbbell, Target, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 interface MeasurementLog {
@@ -19,7 +19,6 @@ interface MeasurementLog {
   short_date?: string;
 }
 
-// Temporary Mock Data for Strength UI until we build the workout backend
 const mockStrengthHistory = [
   { short_date: "1 Apr", bench: 80, squat: 100, deadlift: 120, ohp: 50 },
   { short_date: "8 Apr", bench: 82.5, squat: 105, deadlift: 125, ohp: 52.5 },
@@ -38,7 +37,15 @@ export default function ProgressDashboard() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:5001/api/progress");
+      const sessionStr = localStorage.getItem("thinkfit_session");
+      
+      const res = await fetch("http://127.0.0.1:5001/api/progress", {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session": sessionStr || "" 
+        }
+      });
+      
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       
@@ -74,13 +81,22 @@ export default function ProgressDashboard() {
     };
 
     try {
+      const sessionStr = localStorage.getItem("thinkfit_session");
+
       const res = await fetch("http://127.0.0.1:5001/api/progress/update", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-Session": sessionStr || ""
+        },
         body: JSON.stringify(payload)
       });
       
       if (!res.ok) {
+        if (res.status === 401) {
+           toast.error("Session expired. Please log in again.");
+           return;
+        }
         const errorData = await res.json();
         throw new Error(errorData.error || "Update failed on server");
       }
@@ -106,6 +122,11 @@ export default function ProgressDashboard() {
     );
   }
 
+  // UX Fix: If there is only 1 baseline entry, duplicate it locally so the charts draw a flat starting line!
+  const chartData = history.length === 1 
+    ? [ { ...history[0], short_date: "Day 1" }, { ...history[0], short_date: "Current" } ]
+    : history;
+
   const latest = history[history.length - 1] || null;
   const previous = history.length > 1 ? history[history.length - 2] : null;
 
@@ -115,23 +136,25 @@ export default function ProgressDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-6 md:p-12 font-sans text-slate-900">
+    <div className="min-h-screen bg-[#f8fafc] p-6 md:p-12 font-sans text-slate-900 pb-24">
       <div className="max-w-6xl mx-auto space-y-8">
         
-        {/* Header */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Physique Analytics</h1>
           <p className="text-slate-500 mt-1">Track your body recomposition and strength metrics over time.</p>
         </div>
 
-        {/* --- 1. FULL WIDTH UPDATE CARD --- */}
-        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200/60">
-          <div className="flex items-center gap-3 mb-6">
+        {/* LOG NEW MEASUREMENTS CARD */}
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200/60 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+             <Scale className="w-32 h-32" />
+          </div>
+          <div className="flex items-center gap-3 mb-6 relative z-10">
             <Target className="w-6 h-6 text-indigo-500" />
             <h2 className="text-xl font-bold">Log New Measurements</h2>
           </div>
           
-          <form onSubmit={handleUpdateProgress} className="flex flex-wrap md:flex-nowrap gap-4 items-end">
+          <form onSubmit={handleUpdateProgress} className="flex flex-wrap md:flex-nowrap gap-4 items-end relative z-10">
             <div className="flex-1 min-w-[120px]">
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Weight (kg)</label>
               <input required type="number" step="0.1" value={formData.weight} onChange={(e) => setFormData({...formData, weight: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0.0" />
@@ -153,13 +176,13 @@ export default function ProgressDashboard() {
               <input required type="number" step="0.1" value={formData.thigh} onChange={(e) => setFormData({...formData, thigh: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0.0" />
             </div>
             
-            <button type="submit" disabled={isSubmitting} className="w-full md:w-auto px-8 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors flex items-center justify-center">
+            <button type="submit" disabled={isSubmitting} className="w-full md:w-auto px-8 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center">
               {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save Metrics"}
             </button>
           </form>
         </div>
 
-        {/* --- 2. SUMMARY METRICS --- */}
+        {/* SUMMARY METRICS */}
         {latest && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
              <MetricCard 
@@ -173,17 +196,17 @@ export default function ProgressDashboard() {
                 isGood={previous ? latest.body_fat_pct < previous.body_fat_pct : true} 
               />
              <MetricCard 
-                title="Lean Muscle Mass" value={`${latest.lean_mass} kg`} icon={Dumbbell} 
+                title="Lean Muscle Mass" value={`${latest.lean_mass || 0} kg`} icon={Dumbbell} 
                 trend={previous && latest.lean_mass && previous.lean_mass ? `${getTrend(latest.lean_mass, previous.lean_mass)}kg` : null} 
                 isGood={previous && latest.lean_mass && previous.lean_mass ? latest.lean_mass >= previous.lean_mass : true} 
               />
              <MetricCard 
-                title="Relative Strength" value={`1.8x BW`} icon={ArrowUpRight} subtitle="Est. from workouts" 
+                title="Relative Strength" value={`1.8x BW`} icon={Sparkles} subtitle="Est. from workouts" 
               />
           </div>
         )}
 
-        {/* --- 3. DUAL HERO CHARTS --- */}
+        {/* DUAL HERO CHARTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200/60">
             <div className="mb-6">
@@ -192,7 +215,8 @@ export default function ProgressDashboard() {
             </div>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={history} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                {/* Changed data={history} to data={chartData} */}
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3}/>
@@ -221,7 +245,8 @@ export default function ProgressDashboard() {
             </div>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={history} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                {/* Changed data={history} to data={chartData} */}
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorBF" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
@@ -239,18 +264,18 @@ export default function ProgressDashboard() {
           </div>
         </div>
 
-        {/* --- 4. TAPE MEASUREMENT GRAPHS (Magnified with Gradients) --- */}
+        {/* TAPE MEASUREMENT GRAPHS */}
         <div>
           <h2 className="text-lg font-bold text-slate-900 mb-4 px-1">Body Circumference</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MiniChart title="Waist (cm)" dataKey="waist_cm" color="#10b981" data={history} />
-            <MiniChart title="Chest (cm)" dataKey="chest_cm" color="#f59e0b" data={history} />
-            <MiniChart title="Arm (cm)" dataKey="arm_cm" color="#ef4444" data={history} />
-            <MiniChart title="Thigh (cm)" dataKey="thigh_cm" color="#0ea5e9" data={history} />
+            <MiniChart title="Waist (cm)" dataKey="waist_cm" color="#10b981" data={chartData} />
+            <MiniChart title="Chest (cm)" dataKey="chest_cm" color="#f59e0b" data={chartData} />
+            <MiniChart title="Arm (cm)" dataKey="arm_cm" color="#ef4444" data={chartData} />
+            <MiniChart title="Thigh (cm)" dataKey="thigh_cm" color="#0ea5e9" data={chartData} />
           </div>
         </div>
 
-        {/* --- 5. STRENGTH GRAPHS (Lines with Dots) --- */}
+        {/* STRENGTH GRAPHS */}
         <div>
           <h2 className="text-lg font-bold text-slate-900 mb-4 px-1 mt-4">Estimated 1RM Strength Progression</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -265,8 +290,6 @@ export default function ProgressDashboard() {
     </div>
   );
 }
-
-// --- Sub-components ---
 
 function MetricCard({ title, value, icon: Icon, trend, isGood, subtitle }: any) {
   return (
@@ -303,21 +326,9 @@ function MiniChart({ title, dataKey, color, data }: any) {
                 <stop offset="95%" stopColor={color} stopOpacity={0}/>
               </linearGradient>
             </defs>
-            {/* Magnification Fix: YAxis domain zooms in closely on the data variation */}
             <YAxis domain={['dataMin - 1', 'dataMax + 1']} hide />
-            <Area 
-              type="monotone" 
-              dataKey={dataKey} 
-              stroke={color} 
-              strokeWidth={3} 
-              fillOpacity={1} 
-              fill={`url(#${gradientId})`} 
-            />
-            <Tooltip 
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', padding: '4px 8px' }}
-              itemStyle={{ color: color, fontWeight: 'bold' }}
-              labelStyle={{ display: 'none' }}
-            />
+            <Area type="monotone" dataKey={dataKey} stroke={color} strokeWidth={3} fillOpacity={1} fill={`url(#${gradientId})`} />
+            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', padding: '4px 8px' }} itemStyle={{ color: color, fontWeight: 'bold' }} labelStyle={{ display: 'none' }} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -332,21 +343,9 @@ function StrengthChart({ title, dataKey, color, data }: any) {
       <div className="h-[120px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            {/* Magnification applied here as well */}
             <YAxis domain={['dataMin - 5', 'dataMax + 5']} hide />
-            <Line 
-              type="monotone" 
-              dataKey={dataKey} 
-              stroke={color} 
-              strokeWidth={3} 
-              dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} 
-              activeDot={{ r: 6, strokeWidth: 0 }}
-            />
-            <Tooltip 
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', padding: '4px 8px' }}
-              itemStyle={{ color: color, fontWeight: 'bold' }}
-              labelStyle={{ display: 'none' }}
-            />
+            <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6, strokeWidth: 0 }} />
+            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', padding: '4px 8px' }} itemStyle={{ color: color, fontWeight: 'bold' }} labelStyle={{ display: 'none' }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
