@@ -3,6 +3,8 @@
 import React, { useState, useRef } from 'react';
 import { Camera, ScanBarcode, Plus, Loader2, X, Utensils, ChevronLeft, Search, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+// IMPORT AUTHTOKEN TO PASS TO PYTHON BACKEND
+import { useAuth } from "app/context/AuthContext"; 
 
 type MealType = {
   id: string;
@@ -19,6 +21,7 @@ interface SearchResult {
 }
 
 export default function MealSection() {
+  const { user } = useAuth(); // Grab the user context
   const [isScanning, setIsScanning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,7 +42,6 @@ export default function MealSection() {
   const [amount, setAmount] = useState("1");
   const packagedFileInputRef = useRef<HTMLInputElement>(null);
 
-  // --- NEW: State for the Thali Confirmation Popup ---
   const [isThaliModalOpen, setIsThaliModalOpen] = useState(false);
   const [detectedThaliInfo, setDetectedThaliInfo] = useState<any>(null);
 
@@ -102,18 +104,23 @@ export default function MealSection() {
     }
   };
 
+  // 1. FIXED MANUAL SUBMIT
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFood || !servingQty) return;
+    if (!user) { toast.error("Please log in first."); return; }
 
     let weight_g = parseFloat(servingQty);
     if (servingUnit === "bowls") weight_g = weight_g * 150; 
     if (servingUnit === "pieces") weight_g = weight_g * 50;  
 
-    const payload = { scanned_items: [{ food_id: selectedFood.id, weight_g: weight_g }] };
+    const payload = { 
+      thinkfit_session: user, // Tells Python whose DB row to update
+      scanned_items: [{ food_id: selectedFood.id, weight_g: weight_g }] 
+    };
 
     try {
-      const response = await fetch('/api/scan/log', {
+      const response = await fetch('http://127.0.0.1:5001/api/scan/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -125,6 +132,7 @@ export default function MealSection() {
     } catch (error) { toast.error("Failed to save."); }
   };
 
+  // 2. FIXED PACKAGED UPLOAD (OCR)
   const handlePackagedUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -134,7 +142,7 @@ export default function MealSection() {
     formData.append('image', file);
   
     try {
-      const res = await fetch('/api/scan/packaged', { method: 'POST', body: formData });
+      const res = await fetch('http://127.0.0.1:5001/api/scan/packaged', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.success) {
         setDetectedNutrition(data.nutrition);
@@ -150,9 +158,13 @@ export default function MealSection() {
     }
   };
   
+  // 3. FIXED OCR FINAL SUBMIT
   const submitOcrFinal = async () => {
+    if (!user) { toast.error("Please log in first."); return; }
     const factor = consumptionMode === 'percent' ? parseFloat(amount) / 100 : parseFloat(amount);
+    
     const payload = {
+      thinkfit_session: user, // Tells Python whose DB row to update
       calories: (detectedNutrition.calories || 0) * factor,
       protein: (detectedNutrition.protein || 0) * factor,
       carbs: (detectedNutrition.carbs || 0) * factor,
@@ -160,7 +172,7 @@ export default function MealSection() {
     };
   
     try {
-      await fetch('/api/manual/log', {
+      await fetch('http://127.0.0.1:5001/api/manual/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -173,7 +185,6 @@ export default function MealSection() {
     }
   };
 
-  // --- REVISED THALI UPLOAD HANDLER ---
   const handleThaliUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -198,10 +209,8 @@ export default function MealSection() {
       const colabData = await colabRes.json();
       if (!colabData.success) throw new Error(colabData.error || "AI could not identify food.");
 
-      // Set the data in state and open the modal instead of saving immediately!
       setDetectedThaliInfo(colabData);
       setIsThaliModalOpen(true);
-      
       toast.dismiss(loadingToast);
 
     } catch (error: any) {
@@ -212,16 +221,23 @@ export default function MealSection() {
     }
   };
 
-  // --- NEW: FUNCTION TO SAVE REVIEWED THALI DATA ---
+  // 4. FIXED THALI FINAL SUBMIT
   const handleThaliConfirmAndSave = async () => {
     if (!detectedThaliInfo) return;
+    if (!user) { toast.error("Please log in first."); return; }
+    
     const loadingToast = toast.loading("Saving nutrition to your daily log...");
 
     try {
-      const localRes = await fetch('/api/scan/log', {
+      const payload = {
+        thinkfit_session: user, // Tells Python whose DB row to update
+        scanned_items: detectedThaliInfo.scanned_items
+      };
+
+      const localRes = await fetch('http://127.0.0.1:5001/api/scan/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scanned_items: detectedThaliInfo.scanned_items }), 
+        body: JSON.stringify(payload), 
       });
 
       if (!localRes.ok) throw new Error("Failed to save to local database.");
@@ -270,7 +286,7 @@ export default function MealSection() {
         ))}
       </div>
 
-      {/* --- NEW: THALI CONFIRMATION MODAL --- */}
+      {/* THALI CONFIRMATION MODAL */}
       {isThaliModalOpen && detectedThaliInfo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
           <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">

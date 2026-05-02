@@ -1,7 +1,8 @@
 import os
 import csv
 from datetime import date
-from core.db import NutritionDatabase
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 # --- Load Dataset into Memory ---
 CSV_PATH = os.path.join(os.path.dirname(__file__), 'indian_food_dataset.csv')
@@ -37,32 +38,78 @@ class DailyTracker:
         self.user_id = user_id
         self.today = date.today()
         
-        targets = NutritionDatabase.get_user_targets(self.user_id)
-        if not targets:
-            raise ValueError(f"User {user_id} not found. Please complete onboarding.")
+        # 1. Connect directly to Neon Database
+        self.conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
+        self.cursor = self.conn.cursor(cursor_factory=RealDictCursor)
         
+        # 2. Fetch User Profile to set Daily Targets
+        self.cursor.execute("SELECT weight_kg, target_calories FROM users WHERE id = %s", (self.user_id,))
+        user_data = self.cursor.fetchone()
+        
+        if not user_data:
+            self.cursor.close()
+            self.conn.close()
+            raise ValueError(f"User {user_id} not found. Please complete onboarding.")
+            
+        target_cals = user_data.get('target_calories') or 2000
+        weight = user_data.get('weight_kg') or 70.0
+        
+        # Dynamically assign macro targets
         self.daily_targets = {
-            "calories": targets["target_calories"],
-            "protein_g": targets["target_protein"],
-            "carbs_g": targets["target_carbs"],
-            "fat_g": targets["target_fat"],
-            "sat_fat_limit_g": targets["sat_fat_limit"]
+            "calories": target_cals,
+            "protein_g": round(weight * 1.8),
+            "carbs_g": round(weight * 3.0),
+            "fat_g": round((target_cals * 0.25) / 9),
+            "sat_fat_limit_g": round((target_cals * 0.10) / 9)
         }
 
-        log = NutritionDatabase.get_daily_log(self.user_id, self.today)
+        # 3. Fetch Today's Logs
+        self.cursor.execute("SELECT * FROM daily_logs WHERE user_id = %s AND log_date = %s", (self.user_id, self.today))
+        log = self.cursor.fetchone()
+        
         if log:
             self.consumed_today = {
-                "calories": log["consumed_calories"],
-                "protein_g": log["consumed_protein"],
-                "carbs_g": log["consumed_carbs"],
-                "fat_g": log["consumed_fat"],
-                "sat_fat_g": log["consumed_sat_fat"]
+                "calories": log.get("consumed_calories") or 0,
+                "protein_g": float(log.get("consumed_protein") or 0.0),
+                "carbs_g": float(log.get("consumed_carbs") or 0.0),
+                "fat_g": float(log.get("consumed_fat") or 0.0),
+                "sat_fat_g": float(log.get("consumed_sat_fat") or 0.0)
             }
         else:
             self.consumed_today = {
                 "calories": 0, "protein_g": 0.0, "carbs_g": 0.0, 
                 "fat_g": 0.0, "sat_fat_g": 0.0
             }
+
+    def _save_to_db(self):
+        """Bulletproof manual save bypassing ON CONFLICT errors"""
+        self.cursor.execute("SELECT id FROM daily_logs WHERE user_id = %s AND log_date = %s", (self.user_id, self.today))
+        exists = self.cursor.fetchone()
+        
+        if exists:
+            self.cursor.execute("""
+                UPDATE daily_logs SET 
+                    consumed_calories = %s, consumed_protein = %s, 
+                    consumed_carbs = %s, consumed_fat = %s, consumed_sat_fat = %s
+                WHERE user_id = %s AND log_date = %s
+            """, (
+                self.consumed_today["calories"], self.consumed_today["protein_g"],
+                self.consumed_today["carbs_g"], self.consumed_today["fat_g"],
+                self.consumed_today["sat_fat_g"], self.user_id, self.today
+            ))
+        else:
+            self.cursor.execute("""
+                INSERT INTO daily_logs (user_id, log_date, consumed_calories, consumed_protein, consumed_carbs, consumed_fat, consumed_sat_fat)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (
+                self.user_id, self.today, self.consumed_today["calories"], 
+                self.consumed_today["protein_g"], self.consumed_today["carbs_g"], 
+                self.consumed_today["fat_g"], self.consumed_today["sat_fat_g"]
+            ))
+            
+        self.conn.commit()
+        self.cursor.close()
+        self.conn.close()
 
     def log_meal(self, cv_scanner_output: list) -> dict:
         """Processes an array of food items from the CSV or the AI Scanner"""
@@ -98,7 +145,7 @@ class DailyTracker:
                 self.consumed_today["fat_g"] += round(base_fat * mult, 1)
                 self.consumed_today["sat_fat_g"] += round(base_sat * mult, 1)
 
-        NutritionDatabase.upsert_daily_log(self.user_id, self.today, self.consumed_today)
+        self._save_to_db()
         return self.get_ui_payload()
 
     def log_manual_macros(self, manual_data: dict) -> dict:
@@ -115,7 +162,7 @@ class DailyTracker:
         self.consumed_today["fat_g"] += round(fat, 1)
         self.consumed_today["sat_fat_g"] += round(fat * 0.2, 1) 
 
-        NutritionDatabase.upsert_daily_log(self.user_id, self.today, self.consumed_today)
+        self._save_to_db()
         print(f"DEBUG: Successfully updated DB with new totals.")
         return self.get_ui_payload()
 
@@ -126,8 +173,8 @@ class DailyTracker:
                 "target": self.daily_targets["calories"]
             },
             "macros": {
-                "carbs": { "current": self.consumed_today["carbs_g"], "target": self.daily_targets["carbs_g"], "unit": "g", "colorClass": "bg-[#84cc16]", "bgClass": "bg-[#84cc16]/15" },
-                "protein": { "current": self.consumed_today["protein_g"], "target": self.daily_targets["protein_g"], "unit": "g", "colorClass": "bg-[#fbbf24]", "bgClass": "bg-[#fbbf24]/15" },
-                "satFat": { "current": self.consumed_today["sat_fat_g"], "target": self.daily_targets["sat_fat_limit_g"], "unit": "g", "colorClass": "bg-[#a855f7]", "bgClass": "bg-[#a855f7]/15" }
+                "carbs": { "current": round(self.consumed_today["carbs_g"], 1), "target": self.daily_targets["carbs_g"], "unit": "g", "colorClass": "bg-[#84cc16]", "bgClass": "bg-[#84cc16]/15" },
+                "protein": { "current": round(self.consumed_today["protein_g"], 1), "target": self.daily_targets["protein_g"], "unit": "g", "colorClass": "bg-[#fbbf24]", "bgClass": "bg-[#fbbf24]/15" },
+                "satFat": { "current": round(self.consumed_today["sat_fat_g"], 1), "target": self.daily_targets["sat_fat_limit_g"], "unit": "g", "colorClass": "bg-[#a855f7]", "bgClass": "bg-[#a855f7]/15" }
             }
         }

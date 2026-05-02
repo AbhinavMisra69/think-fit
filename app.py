@@ -89,6 +89,12 @@ def save_onboarding():
         experience_level = safe_str(data.get('experienceLevel'), 'beginner')
         
         days_available = int(safe_float(data.get('workoutDays', 4)))
+        
+        # --- THE FIX: Extract and process the selected training days list ---
+        selected_workout_days = data.get('selectedWorkoutDays', [])
+        # Convert the array to a comma-separated string for PostgreSQL VARCHAR compatibility
+        workout_days_str = ",".join(selected_workout_days) if selected_workout_days else "Monday,Wednesday,Friday"
+        
         facility_type = safe_str(data.get('workoutLocation'), 'gym')
         soreness_recovery = safe_str(data.get('soreness'), 'normal')
         
@@ -100,7 +106,7 @@ def save_onboarding():
         bf_pct = safe_float(data.get('estimatedBF', 15.0))
 
         # ---------------------------------------------------------
-        # THE FIX: Tap directly into your core.nutrition engine
+        # Tap directly into your core.nutrition engine
         # ---------------------------------------------------------
         try:
             nutrition_profile = NutritionCalculator.generate_full_profile(
@@ -127,14 +133,15 @@ def save_onboarding():
         conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
         cur = conn.cursor()
 
+        # Added workout_days column to the INSERT and UPDATE blocks
         insert_query = """
         INSERT INTO users (
             id, gender, weight_kg, height_cm, neck, waist_cm, chest_cm, arm_cm, hip, 
-            body_type, activity_level, experience_level, days_available, facility_type, 
-            soreness_recovery, medical_conditions, available_equipment, goal, body_fat_pct,
-            target_calories
+            body_type, activity_level, experience_level, days_available, workout_days, 
+            facility_type, soreness_recovery, medical_conditions, available_equipment, 
+            goal, body_fat_pct, target_calories
         ) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (id) DO UPDATE SET
             weight_kg = EXCLUDED.weight_kg,
             height_cm = EXCLUDED.height_cm,
@@ -148,6 +155,7 @@ def save_onboarding():
             activity_level = EXCLUDED.activity_level,
             experience_level = EXCLUDED.experience_level,
             days_available = EXCLUDED.days_available,
+            workout_days = EXCLUDED.workout_days,
             facility_type = EXCLUDED.facility_type,
             soreness_recovery = EXCLUDED.soreness_recovery,
             medical_conditions = EXCLUDED.medical_conditions,
@@ -159,15 +167,21 @@ def save_onboarding():
         
         cur.execute(insert_query, (
             user_id, gender, weight, height, neck, waist, chest, arm, hip,
-            body_type, activity_level, experience_level, days_available, facility_type,
-            soreness_recovery, medical_conditions, available_equipment, goal_main, bf_pct,
-            target_calories
+            body_type, activity_level, experience_level, days_available, workout_days_str, 
+            facility_type, soreness_recovery, medical_conditions, available_equipment, 
+            goal_main, bf_pct, target_calories
         ))
 
         cur.execute("""
         INSERT INTO measurement_logs 
-        (user_id, weight_kg, body_fat_pct, waist_cm, chest_cm, arm_cm)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        (user_id, weight_kg, body_fat_pct, waist_cm, chest_cm, arm_cm, log_date)
+        VALUES (%s, %s, %s, %s, %s, %s, CURRENT_DATE)
+        ON CONFLICT (user_id, log_date) DO UPDATE SET
+            weight_kg = EXCLUDED.weight_kg,
+            body_fat_pct = EXCLUDED.body_fat_pct,
+            waist_cm = EXCLUDED.waist_cm,
+            chest_cm = EXCLUDED.chest_cm,
+            arm_cm = EXCLUDED.arm_cm;
         """, (user_id, weight, bf_pct, waist, chest, arm))
 
         conn.commit()
@@ -179,49 +193,30 @@ def save_onboarding():
     except Exception as e:
         print(f"🔥 Database Error: {e}")
         return jsonify({"error": str(e)}), 500
-
-# ---------------------------------------------------------
+    
 # 2. NUTRITION DASHBOARD ROUTES
 # ---------------------------------------------------------
-@app.route('/api/nutrition/today', methods=['GET'])
-def get_todays_nutrition():
-    try:
-        tracker = DailyTracker(user_id="user_123")
-        return jsonify(tracker.get_ui_payload())
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
-@app.route('/api/nutrition/weekly', methods=['GET'])
-def get_weekly_progress():
-    user_id = "user_123"
-    try:
-        profile = NutritionDatabase.get_user_targets(user_id)
-        target_cals = profile['target_calories'] if profile else 2500
-        
-        today = date.today()
-        monday = today - timedelta(days=today.weekday())
-        sunday = monday + timedelta(days=6)
-        
-        query = """
-            SELECT log_date, consumed_calories 
-            FROM daily_logs 
-            WHERE user_id = %s AND log_date >= %s AND log_date <= %s
-        """
-        with get_db_connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(query, (user_id, monday, sunday))
-                logs = cursor.fetchall()
-        
-        progress_dict = {}
-        for log in logs:
-            date_str = log['log_date'].strftime('%Y-%m-%d')
-            progress_pct = (log['consumed_calories'] / target_cals) * 100
-            progress_dict[date_str] = round(progress_pct)
-            
-        return jsonify(progress_dict)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+@app.route('/api/manual/log', methods=['POST'])
+def log_manual_meal():
+    data = request.json
+    print(f"DEBUG [Manual Log]: Received payload: {data}")
+    
+    # Grab the real user ID!
+    user_id = get_user_id_from_request(request)
+    if not user_id:
+        return jsonify({"error": "User ID is missing. Cannot log meal."}), 400
 
+    try:
+        tracker = DailyTracker(user_id=user_id)
+        updated_ui_payload = tracker.log_manual_macros(data)
+        return jsonify(updated_ui_payload)
+    except Exception as e:
+        print(f"🔥 CRASH IN MANUAL LOG: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+    
 @app.route('/api/progress/update', methods=['POST'])
 def update_progress():
     session_str = request.headers.get('X-Session')
@@ -450,12 +445,136 @@ def scan_packaged_food():
     except Exception as e:
         print(f"🔥 OCR ERROR: {str(e)}")
         return jsonify({"error": str(e)}), 500
+# Helper to reliably grab the user_id from either the JSON body or the X-Session header
+# Helper to reliably grab the user_id from the thinkfit_session key
+def get_user_id_from_request(req):
+    import json
+    import urllib.parse
+    
+    # 0. Check Query Parameters FIRST (Best for GET requests)
+    query_id = req.args.get('userId') or req.args.get('user_id')
+    if query_id: 
+        return query_id
+
+    # 1. Try checking the JSON Body (For POST requests)
+    data = req.get_json(silent=True) or {}
+    session_data = data.get('thinkfit_session')
+    
+    if isinstance(session_data, str):
+        try: session_data = json.loads(session_data)
+        except: session_data = {}
+            
+    if session_data and isinstance(session_data, dict) and session_data.get('id'):
+        return session_data.get('id')
+        
+    user_id = data.get('userId') or data.get('user_id')
+    if user_id: return user_id
+
+    # 2. Check the Cookies
+    cookie_str = req.cookies.get('thinkfit_session')
+    if cookie_str:
+        try:
+            decoded_cookie = urllib.parse.unquote(cookie_str)
+            return json.loads(decoded_cookie).get('id')
+        except: pass
+
+    # 3. Check Headers
+    header_str = req.headers.get('X-Session') or req.headers.get('Authorization')
+    if header_str:
+        try:
+            header_data = json.loads(header_str)
+            if isinstance(header_data, dict) and 'thinkfit_session' in header_data:
+                return header_data['thinkfit_session'].get('id')
+            elif isinstance(header_data, dict) and header_data.get('id'):
+                return header_data.get('id')
+        except:
+            if "{" in header_str:
+                try: return json.loads(header_str[header_str.find('{'):]).get('id')
+                except: pass
+                    
+    return None
+
+# ---------------------------------------------------------
+# 2. NUTRITION DASHBOARD ROUTES
+# ---------------------------------------------------------
+@app.route('/api/nutrition/today', methods=['GET'])
+def get_todays_nutrition():
+    # THE FIX: Grab the real user ID instead of "user_123"
+    user_id = get_user_id_from_request(request)
+    if not user_id:
+        return jsonify({"error": "Unauthorized. Missing User ID."}), 401
+        
+    try:
+        tracker = DailyTracker(user_id=user_id)
+        return jsonify(tracker.get_ui_payload())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/nutrition/weekly', methods=['GET'])
+def get_weekly_progress():
+    user_id = get_user_id_from_request(request)
+    if not user_id:
+        return jsonify({"error": "Unauthorized. Missing User ID."}), 401
+        
+    try:
+        from datetime import date, timedelta
+        import psycopg2
+        from psycopg2.extras import RealDictCursor
+        
+        today = date.today()
+        # Calculate Monday and Sunday of the current week
+        monday = today - timedelta(days=today.weekday())
+        sunday = monday + timedelta(days=6)
+        
+        # 1. Connect directly and safely
+        conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # 2. Fetch the user's custom target calories directly
+        cursor.execute("SELECT target_calories FROM users WHERE id = %s", (user_id,))
+        user_row = cursor.fetchone()
+        target_cals = user_row['target_calories'] if user_row and user_row['target_calories'] else 2000
+        
+        # 3. Fetch all logs for this week
+        query = """
+            SELECT log_date, consumed_calories 
+            FROM daily_logs 
+            WHERE user_id = %s AND log_date >= %s AND log_date <= %s
+        """
+        cursor.execute(query, (user_id, monday, sunday))
+        logs = cursor.fetchall()
+        
+        # 4. Process the data into the {"YYYY-MM-DD": 85} format
+        progress_dict = {}
+        for log in logs:
+            # Handle date formatting safely
+            date_val = log['log_date']
+            date_str = date_val.strftime('%Y-%m-%d') if hasattr(date_val, 'strftime') else str(date_val)
+            
+            # Calculate completion percentage
+            progress_pct = (log['consumed_calories'] / target_cals) * 100
+            progress_dict[date_str] = round(progress_pct)
+            
+        cursor.close()
+        conn.close()
+            
+        return jsonify(progress_dict)
+        
+    except Exception as e:
+        print(f"🔥 WEEKLY PROGRESS CRASH: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
     
 @app.route('/api/scan/log', methods=['POST'])
 def log_scanned_meal():
     try:
         data = request.json
         print(f"DEBUG [Scan Log]: Received payload: {data}")
+        
+        user_id = get_user_id_from_request(request)
+        if not user_id:
+            return jsonify({"error": "User ID is missing. Cannot log scanned meal."}), 400
         
         items_to_log = data.get('scanned_items', []) if isinstance(data, dict) else data
         
@@ -473,29 +592,17 @@ def log_scanned_meal():
                 'fat': item.get('fat_g', item.get('fat', 0))
             })
 
-        tracker = DailyTracker(user_id="user_123")
+        # THE FIX: Pass the real user_id instead of "user_123"
+        tracker = DailyTracker(user_id=user_id)
         updated_payload = tracker.log_meal(normalized_items)
         
         return jsonify(updated_payload)
         
     except Exception as e:
         print(f"🔥 CRASH IN /api/scan/log: {str(e)}")
+        import traceback
         traceback.print_exc() 
         return jsonify({"error": str(e)}), 500
-
-@app.route('/api/manual/log', methods=['POST'])
-def log_manual_meal():
-    data = request.json
-    print(f"DEBUG [Manual Log]: Received payload: {data}")
-    try:
-        tracker = DailyTracker(user_id="user_123")
-        updated_ui_payload = tracker.log_manual_macros(data)
-        return jsonify(updated_ui_payload)
-    except Exception as e:
-        print(f"🔥 CRASH IN MANUAL LOG: {str(e)}")
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
-    
 # ---------------------------------------------------------
 # 6. WORKOUT EXPERT ROUTES
 # ---------------------------------------------------------

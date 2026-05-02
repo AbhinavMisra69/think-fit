@@ -12,8 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, ChevronLeft, ChevronRight, User, Target, Calendar, Activity, MapPin, Sparkles, Percent, Zap, Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useAuth } from "app/context/AuthContext"; // (Adjust this path to match your project!)
- // Assuming your AuthContext exports the token!
+import { useAuth } from "app/context/AuthContext"; 
 
 const formSchema = z.object({
   gender: z.string().min(1, "Please select your gender"),
@@ -25,23 +24,29 @@ const formSchema = z.object({
   arm: z.string().min(1, "Arm circumference is required"),
   hip: z.string().optional(),
   bodyType: z.string().min(1, "Please select a body shape"),
-  primaryGoals: z.array(z.string()).min(1, "Please select at least one goal"), // Selection back
+  primaryGoals: z.array(z.string()).min(1, "Please select at least one goal"), 
   activityLevel: z.string().min(1, "Please select your daily activity level"),
   experienceLevel: z.string().min(1, "Select your training experience"),
   workoutDays: z.string().min(1, "Select availability"),
+  selectedWorkoutDays: z.array(z.string()).min(1, "Please select your training days"),
   workoutTime: z.string().min(1, "Select preferred time"),
   soreness: z.string().min(1, "Select recovery speed"),
   medicalConditions: z.array(z.string()),
   workoutLocation: z.string().min(1, "Select a location"),
   availableEquipment: z.array(z.string()).optional(),
 }).refine((data) => {
-  if (data.gender === "female") {
-    return !!data.hip && data.hip.length > 0;
-  }
+  if (data.gender === "female") return !!data.hip && data.hip.length > 0;
   return true;
 }, {
   message: "Hip circumference is required for females",
   path: ["hip"],
+}).refine((data) => {
+  // Enforce max days based on frequency selection
+  const maxDays = data.workoutDays === "2" ? 2 : data.workoutDays === "4" ? 4 : 7;
+  return data.selectedWorkoutDays.length <= maxDays;
+}, {
+  message: "You have selected too many days for your chosen frequency.",
+  path: ["selectedWorkoutDays"],
 });
 
 type MultiFormSchema = z.infer<typeof formSchema>;
@@ -68,6 +73,8 @@ const goalOptions = [
   { id: "recomposition", label: "Body Recomposition (Both)" },
   { id: "maintenance", label: "Maintain / Performance" }
 ];
+const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
 export default function ThinkFitMasterForm() {
   const router = useRouter(); 
   const { user } = useAuth();
@@ -88,7 +95,7 @@ export default function ThinkFitMasterForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       gender: "", weight: "", height: "", neck: "", waist: "", chest: "", arm: "", hip: "", bodyType: "",
-      activityLevel: "", experienceLevel: "", workoutDays: "", workoutTime: "", soreness: "",
+      activityLevel: "", experienceLevel: "", workoutDays: "", selectedWorkoutDays: [], workoutTime: "", soreness: "",
       medicalConditions: [], workoutLocation: "", availableEquipment: [],
     },
     mode: "onChange",
@@ -99,6 +106,16 @@ export default function ThinkFitMasterForm() {
   
   const selectedLocation = form.watch("workoutLocation");
   const selectedGender = form.watch("gender");
+  const selectedFrequency = form.watch("workoutDays");
+  const maxAllowedDays = selectedFrequency === "2" ? 2 : selectedFrequency === "4" ? 4 : 7;
+
+  // Auto-clear selected days if frequency changes and they exceed the new limit
+  React.useEffect(() => {
+    const currentDays = form.getValues("selectedWorkoutDays");
+    if (currentDays.length > maxAllowedDays) {
+      form.setValue("selectedWorkoutDays", currentDays.slice(0, maxAllowedDays));
+    }
+  }, [selectedFrequency, maxAllowedDays, form]);
 
   const handleNextButton = async () => {
     let fieldsToValidate: (keyof MultiFormSchema)[] = [];
@@ -106,8 +123,8 @@ export default function ThinkFitMasterForm() {
       fieldsToValidate = ["gender", "weight", "height", "neck", "waist", "chest", "arm", "bodyType"];
       if (selectedGender === "female") fieldsToValidate.push("hip");
     }
-    if (currentStep === 1) fieldsToValidate = ["activityLevel"]; // CHANGED TO ACTIVITY LEVEL
-    if (currentStep === 2) fieldsToValidate = ["experienceLevel", "workoutDays", "workoutTime", "soreness"];
+    if (currentStep === 1) fieldsToValidate = ["activityLevel", "primaryGoals"];
+    if (currentStep === 2) fieldsToValidate = ["experienceLevel", "workoutDays", "selectedWorkoutDays", "workoutTime", "soreness"];
     if (currentStep === 3) fieldsToValidate = ["medicalConditions"];
     if (currentStep === 4) fieldsToValidate = ["workoutLocation"];
     
@@ -137,16 +154,13 @@ export default function ThinkFitMasterForm() {
       }
       setCurrentStep((prev) => prev + 1);
     } else {
-      toast.error("Please complete all required fields.");
+      toast.error("Please complete all required fields correctly.");
     }
   };
 
   const handleBackButton = () => { if (currentStep > 0) setCurrentStep((prev) => prev - 1); };
 
-  // Inside your ThinkFitMasterForm component...
-
   const handleFinalSubmit = async (values: MultiFormSchema) => {
-    // 3. Guard Clause: Make sure they are actually logged in
     if (!user) {
       toast.error("Authentication Error: Please log in again.");
       router.push("/login");
@@ -158,14 +172,13 @@ export default function ThinkFitMasterForm() {
     try {
       const payload = { 
         ...values, 
-        userId: user.id, // 🔥 This dynamically attaches the real user's ID!
+        userId: user.id,
         estimatedBF: estimatedBF 
       };
       
       const response = await fetch("http://127.0.0.1:5001/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // We removed the "Authorization" header because we don't need a token anymore!
         body: JSON.stringify(payload),
       });
 
@@ -273,11 +286,8 @@ export default function ThinkFitMasterForm() {
         case 1:
           return (
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4">
-              {/* GOAL SELECTION IS BACK */}
               {renderCheckboxGrid("primaryGoals", goalOptions, "Select Your Primary Objectives")}
-              
               <div className="pt-6 border-t border-slate-100">
-                {/* ACTIVITY LEVEL REPLACES TEXTBOX */}
                 {renderRadioGrid("activityLevel", activityOptions, "Daily Activity Level (Non-Exercise)")}
               </div>
             </div>
@@ -287,6 +297,42 @@ export default function ThinkFitMasterForm() {
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4">
             {renderRadioGrid("experienceLevel", experienceOptions, "Training Experience")}
             {renderRadioGrid("workoutDays", daysOptions, "Workout Availability")}
+            
+            {/* DYNAMIC DAYS SELECTOR */}
+            {selectedFrequency && (
+              <div className="pt-4 border-t border-slate-100 animate-in fade-in">
+                <label style={theme.label}>Select Your Training Days (Max: {maxAllowedDays})</label>
+                <FormField control={form.control} name="selectedWorkoutDays" render={({ field }) => (
+                  <>
+                    <div className="flex flex-wrap gap-3 mt-4">
+                      {weekDays.map((day) => {
+                        const isSelected = field.value?.includes(day);
+                        const isDisabled = !isSelected && field.value?.length >= maxAllowedDays;
+                        return (
+                          <button
+                            type="button"
+                            key={day}
+                            disabled={isDisabled}
+                            onClick={() => {
+                              if (isSelected) field.onChange(field.value.filter(d => d !== day));
+                              else field.onChange([...(field.value || []), day]);
+                            }}
+                            className={`px-4 py-2.5 rounded-xl font-semibold text-sm transition-all border
+                              ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-blue-50'}
+                              ${isDisabled ? 'opacity-40 cursor-not-allowed hover:border-slate-200 hover:bg-white' : 'cursor-pointer'}
+                            `}
+                          >
+                            {day}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <FormMessage className="mt-2" />
+                  </>
+                )} />
+              </div>
+            )}
+
             {renderRadioGrid("workoutTime", timeOptions, "Preferred Time of Day")}
             {renderRadioGrid("soreness", recoveryOptions, "How long does muscle soreness last?")}
           </div>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Flame, MoreHorizontal } from 'lucide-react';
 import MealSection from "@/components/MealSection"; 
+import { useAuth } from "app/context/AuthContext";
 
 // --- Types & Interfaces ---
 type MacroData = {
@@ -43,36 +44,42 @@ export default function NutritionPage({ descriptions = defaultDescriptions }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [nutritionData, setNutritionData] = useState<NutritionPayload | null>(null);
   
-  // NEW: State to hold the weekly progress dictionary from the DB
+  // State to hold the weekly progress dictionary from the DB
   const [weeklyData, setWeeklyData] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
-  // UPDATED: Fetch both Daily and Weekly data
+  // Fetch both Daily and Weekly data
   useEffect(() => {
     async function fetchData() {
+      if (!user?.id) return;
+
       try {
-        const dailyRes = await fetch('http://127.0.0.1:5001/api/nutrition/today');
-        const weeklyRes = await fetch('http://127.0.0.1:5001/api/nutrition/weekly');
-  
-        // If Flask sends a 500 error, this text() check will show you the HTML error
-        if (!dailyRes.ok) {
-          const errorText = await dailyRes.text();
-          console.error("Flask Daily Error:", errorText);
-          return;
+        const [dailyRes, weeklyRes] = await Promise.all([
+          fetch(`http://127.0.0.1:5001/api/nutrition/today?userId=${user.id}`),
+          fetch(`http://127.0.0.1:5001/api/nutrition/weekly?userId=${user.id}`)
+        ]);
+
+        if (dailyRes.ok && weeklyRes.ok) {
+          const dailyData = await dailyRes.json();
+          const weeklyDataRes = await weeklyRes.json();
+
+          setNutritionData(dailyData);
+          setWeeklyData(weeklyDataRes);
+        } else {
+          console.error("Failed to fetch data from Flask");
         }
-  
-        setNutritionData(await dailyRes.json());
-        setWeeklyData(await weeklyRes.json());
       } catch (error) {
-        console.error("Network or JSON Error:", error);
+        console.error("Network error:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchData();
-  }, []);
 
-  // UPDATED: Dynamic Week Generator wired to the Database
+    fetchData();
+  }, [user]);
+
+  // Dynamic Week Generator wired to the Database
   const generateWeek = (baseDate: Date): WeeklyProgressDay[] => {
     const current = new Date(baseDate);
     const dayOfWeek = current.getDay(); 
@@ -86,7 +93,6 @@ export default function NutritionPage({ descriptions = defaultDescriptions }) {
       const dayDate = new Date(current);
       dayDate.setDate(current.getDate() + i);
       
-      // Format to YYYY-MM-DD perfectly to match the backend dictionary
       const yyyy = dayDate.getFullYear();
       const mm = String(dayDate.getMonth() + 1).padStart(2, '0');
       const dd = String(dayDate.getDate()).padStart(2, '0');
@@ -96,7 +102,6 @@ export default function NutritionPage({ descriptions = defaultDescriptions }) {
         day: dayNames[i],
         date: dayDate.getDate(),
         isSelected: dayDate.toDateString() === baseDate.toDateString(),
-        // Check the database dictionary for this date. If empty, default to 0.
         progress: weeklyData[formattedDate] || 0, 
       });
     }
@@ -104,7 +109,8 @@ export default function NutritionPage({ descriptions = defaultDescriptions }) {
   };
 
   // Run the generator
-  const weeklyProgress = generateWeek(selectedDate);
+  const weeklyProgressList = generateWeek(selectedDate);
+
   if (isLoading || !nutritionData) {
     return (
       <div className="flex w-full h-screen bg-[#f8fafc]">
@@ -147,7 +153,7 @@ export default function NutritionPage({ descriptions = defaultDescriptions }) {
             </div>
 
             <div className="flex justify-between gap-3 overflow-x-auto pb-4 select-none hide-scrollbar">
-              {weeklyProgress.map((day, idx) => {
+              {weeklyProgressList.map((day, idx) => {
                 const isSelected = day.isSelected;
                 
                 // Color Logic based on ranges
@@ -159,21 +165,18 @@ export default function NutritionPage({ descriptions = defaultDescriptions }) {
 
                 if (day.progress > 0) {
                   if (day.progress < 85) {
-                    // Under eaten - Blue
                     bgColor = isSelected ? "bg-blue-500" : "bg-blue-50";
                     borderColor = isSelected ? "border-blue-500" : "border-blue-200";
                     dayTextColor = isSelected ? "text-blue-100" : "text-blue-500";
                     dateTextColor = isSelected ? "text-white" : "text-blue-900";
                     shadowClass = isSelected ? "shadow-[0_8px_16px_-6px_rgba(59,130,246,0.5)]" : "shadow-sm";
                   } else if (day.progress > 115) {
-                    // Over eaten - Red
                     bgColor = isSelected ? "bg-red-500" : "bg-red-50";
                     borderColor = isSelected ? "border-red-500" : "border-red-200";
                     dayTextColor = isSelected ? "text-red-100" : "text-red-500";
                     dateTextColor = isSelected ? "text-white" : "text-red-900";
                     shadowClass = isSelected ? "shadow-[0_8px_16px_-6px_rgba(239,68,68,0.5)]" : "shadow-sm";
                   } else {
-                    // On Track - Green
                     bgColor = isSelected ? "bg-emerald-500" : "bg-emerald-50";
                     borderColor = isSelected ? "border-emerald-500" : "border-emerald-200";
                     dayTextColor = isSelected ? "text-emerald-100" : "text-emerald-500";
@@ -181,7 +184,6 @@ export default function NutritionPage({ descriptions = defaultDescriptions }) {
                     shadowClass = isSelected ? "shadow-[0_8px_16px_-6px_rgba(16,185,129,0.5)]" : "shadow-sm";
                   }
                 } else if (isSelected) {
-                  // Selected but no progress yet (e.g. today before any meals)
                   bgColor = "bg-slate-800";
                   borderColor = "border-slate-800";
                   dayTextColor = "text-slate-300";
@@ -191,10 +193,7 @@ export default function NutritionPage({ descriptions = defaultDescriptions }) {
                 
                 return (
                   <div key={idx} className="relative w-[52px] h-[90px] shrink-0 flex flex-col items-center justify-center cursor-pointer group">
-                    
-                    {/* Solid Background Fill */}
                     <div className={`absolute inset-0 rounded-[26px] transition-all duration-300 border ${bgColor} ${borderColor} ${shadowClass}`} />
-                    
                     <div className="relative z-10 flex flex-col items-center justify-between h-full py-4">
                       <span className={`text-[10px] font-bold tracking-widest uppercase transition-colors ${dayTextColor}`}>
                         {day.day}
