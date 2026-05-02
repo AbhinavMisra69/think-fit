@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight } from 'lucide-react';
 import data from '@/data/exercises_enriched.json';
 
@@ -37,7 +37,7 @@ type ExerciseCardProps = {
   onProgressUpdate?: (ratio: number) => void; 
 };
 
-// 2. Animation Component (Lives outside to prevent re-render flickers)
+// 2. Animation Component
 function ExerciseAnimation({ frames }: { frames: string[] }) {
   const [currentFrame, setCurrentFrame] = useState(0);
   
@@ -76,7 +76,10 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
     { id: 3, reps: '', weight: '', isDropset: false, dropEndWeight: '' },
   ]);
 
-  // --- PROGRESS TRACKER LOGIC ---
+  // THE FIX: We use a ref to remember the last progress we reported
+  const lastReportedProgress = useRef<number>(-1);
+
+  // --- STABILIZED PROGRESS TRACKER LOGIC ---
   useEffect(() => {
     if (onProgressUpdate) {
       const filled = sets.filter(s => {
@@ -85,7 +88,14 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
         return hasBasic && hasDropset;
       }).length;
       
-      onProgressUpdate(filled / sets.length);
+      const currentRatio = filled / sets.length;
+
+      // GUARD: Only call the parent if the ratio ACTUALLY changed. 
+      // This instantly breaks the infinite loop.
+      if (currentRatio !== lastReportedProgress.current) {
+        lastReportedProgress.current = currentRatio;
+        onProgressUpdate(currentRatio);
+      }
     }
   }, [sets, onProgressUpdate]);
 

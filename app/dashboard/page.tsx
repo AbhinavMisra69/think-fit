@@ -18,7 +18,8 @@ const toDateString = (date: Date) => {
 type DayData = {
   type: 'workout' | 'rest';
   progress: number; 
-  exerciseCompletion: Record<string, number>; 
+  // FIX: Switched from string (exercise_id) to number (array index) to prevent overwriting
+  exerciseCompletion: Record<number, number>; 
 };
 
 export default function Page() {
@@ -87,20 +88,20 @@ export default function Page() {
     fetchWeekData();
   }, [selectedDate]);
 
-  // --- STABILIZED PROGRESS LOGIC ---
-  const handleExerciseProgress = useCallback((exerciseId: string, completionRatio: number) => {
+  // --- BULLETPROOF CUMULATIVE PROGRESS LOGIC ---
+  // FIX: Using exerciseIndex instead of exerciseId
+  const handleExerciseProgress = useCallback((exerciseIndex: number, completionRatio: number) => {
     const dateStr = toDateString(selectedDate);
     const dayKey = getDayKey(selectedDate);
     
     setDayDataMap(prev => {
       const currentDay = prev[dateStr] || { type: 'workout', progress: 0, exerciseCompletion: {} };
       
-      // Guard: If the completion for this specific exercise hasn't changed, do nothing
-      if (currentDay.exerciseCompletion[exerciseId] === completionRatio) {
+      if (currentDay.exerciseCompletion[exerciseIndex] === completionRatio) {
         return prev;
       }
 
-      const updatedCompletions = { ...currentDay.exerciseCompletion, [exerciseId]: completionRatio };
+      const updatedCompletions = { ...currentDay.exerciseCompletion, [exerciseIndex]: completionRatio };
       const exercises = weeklyProgram?.[dayKey] || [];
       const totalExercises = exercises.length;
       
@@ -110,8 +111,7 @@ export default function Page() {
         newProgress = Math.round((sumOfCompletion / totalExercises) * 100);
       }
 
-      // Guard: If the total daily progress hasn't changed, don't trigger a re-render
-      if (currentDay.progress === newProgress && currentDay.exerciseCompletion[exerciseId] === completionRatio) {
+      if (currentDay.progress === newProgress && currentDay.exerciseCompletion[exerciseIndex] === completionRatio) {
         return prev;
       }
 
@@ -195,7 +195,8 @@ export default function Page() {
                     key={i} 
                     exercise={ex} 
                     onOpenDetails={() => setActiveExercise(ex)}
-                    onProgressUpdate={(ratio) => handleExerciseProgress(ex.exercise_id, ratio)} 
+                    // FIX: Passing the strict Array Index instead of the ID
+                    onProgressUpdate={(ratio) => handleExerciseProgress(i, ratio)} 
                   />
                 ))
               )}
