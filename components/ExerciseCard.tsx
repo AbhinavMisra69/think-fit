@@ -77,25 +77,7 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
   ]);
 
   // --- PROGRESS TRACKER LOGIC ---
-  // Inside ExerciseCard.tsx
-
-const lastReportedProgress = React.useRef<number>(-1); // Track previous value
-
-useEffect(() => {
-  const filled = sets.filter(s => {
-    const hasBasic = s.reps !== '' && s.weight !== '';
-    const hasDropset = s.isDropset ? s.dropEndWeight !== '' : true;
-    return hasBasic && hasDropset;
-  }).length;
   
-  const currentRatio = filled / sets.length;
-
-  // ONLY call the parent if the ratio is actually different
-  if (onProgressUpdate && currentRatio !== lastReportedProgress.current) {
-    lastReportedProgress.current = currentRatio;
-    onProgressUpdate(currentRatio);
-  }
-}, [sets, onProgressUpdate]);
 
   const handleInputChange = (id: number, field: string, value: string) => {
     const numericValue = value.replace(/[^0-9.]/g, ''); 
