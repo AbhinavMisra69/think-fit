@@ -18,6 +18,10 @@ from core.nutrition import NutritionCalculator
 from core.ocr_engine import PackagedFoodEngine
 from core.planning import AdaptiveCoach 
 
+from exercise_engine.core_logic import determine_active_phase, determine_weekly_split, schedule_weekly_blueprints, generate_daily_workout, generate_custom_timeline
+from exercise_engine.utils import calculate_dynamic_weeks_off
+from exercise_engine.database import  blueprint_library, phase_parameters_kb, macrocycle_kb, PHASE_UI_META
+
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -635,21 +639,81 @@ def get_db_connection():
         print("="*50 + "\n")
         raise e
     
-@app.route('/api/debug/both_columns', methods=['GET'])
-def debug_both_columns():
+@app.route('/api/workout/macrocycle', methods=['GET'])
+def get_macrocycle_overview():
+    user_id = request.args.get('user_id')
+    
+    if not user_id:
+        return jsonify({"error": "user_id is required"}), 400
+        
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
-    cursor.execute("""
-        SELECT table_name, column_name 
-        FROM information_schema.columns 
-        WHERE table_name IN ('users', 'exercise_state')
-        ORDER BY table_name, ordinal_position
-    """)
-    columns = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return jsonify({"columns": columns})
+    try:
+        # 1. Fetch user data
+        cursor.execute("""
+            SELECT u.goal, e.weeks_in_program, u.duration_weeks
+            FROM users u 
+            JOIN exercise_state e ON u.id = e.user_id 
+            WHERE u.id = %s
+        """, (user_id,))
+        user_data = cursor.fetchone()
+        
+        if not user_data:
+            return jsonify({"error": "User not found"}), 404
+            
+        goal = user_data['goal']
+        current_week = user_data['weeks_in_program']
+        preferred_duration = user_data['duration_weeks']
+        
+        # 2. Call your custom algorithm!
+        timeline_result = generate_custom_timeline(goal, preferred_duration, macrocycle_kb)
+        
+        # Safety check if the algorithm rejected the timeline
+        if timeline_result["status"] == "rejected":
+            return jsonify({"error": timeline_result["message"]}), 400
+            
+        # 3. Transform the algorithm's output into the rich UI format
+        macrocycle_ui = []
+        rolling_start_week = 1
+        
+        for phase_data in timeline_result["timeline"]:
+            raw_name = phase_data["phase"]
+            end_week = phase_data["end_week"]
+            
+            # Map the raw backend name to the UI metadata
+            meta = PHASE_UI_META.get(raw_name, {
+                "name": raw_name.replace('_', ' ').title(), 
+                "focus": "Continuing progression.", 
+                "theme": "blue"
+            })
+            
+            macrocycle_ui.append({
+                "phase": meta["name"],
+                "start_week": rolling_start_week,
+                "end_week": end_week,
+                "focus": meta["focus"],
+                "theme": meta["theme"]
+            })
+            
+            # The next phase starts the week after this one ends
+            rolling_start_week = end_week + 1
+            
+        # 4. Return the fully computed payload to React
+        return jsonify({
+            "status": "success",
+            "total_weeks": preferred_duration,
+            "current_week": current_week,
+            "goal": goal,
+            "phases": macrocycle_ui
+        })
+        
+    except Exception as e:
+        print(f"Error in macrocycle: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/api/workout/generate_week', methods=['POST'])
 def generate_week():
