@@ -97,6 +97,7 @@ export default function ThinkFitMasterForm() {
       gender: "", weight: "", height: "", neck: "", waist: "", chest: "", arm: "", hip: "", bodyType: "",
       activityLevel: "", experienceLevel: "", workoutDays: "", selectedWorkoutDays: [], workoutTime: "", soreness: "",
       medicalConditions: [], workoutLocation: "", availableEquipment: [],
+      primaryGoals: [], // <-- ADDED THIS LINE!
     },
     mode: "onChange",
   });
@@ -303,32 +304,37 @@ export default function ThinkFitMasterForm() {
               <div className="pt-4 border-t border-slate-100 animate-in fade-in">
                 <label style={theme.label}>Select Your Training Days (Max: {maxAllowedDays})</label>
                 <FormField control={form.control} name="selectedWorkoutDays" render={({ field }) => (
-                  <>
-                    <div className="flex flex-wrap gap-3 mt-4">
-                      {weekDays.map((day) => {
-                        const isSelected = field.value?.includes(day);
-                        const isDisabled = !isSelected && field.value?.length >= maxAllowedDays;
-                        return (
-                          <button
-                            type="button"
-                            key={day}
-                            disabled={isDisabled}
-                            onClick={() => {
-                              if (isSelected) field.onChange(field.value.filter(d => d !== day));
-                              else field.onChange([...(field.value || []), day]);
-                            }}
-                            className={`px-4 py-2.5 rounded-xl font-semibold text-sm transition-all border
-                              ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-blue-50'}
-                              ${isDisabled ? 'opacity-40 cursor-not-allowed hover:border-slate-200 hover:bg-white' : 'cursor-pointer'}
-                            `}
-                          >
-                            {day}
-                          </button>
-                        );
-                      })}
-                    </div>
+                  <FormItem> 
+                    {/* 1. FormControl is now OUTSIDE the div, wrapping a single element! */}
+                    <FormControl>
+                      <div className="flex flex-wrap gap-3 mt-4">
+                        {weekDays.map((day) => {
+                          const currentValues = field.value || [];
+                          const isSelected = currentValues.includes(day);
+                          const isDisabled = !isSelected && currentValues.length >= maxAllowedDays;
+                          
+                          return (
+                            <button
+                              type="button"
+                              key={day} // 2. Key goes back on the button!
+                              disabled={isDisabled}
+                              onClick={() => {
+                                if (isSelected) field.onChange(currentValues.filter((d: string) => d !== day));
+                                else field.onChange([...currentValues, day]);
+                              }}
+                              className={`px-4 py-2.5 rounded-xl font-semibold text-sm transition-all border
+                                ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-blue-50'}
+                                ${isDisabled ? 'opacity-40 cursor-not-allowed hover:border-slate-200 hover:bg-white' : 'cursor-pointer'}
+                              `}
+                            >
+                              {day}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </FormControl>
                     <FormMessage className="mt-2" />
-                  </>
+                  </FormItem>
                 )} />
               </div>
             )}
@@ -403,7 +409,7 @@ export default function ThinkFitMasterForm() {
     <div className="min-h-screen bg-slate-50 py-16 px-4 flex justify-center items-center font-sans text-slate-900">
       <div className="w-full max-w-4xl mx-auto">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFinalSubmit)}>
+          <form onSubmit={form.handleSubmit(handleFinalSubmit)} suppressHydrationWarning>
             <Card style={{ ...theme.bgMain, borderRadius: '28px', overflow: 'hidden', boxShadow: '0 20px 40px -15px rgba(0,0,0,0.05)' }}>
               <CardHeader style={{ padding: '48px 48px 32px 48px', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(to bottom, #ffffff, #f8fafc)' }}>
                 <div className="flex justify-between items-center">

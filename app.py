@@ -93,11 +93,13 @@ def save_onboarding():
         experience_level = safe_str(data.get('experienceLevel'), 'beginner')
         
         days_available = int(safe_float(data.get('workoutDays', 4)))
+
+        duration_weeks = int(safe_float(data.get('durationWeeks', 12)))
         
-        # --- THE FIX: Extract and process the selected training days list ---
-        selected_workout_days = data.get('selectedWorkoutDays', [])
-        # Convert the array to a comma-separated string for PostgreSQL VARCHAR compatibility
-        workout_days_str = ",".join(selected_workout_days) if selected_workout_days else "Monday,Wednesday,Friday"
+        # --- THE FIX: Pass the Python list directly for PostgreSQL Arrays ---
+        workout_days_list = data.get('selectedWorkoutDays', [])
+        if not workout_days_list:
+            workout_days_list = ['Monday', 'Wednesday', 'Friday'] # Fallback list
         
         facility_type = safe_str(data.get('workoutLocation'), 'gym')
         soreness_recovery = safe_str(data.get('soreness'), 'normal')
@@ -171,7 +173,7 @@ def save_onboarding():
         
         cur.execute(insert_query, (
             user_id, gender, weight, height, neck, waist, chest, arm, hip,
-            body_type, activity_level, experience_level, days_available, workout_days_str, 
+            body_type, activity_level, experience_level, days_available, workout_days_list, 
             facility_type, soreness_recovery, medical_conditions, available_equipment, 
             goal_main, bf_pct, target_calories
         ))
@@ -187,6 +189,40 @@ def save_onboarding():
             chest_cm = EXCLUDED.chest_cm,
             arm_cm = EXCLUDED.arm_cm;
         """, (user_id, weight, bf_pct, waist, chest, arm))
+
+        # ---------------------------------------------------------
+        # NEW: Initialize the Exercise Engine State
+        # ---------------------------------------------------------
+        starting_phases = {
+            "build_muscle": "foundation_hypertrophy",
+            "lose_fat": "foundation",
+            "recomposition": "strength_foundation",
+            "general_health": "foundation"
+        }
+        starting_phase = starting_phases.get(goal_main, "foundation")
+
+        cur.execute("""
+        INSERT INTO exercise_state (
+            user_id, current_goal, experience_level, 
+            preferred_duration_weeks, weeks_in_program, 
+            active_phase, last_assigned_split, split_rotation_index
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (user_id) DO UPDATE SET
+            current_goal = EXCLUDED.current_goal,
+            experience_level = EXCLUDED.experience_level,
+            active_phase = EXCLUDED.active_phase,
+            updated_at = CURRENT_TIMESTAMP;
+        """, (
+            user_id, 
+            goal_main, 
+            experience_level,
+            16,               # Defaulting to 16-week cycle
+            1,                # Start at week 1
+            starting_phase,   # The correct mapped phase!
+            'full_body',      # Safe starting split
+            0                 # Start at array index 0
+        ))
+        # ---------------------------------------------------------
 
         conn.commit()
         cur.close()
