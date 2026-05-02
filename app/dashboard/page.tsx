@@ -158,7 +158,7 @@ export default function Page() {
               Monthly Progress
             </h2>
             <div className="px-6 mb-10">
-              <StreakCalendar />
+            <StreakCalendar history={dayDataMap} />
             </div>
             
             {/* NEW: The integrated Macrocycle Overview right below the calendar! */}
@@ -385,7 +385,7 @@ function ExerciseDetailPanel({ exercise, onClose }: { exercise: ExerciseData; on
   return (
     <div className="h-full flex flex-col bg-zinc-50 animate-in slide-in-from-right-4 duration-300">
       <div className="flex items-center justify-between p-6 border-b border-zinc-200 bg-white shadow-sm z-10 shrink-0">
-        <h2 className="text-xl font-bold text-zinc-900 tracking-tight">{exercise.exercise_name || exercise.exercise}</h2>
+      <h2 className="text-xl font-bold text-zinc-900 tracking-tight">{exercise.exercise_name || (exercise as any).exercise}</h2>
         <button onClick={onClose} className="p-2 hover:bg-zinc-100 rounded-full text-zinc-500 hover:text-zinc-800 transition-colors">
           <X className="w-5 h-5" />
         </button>
@@ -417,7 +417,7 @@ function ExerciseDetailPanel({ exercise, onClose }: { exercise: ExerciseData; on
             ) : (
               <iframe 
                 src={youtubeEmbedUrl}
-                title={`${exercise.exercise_name || exercise.exercise} execution video`}
+                title={`${exercise.exercise_name || (exercise as any).exercise} execution video`}
                 className="w-full h-full absolute top-0 left-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

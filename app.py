@@ -68,12 +68,12 @@ def calculate_bf():
     except Exception as e:
         print(f"BF Calculation Error: {e}")
         return jsonify({"error": str(e)}), 400
-
+    
 @app.route('/api/onboarding', methods=['POST'])
 def save_onboarding():
     data = request.json
-    user_id = data.get('userId')
     
+    user_id = get_user_id_from_request(request)
     if not user_id:
         return jsonify({"error": "User ID is missing. User not logged in."}), 400
 
@@ -93,13 +93,12 @@ def save_onboarding():
         experience_level = safe_str(data.get('experienceLevel'), 'beginner')
         
         days_available = int(safe_float(data.get('workoutDays', 4)))
-
         duration_weeks = int(safe_float(data.get('durationWeeks', 12)))
         
-        # --- THE FIX: Pass the Python list directly for PostgreSQL Arrays ---
-        workout_days_list = data.get('selectedWorkoutDays', [])
-        if not workout_days_list:
-            workout_days_list = ['Monday', 'Wednesday', 'Friday'] # Fallback list
+        # --- THE FIX: Keep it as a native Python list! ---
+        selected_workout_days = data.get('selectedWorkoutDays', [])
+        if not selected_workout_days:
+            selected_workout_days = ["Monday", "Wednesday", "Friday"]
         
         facility_type = safe_str(data.get('workoutLocation'), 'gym')
         soreness_recovery = safe_str(data.get('soreness'), 'normal')
@@ -116,21 +115,10 @@ def save_onboarding():
         # ---------------------------------------------------------
         try:
             nutrition_profile = NutritionCalculator.generate_full_profile(
-                sex=gender,
-                age=age,
-                height_cm=height,
-                weight_kg=weight,
-                activity_level=activity_level,
-                body_fat_pct=bf_pct,
-                experience_level=experience_level
+                sex=gender, age=age, height_cm=height, weight_kg=weight,
+                activity_level=activity_level, body_fat_pct=bf_pct, experience_level=experience_level
             )
-            
             target_calories = nutrition_profile["results"]["daily_calories"]
-            assigned_phase = nutrition_profile["results"]["phase_assigned"]
-            macros = nutrition_profile["results"]["macros"]
-            
-            print(f"🎯 Nutrition Engine assigned Phase: {assigned_phase.upper()}")
-            print(f"🎯 Calculated Target Cals: {target_calories} | Macros: {macros}")
         except Exception as e:
             print(f"⚠️ Nutrition Engine Failed: {e}. Falling back to 2000.")
             target_calories = 2000
@@ -139,15 +127,14 @@ def save_onboarding():
         conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
         cur = conn.cursor()
 
-        # Added workout_days column to the INSERT and UPDATE blocks
         insert_query = """
         INSERT INTO users (
             id, gender, weight_kg, height_cm, neck, waist_cm, chest_cm, arm_cm, hip, 
             body_type, activity_level, experience_level, days_available, workout_days, 
-            facility_type, soreness_recovery, medical_conditions, available_equipment, 
+            duration_weeks, facility_type, soreness_recovery, medical_conditions, available_equipment, 
             goal, body_fat_pct, target_calories
         ) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (id) DO UPDATE SET
             weight_kg = EXCLUDED.weight_kg,
             height_cm = EXCLUDED.height_cm,
@@ -162,6 +149,7 @@ def save_onboarding():
             experience_level = EXCLUDED.experience_level,
             days_available = EXCLUDED.days_available,
             workout_days = EXCLUDED.workout_days,
+            duration_weeks = EXCLUDED.duration_weeks,
             facility_type = EXCLUDED.facility_type,
             soreness_recovery = EXCLUDED.soreness_recovery,
             medical_conditions = EXCLUDED.medical_conditions,
@@ -171,10 +159,11 @@ def save_onboarding():
             updated_at = CURRENT_TIMESTAMP;
         """
         
+        # Pass the selected_workout_days array directly!
         cur.execute(insert_query, (
             user_id, gender, weight, height, neck, waist, chest, arm, hip,
-            body_type, activity_level, experience_level, days_available, workout_days_list, 
-            facility_type, soreness_recovery, medical_conditions, available_equipment, 
+            body_type, activity_level, experience_level, days_available, selected_workout_days, 
+            duration_weeks, facility_type, soreness_recovery, medical_conditions, available_equipment, 
             goal_main, bf_pct, target_calories
         ))
 
@@ -189,7 +178,6 @@ def save_onboarding():
             chest_cm = EXCLUDED.chest_cm,
             arm_cm = EXCLUDED.arm_cm;
         """, (user_id, weight, bf_pct, waist, chest, arm))
-
         # ---------------------------------------------------------
         # NEW: Initialize the Exercise Engine State
         # ---------------------------------------------------------

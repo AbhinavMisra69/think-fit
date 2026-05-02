@@ -31,6 +31,7 @@ const formSchema = z.object({
   selectedWorkoutDays: z.array(z.string()).min(1, "Please select your training days"),
   workoutTime: z.string().min(1, "Select preferred time"),
   soreness: z.string().min(1, "Select recovery speed"),
+  durationWeeks: z.string().min(1, "Please select a program duration"), // <-- NEW FIELD
   medicalConditions: z.array(z.string()),
   workoutLocation: z.string().min(1, "Select a location"),
   availableEquipment: z.array(z.string()).optional(),
@@ -41,7 +42,6 @@ const formSchema = z.object({
   message: "Hip circumference is required for females",
   path: ["hip"],
 }).refine((data) => {
-  // Enforce max days based on frequency selection
   const maxDays = data.workoutDays === "2" ? 2 : data.workoutDays === "4" ? 4 : 7;
   return data.selectedWorkoutDays.length <= maxDays;
 }, {
@@ -73,6 +73,15 @@ const goalOptions = [
   { id: "recomposition", label: "Body Recomposition (Both)" },
   { id: "maintenance", label: "Maintain / Performance" }
 ];
+// <-- NEW DURATION OPTIONS
+const durationOptions = [
+  { id: "6", label: "6 Weeks (Short Term)" },
+  { id: "8", label: "8 Weeks (Standard)" },
+  { id: "12", label: "12 Weeks (Transformation)" },
+  { id: "16", label: "16 Weeks (Extended)" },
+  { id: "18", label: "18 Weeks (Marathon)" }
+];
+
 const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export default function ThinkFitMasterForm() {
@@ -96,8 +105,9 @@ export default function ThinkFitMasterForm() {
     defaultValues: {
       gender: "", weight: "", height: "", neck: "", waist: "", chest: "", arm: "", hip: "", bodyType: "",
       activityLevel: "", experienceLevel: "", workoutDays: "", selectedWorkoutDays: [], workoutTime: "", soreness: "",
+      durationWeeks: "", // <-- ADDED DEFAULT VALUE
       medicalConditions: [], workoutLocation: "", availableEquipment: [],
-      primaryGoals: [], // <-- ADDED THIS LINE!
+      primaryGoals: [], 
     },
     mode: "onChange",
   });
@@ -110,7 +120,6 @@ export default function ThinkFitMasterForm() {
   const selectedFrequency = form.watch("workoutDays");
   const maxAllowedDays = selectedFrequency === "2" ? 2 : selectedFrequency === "4" ? 4 : 7;
 
-  // Auto-clear selected days if frequency changes and they exceed the new limit
   React.useEffect(() => {
     const currentDays = form.getValues("selectedWorkoutDays");
     if (currentDays.length > maxAllowedDays) {
@@ -125,7 +134,8 @@ export default function ThinkFitMasterForm() {
       if (selectedGender === "female") fieldsToValidate.push("hip");
     }
     if (currentStep === 1) fieldsToValidate = ["activityLevel", "primaryGoals"];
-    if (currentStep === 2) fieldsToValidate = ["experienceLevel", "workoutDays", "selectedWorkoutDays", "workoutTime", "soreness"];
+    // Add durationWeeks to Step 2 validation!
+    if (currentStep === 2) fieldsToValidate = ["experienceLevel", "workoutDays", "selectedWorkoutDays", "workoutTime", "soreness", "durationWeeks"];
     if (currentStep === 3) fieldsToValidate = ["medicalConditions"];
     if (currentStep === 4) fieldsToValidate = ["workoutLocation"];
     
@@ -297,15 +307,16 @@ export default function ThinkFitMasterForm() {
         return (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4">
             {renderRadioGrid("experienceLevel", experienceOptions, "Training Experience")}
+            {/* NEW: DURATION OPTIONS ADDED HERE */}
+            {renderRadioGrid("durationWeeks", durationOptions, "Desired Program Duration")}
+
             {renderRadioGrid("workoutDays", daysOptions, "Workout Availability")}
             
-            {/* DYNAMIC DAYS SELECTOR */}
             {selectedFrequency && (
               <div className="pt-4 border-t border-slate-100 animate-in fade-in">
                 <label style={theme.label}>Select Your Training Days (Max: {maxAllowedDays})</label>
                 <FormField control={form.control} name="selectedWorkoutDays" render={({ field }) => (
                   <FormItem> 
-                    {/* 1. FormControl is now OUTSIDE the div, wrapping a single element! */}
                     <FormControl>
                       <div className="flex flex-wrap gap-3 mt-4">
                         {weekDays.map((day) => {
@@ -316,7 +327,7 @@ export default function ThinkFitMasterForm() {
                           return (
                             <button
                               type="button"
-                              key={day} // 2. Key goes back on the button!
+                              key={day} 
                               disabled={isDisabled}
                               onClick={() => {
                                 if (isSelected) field.onChange(currentValues.filter((d: string) => d !== day));
