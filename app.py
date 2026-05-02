@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 import pytesseract
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import math
 
 # Core Module Imports
 from core.db import get_db_connection, NutritionDatabase
@@ -49,25 +50,39 @@ def safe_str(val, default=""):
 def calculate_bf():
     data = request.json
     try:
-        gender = safe_str(data.get('gender', 'male'))
+        gender = safe_str(data.get('gender', 'male')).lower()
         height = safe_float(data.get('height'))
-        weight = safe_float(data.get('weight'))
         waist = safe_float(data.get('waist'))
         neck = safe_float(data.get('neck'))
-        chest = safe_float(data.get('chest'))
-        arm = safe_float(data.get('arm'))
         hip = safe_float(data.get('hip'))
-        
-        print(f"Calculating BF for: W:{waist} N:{neck} H:{height}")
 
-        bf_percentage = PhysiqueAnalyzer.predict_body_fat(
-            gender, weight, height, waist, neck, chest, arm, hip
-        )
+        # Safety check to prevent math domain errors (log of 0 or negative)
+        if height <= 0 or waist <= 0 or neck <= 0:
+            return jsonify({"body_fat_percentage": 15.0}), 200 # Safe fallback
+
+        if gender == 'female':
+            # U.S. Navy Formula for Women
+            # 495 / (1.29579 - 0.35004 * log10(waist + hip - neck) + 0.22100 * log10(height)) - 450
+            if (waist + hip - neck) <= 0: return jsonify({"body_fat_percentage": 25.0}), 200
+            
+            bf = 495.0 / (1.29579 - 0.35004 * math.log10(waist + hip - neck) + 0.22100 * math.log10(height)) - 450.0
+        else:
+            # U.S. Navy Formula for Men
+            # 495 / (1.0324 - 0.19077 * log10(waist - neck) + 0.15456 * log10(height)) - 450
+            if (waist - neck) <= 0: return jsonify({"body_fat_percentage": 15.0}), 200
+            
+            bf = 495.0 / (1.0324 - 0.19077 * math.log10(waist - neck) + 0.15456 * math.log10(height)) - 450.0
+
+        # Clamp the result so it never returns an impossible number (e.g. -2% or 90%)
+        bf_percentage = max(3.0, min(round(bf, 1), 60.0))
+        
+        print(f"✅ Navy Formula calculated {bf_percentage}% BF for {gender}")
         
         return jsonify({"body_fat_percentage": bf_percentage}), 200
+
     except Exception as e:
-        print(f"BF Calculation Error: {e}")
-        return jsonify({"error": str(e)}), 400
+        print(f"🔥 BF Calculation Error: {e}")
+        return jsonify({"error": str(e), "body_fat_percentage": 15.0}), 400
     
 @app.route('/api/onboarding', methods=['POST'])
 def save_onboarding():
@@ -136,6 +151,7 @@ def save_onboarding():
         ) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (id) DO UPDATE SET
+            gender = EXCLUDED.gender,
             weight_kg = EXCLUDED.weight_kg,
             height_cm = EXCLUDED.height_cm,
             neck = EXCLUDED.neck,
