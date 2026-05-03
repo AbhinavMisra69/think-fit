@@ -12,6 +12,7 @@ import StreakCalendar from "@/components/StreakCalendar";
 import ExerciseCard, { type ExerciseData } from "@/components/ExerciseCard";
 import RestDayCard from "@/components/RestDayCard";
 import { Navigation } from '@/components/Navigation';
+import EditWeekModal from '@/components/EditWeekModal';
 import { useAuth } from "app/context/AuthContext";
 
 const toDateString = (date: Date) => {
@@ -66,6 +67,69 @@ export default function Page() {
   const [showInterventionModal, setShowInterventionModal] = useState(false);
   const [interventionData, setInterventionData] = useState<any>(null);
   const [isResolving, setIsResolving] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentWeekDays, setCurrentWeekDays] = useState([]); 
+  const [userActivePhase, setUserActivePhase] = useState(""); 
+  const [isDashboardLoading, setIsDashboardLoading] = useState(true);
+
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchDashboardData = async () => {
+      try {
+        const res = await fetch(`http://localhost:5001/api/dashboard/user_data?user_id=${userId}`);
+        const data = await res.json();
+
+        if (data.status === "success") {
+          setCurrentWeekDays(data.current_week_days);
+          setUserActivePhase(data.active_phase);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsDashboardLoading(false); // <-- Changed this line!
+      }
+    };
+
+    fetchDashboardData();
+  }, [userId]);
+
+  const handleSaveNewSchedule = async (newDaysArray) => {
+    // Optional: Start a loading state if you want the button to spin
+    
+    try {
+      const res = await fetch(`http://localhost:5001/api/workout/edit_week`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId, // Ensure userId is available in this component!
+          new_days: newDaysArray
+        })
+      });
+      
+      const data = await res.json();
+
+      if (data.status === "success") {
+        // 1. Show success message
+        toast.success(data.message);
+        
+        // 2. Close the modal
+        setIsEditModalOpen(false);
+        
+        // 3. RELOAD THE UI! 
+        router.refresh(); 
+        
+      } else if (data.status === "conflict" || data.status === "error") {
+        // Trap them in the modal and show exactly why the AI rejected it
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Failed to update schedule:", error);
+      toast.error("A network error occurred while saving.");
+    }
+  };
+
 
 
   // 1. Define the function OUTSIDE the useEffect so everything can see it
@@ -312,6 +376,26 @@ useEffect(() => {
               );
             })}
           </div>
+
+          <div className="flex justify-end mt-4 pr-4">
+        <button 
+          onClick={() => setIsEditModalOpen(true)}
+          className="flex items-center text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors"
+        >
+          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          </svg>
+          Edit Week
+        </button>
+      </div>
+
+      <EditWeekModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        initialDays={currentWeekDays}       // <--- Now perfectly dynamic!
+        activePhase={userActivePhase}       // <--- Now perfectly dynamic!
+        onSave={handleSaveNewSchedule}
+      />
 
           <div className="mt-12 border-t border-zinc-100 pt-8">
             <h3 className="text-xl font-bold text-zinc-900 mb-6">{protocolTitle}</h3>

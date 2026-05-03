@@ -823,6 +823,203 @@ def get_macrocycle_overview():
 
 
 
+@app.route('/api/workout/edit_week', methods=['POST'])
+def edit_week():
+    import json
+    data = request.json
+    user_id = data.get('user_id')
+    if not user_id:
+        return jsonify({"error": "user_id is required"}), 400
+    new_days_names = data.get('new_days', []) 
+    new_frequency = len(new_days_names)
+    
+    # 1. Hard API Validation (Backup for the React frontend)
+    if new_frequency < 2 or new_frequency > 7:
+        return jsonify({"status": "error", "message": "You must select between 2 and 7 workout days."})
+
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+        # Map string days to numbers
+        day_map = { "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6, "Sunday": 7 }
+        new_day_indices = sorted([day_map[d] for d in new_days_names])
+        
+        # Get current state
+        cursor.execute("SELECT active_phase, weeks_in_program FROM exercise_state WHERE user_id = %s", (user_id,))
+        state = cursor.fetchone()
+        current_week = state['weeks_in_program']
+        active_phase = state['active_phase']
+        
+        cursor.execute("SELECT workout_json FROM generated_programs WHERE user_id = %s AND week_number = %s", (user_id, current_week))
+        workout_json = cursor.fetchone()['workout_json']
+        
+        # Extract chronological existing workouts
+        occupied_keys = sorted([k for k, v in workout_json.items() if k.startswith('Day_') and len(v) > 0], key=lambda x: int(x.split('_')[1]))
+        current_workouts = [workout_json[k] for k in occupied_keys]
+        
+        # ---------------------------------------------------------
+        # 🔄 THE SMART SWITCH (Rearrange vs. Regenerate)
+        # ---------------------------------------------------------
+        # ---------------------------------------------------------
+        # 🔄 THE SMART SWITCH (Rearrange vs. Regenerate)
+        # ---------------------------------------------------------
+        proposed_json = {f"Day_{i}": [] for i in range(1, 8)} # Blank slate for BOTH paths
+
+        if new_frequency == len(current_workouts):
+            # NO FREQUENCY CHANGE: Just shift the existing workouts around
+            for i, target_day_idx in enumerate(new_day_indices):
+                proposed_json[f"Day_{target_day_idx}"] = current_workouts[i]
+        
+        else:
+            # FREQUENCY CHANGE: Regenerate the program using the Core Pipeline!
+            
+            # 1. Fetch deep user data
+            cursor.execute("""
+                SELECT u.goal, u.experience_level as user_exp, u.workout_days, u.available_equipment, u.facility_type, u.injuries, u.duration_weeks,
+                       e.weeks_in_program, e.active_phase as active_phase, e.last_assigned_split, e.split_rotation_index, e.last_workout_date
+                FROM users u
+                JOIN exercise_state e ON u.id = e.user_id
+                WHERE u.id = %s
+            """, (user_id,))
+            row = cursor.fetchone()
+            
+            if not row:
+                return jsonify({"error": "User or exercise state not found."}), 404
+
+            # 2. Build Working Memory with the NEW schedule
+            working_memory = {
+                "user_id": user_id,
+                "primary_goal": row['goal'],
+                "experience_level": row['user_exp'],
+                "facility_type": row['facility_type'],
+                "owned_equipment": row['available_equipment'] or [],
+                "medical_issues": row['injuries'] or [],
+                "schedule": new_days_names, # <-- THIS TRIGGER THE NEW AI CALENDAR
+                "preferred_duration_weeks": row['duration_weeks'], 
+                "weeks_in_program": row['weeks_in_program'],
+                "active_phase": row['active_phase'],
+                "last_assigned_split": row['last_assigned_split'],
+                "split_rotation_index": row['split_rotation_index'],
+                "weeks_off": calculate_dynamic_weeks_off(row['last_workout_date'])
+            }
+            
+            # 3. Determine Parameters
+            active_phase = determine_active_phase(working_memory, macrocycle_kb)
+            working_memory["active_phase"] = active_phase
+            
+            phase_params = phase_parameters_kb.get(active_phase, phase_parameters_kb["foundation"])
+            base_split = phase_params.get("recommended_split", "full_body")
+            
+            assigned_split = determine_weekly_split(working_memory, base_split)
+            working_memory["last_assigned_split"] = assigned_split
+
+            calendar = schedule_weekly_blueprints(working_memory, assigned_split)
+            
+            # 4. Fetch history for the generator (Assuming you have a function or query for this)
+            cursor.execute("""
+                SELECT exercise_name, sets_completed, reps_achieved, weight_used
+                FROM (
+                    SELECT exercise_name, sets_completed, reps_achieved, weight_used,
+                        ROW_NUMBER() OVER(PARTITION BY exercise_name ORDER BY log_date DESC) as rn
+                    FROM workout_history
+                    WHERE user_id = %s
+                ) tmp 
+                WHERE rn = 1;
+            """, (user_id,))
+            
+            history_rows = cursor.fetchall()
+            user_workout_history = {}
+            for r in history_rows:
+                user_workout_history[r['exercise_name']] = {
+                    "sets": r['sets_completed'],
+                    "reps_achieved": r['reps_achieved'],
+                    "weight": r['weight_used']
+                }
+            
+            # 5. Generate and assign the daily workouts directly into proposed_json
+            for day_name, day_type in calendar.items():
+                if day_type == "rest_day":
+                    continue # Skip empty days
+                    
+                library_category = assigned_split.replace("_repeated", "").replace("_full", "")
+                if day_type in ["upper_day", "lower_day"]: library_category = "upper_lower"
+                elif day_type in ["push_day", "pull_day", "leg_day"]: library_category = "push_pull_legs"
+                elif "full_body" in day_type: library_category = "full_body"
+                
+                blueprint = blueprint_library[library_category][day_type]
+                
+                daily_plan = generate_daily_workout(
+                    working_memory, 
+                    exercise_dataset, 
+                    blueprint, 
+                    phase_params, 
+                    user_workout_history # Make sure this variable is defined!
+                )
+                
+                day_index = {"Sunday":7, "Monday":1, "Tuesday":2, "Wednesday":3, "Thursday":4, "Friday":5, "Saturday":6}.get(day_name, 1)
+                
+                # Assign it directly to the master output
+                proposed_json[f"Day_{day_index}"] = daily_plan
+                
+        # ---------------------------------------------------------
+        # ---------------------------------------------------------
+
+        # ---------------------------------------------------------
+        # 🧠 FULL-WEEK CNS SAFETY AUDIT (Runs on BOTH cases!)
+        # ---------------------------------------------------------
+        def get_workout_category(workout):
+            if not workout: return None
+            upper = {'chest', 'lats', 'back', 'triceps', 'biceps', 'front_delts', 'side_delts', 'rear_delts', 'traps', 'shoulders'}
+            lower = {'quads', 'hamstrings', 'glutes', 'calves'}
+            has_u = has_l = False
+            for ex in workout:
+                targets = ex.get('muscle_data', {}).get('primary_targets', [])
+                for t in targets:
+                    if t in upper: has_u = True
+                    if t in lower: has_l = True
+            if has_u and has_l: return 'full_body'
+            if has_u: return 'upper'
+            if has_l: return 'lower'
+            return 'core'
+
+        for day_idx in new_day_indices:
+            cat = get_workout_category(proposed_json[f"Day_{day_idx}"])
+            if not cat or cat == 'core': continue
+            
+            for adj in [((day_idx - 2) % 7) + 1, (day_idx % 7) + 1]:
+                adj_cat = get_workout_category(proposed_json[f"Day_{adj}"])
+                if adj_cat and (adj_cat == cat or adj_cat == 'full_body' or cat == 'full_body'):
+                    return jsonify({
+                        "status": "conflict", 
+                        "message": "This layout violates the 48-hour recovery rule. Heavy/Full-body days cannot be back-to-back."
+                    })
+        # ---------------------------------------------------------
+
+        # Update the Database
+        cursor.execute("""
+            UPDATE generated_programs 
+            SET workout_json = %s::jsonb 
+            WHERE user_id = %s AND week_number = %s
+        """, (json.dumps(proposed_json), user_id, current_week))
+        
+        conn.commit()
+        return jsonify({"status": "success", "message": "Schedule optimized and safely saved!", "updated_program": proposed_json})
+
+    except Exception as e:
+        import traceback
+        print("\n" + "="*50)
+        print("🚨 CRASH IN EDIT_WEEK 🚨")
+        traceback.print_exc() # This prints the exact line number and variable that failed!
+        print("="*50 + "\n")
+        
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
 @app.route('/api/workout/check_status', methods=['GET'])
 def check_workout_status():
     user_id = request.args.get('user_id')
@@ -830,22 +1027,46 @@ def check_workout_status():
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     try:
-        
-        # 1. What day was yesterday?
-        yesterday_idx = (datetime.datetime.today().weekday() - 1) % 7 + 1
+        # 1. Figure out exactly what day it is
+        today_idx = datetime.datetime.today().weekday() + 1 # Monday=1, Sunday=7
+        yesterday_idx = (today_idx - 2) % 7 + 1
         day_key = f"Day_{yesterday_idx}"
+        
         #TESTING
         # day_key = "Day_1"     # Force it to look at Monday's JSON
         # planned_count_override = 5 
         # logged_count_override = 2
         
-        # 2. Get the current week's program
+        # 2. Get the current week number from the user's state
+        cursor.execute("SELECT weeks_in_program FROM exercise_state WHERE user_id = %s", (user_id,))
+        state_record = cursor.fetchone()
+        
+        if not state_record:
+            return jsonify({"status": "clear", "message": "No active program."})
+            
+        current_week = state_record['weeks_in_program']
+
+        # =========================================================
+        # 🛡️ THE WRAP-AROUND PROTECTOR 🛡️
+        # =========================================================
+        week_to_check = current_week
+        
+        if today_idx == 1: 
+            # If today is Monday, yesterday was Sunday of LAST week!
+            week_to_check = current_week - 1
+            
+        if week_to_check < 1:
+            # If they just started Week 1 today (or changed schedules on Day 1), 
+            # it is biologically impossible to have missed a workout yesterday.
+            return jsonify({"status": "clear", "message": "Brand new program timeline. Clean slate!"})
+        # =========================================================
+
+        # 3. Fetch the program for the CORRECT week
         cursor.execute("""
-            SELECT e.weeks_in_program, g.workout_json 
-            FROM exercise_state e
-            JOIN generated_programs g ON e.user_id = g.user_id AND e.weeks_in_program = g.week_number
-            WHERE e.user_id = %s
-        """, (user_id,))
+            SELECT workout_json 
+            FROM generated_programs 
+            WHERE user_id = %s AND week_number = %s
+        """, (user_id, week_to_check))
         record = cursor.fetchone()
         
         if not record or day_key not in record['workout_json']:
@@ -856,20 +1077,18 @@ def check_workout_status():
         if len(planned_workout) == 0:
             return jsonify({"status": "clear", "message": "Missed workout was successfully resolved."})
         
-        # 3. Check if they logged anything yesterday
+        # 4. Check if they logged anything yesterday
         cursor.execute("""
             SELECT COUNT(*) as exercises_logged 
             FROM workout_history 
             WHERE user_id = %s AND log_date = CURRENT_DATE - INTERVAL '1 day'
         """, (user_id,))
 
-       
-
         history = cursor.fetchone()
         logged_count = history['exercises_logged']
         planned_count = len(planned_workout)
 
-        #4. Determine the Intervention State
+        # 5. Determine the Intervention State
         if logged_count == 0:
             return jsonify({
                 "status": "intervention_needed",
@@ -900,7 +1119,8 @@ def check_workout_status():
         #     })  
         # return jsonify({"status": "clear", "message": "Workout completed successfully."})
 
-        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
@@ -1249,6 +1469,58 @@ def resolve_intervention():
     except Exception as e:
         conn.rollback()
         print(f"🔥 FATAL RESOLUTION ERROR: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+@app.route('/api/dashboard/user_data', methods=['GET'])
+def get_dashboard_data():
+    user_id = request.args.get('user_id')
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+        # 1. Fetch the user's current phase and their current week's workout plan
+        cursor.execute("""
+            SELECT e.active_phase, g.workout_json 
+            FROM exercise_state e
+            JOIN generated_programs g ON e.user_id = g.user_id AND e.weeks_in_program = g.week_number
+            WHERE e.user_id = %s
+        """, (user_id,))
+        
+        record = cursor.fetchone()
+        
+        if not record:
+            return jsonify({"error": "User data not found"}), 404
+            
+        workout_json = record['workout_json']
+        active_phase = record['active_phase'] 
+
+        # 2. Map the "Day_X" keys to actual day names, ONLY if the day has exercises
+        day_map = {
+            1: "Monday", 2: "Tuesday", 3: "Wednesday", 
+            4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"
+        }
+        
+        current_week_days = []
+        for key, exercises in workout_json.items():
+            # Check if it's a day key and the array isn't empty (meaning it's not a rest day)
+            if key.startswith('Day_') and isinstance(exercises, list) and len(exercises) > 0:
+                day_num = int(key.split('_')[1])
+                current_week_days.append(day_map[day_num])
+                
+        return jsonify({
+            "status": "success",
+            "active_phase": active_phase,
+            "current_week_days": current_week_days
+        })
+
+    except Exception as e:
+        print(f"Error fetching dashboard data: {str(e)}")
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
