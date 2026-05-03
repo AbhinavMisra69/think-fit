@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight, Target, Plus } from 'lucide-react';
+import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight, Target, Plus, Loader2 } from 'lucide-react';
 import data from '@/data/exercises_enriched.json';
+import { useAuth } from "app/context/AuthContext"; // Import your auth hook!
+import { toast } from "sonner"; // For success popups
 
 // 1. Types (Updated with progression targets)
 export type ExerciseData = {
@@ -74,6 +76,7 @@ function ExerciseAnimation({ frames }: { frames: string[] }) {
 // 3. Main Exercise Card Component
 export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate }: ExerciseCardProps) {
   // NEW: Dynamically initialize the number of sets based on the engine's target
+  const { user } = useAuth(); 
   const initialSetsCount = exercise.target_sets || 3;
   const [sets, setSets] = useState(() => 
     Array.from({ length: initialSetsCount }, (_, i) => ({
@@ -81,6 +84,8 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
     }))
   );
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
   const lastReportedProgress = useRef<number>(-1);
 
   useEffect(() => {
@@ -99,6 +104,54 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
       }
     }
   }, [sets, onProgressUpdate]);
+
+
+  const handleLogExercise = async () => {
+    // 1. Filter out empty sets
+    const validSets = sets.filter(s => s.reps !== '' && s.weight !== '');
+    if (validSets.length === 0) {
+      toast.error("Please fill out at least one set!");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // 2. Aggregate the data for your Postgres Schema
+    const setsCompleted = validSets.length;
+    // Find the highest weight lifted
+    const maxWeight = Math.max(...validSets.map(s => parseFloat(s.weight)));
+    // Calculate the average reps across all valid sets
+    const avgReps = Math.round(validSets.reduce((sum, s) => sum + parseInt(s.reps), 0) / setsCompleted);
+
+    try {
+      const payload = {
+        user_id: user?.id,
+        exercises: [{
+          name: exercise.exercise_name || (exercise as any).exercise,
+          sets: setsCompleted,
+          reps: avgReps,
+          weight: maxWeight
+        }]
+      };
+
+      const res = await fetch("http://127.0.0.1:5001/api/workout/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error("Failed to save to database");
+
+      toast.success("Exercise logged successfully!");
+      setIsLogged(true); // Lock the card so they know it's saved
+      
+    } catch (error) {
+      console.error(error);
+      toast.error("Network error. Could not save exercise.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleAddSet = () => {
     setSets(prev => {
@@ -274,10 +327,29 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
             </button>
           </div>
 
+
           <div className="mt-auto">
-            <button className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all duration-300 ${status.style}`}>
-              {status.icon}
-              {status.label}
+            <button 
+              onClick={handleLogExercise}
+              disabled={status.label === 'Not Done' || isSubmitting || isLogged}
+              className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all duration-300 
+                ${isLogged ? 'bg-emerald-500 text-white shadow-md' : status.style}
+                ${(status.label === 'Not Done' && !isLogged) ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'}
+              `}
+            >
+              {isSubmitting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : isLogged ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5" />
+                  Successfully Logged
+                </>
+              ) : (
+                <>
+                  {status.icon}
+                  {status.label === 'Completed' ? 'Log Exercise' : status.label === 'Partially Done' ? 'Log Partial Exercise' : 'Not Done'}
+                </>
+              )}
             </button>
           </div>
         </div>
