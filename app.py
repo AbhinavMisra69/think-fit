@@ -43,6 +43,42 @@ def safe_str(val, default=""):
         return str(default)
     return str(val).strip()
 
+SEARCH_DB = []
+try:
+    csv_path = os.path.join('core', 'indian_food_dataset.csv')
+    with open(csv_path, mode='r', encoding='utf-8-sig') as f:
+        reader = csv.DictReader(f)
+        
+        for row in reader:
+            dish_name = row.get('Dish Name', '').strip()
+            
+            if dish_name:
+                # 1. Slugify the ID to match your AI scan/search format (e.g. 'aloo-fry')
+                food_id = dish_name.lower().replace(" ", "-")
+                
+                # 2. Extract values using the EXACT headers from your CSV
+                cals = row.get('Calories (kcal)')
+                prot = row.get('Protein (g)')
+                carb = row.get('Carbohydrates (g)')
+                fat  = row.get('Fats (g)')
+                
+                SEARCH_DB.append({
+                    "id": food_id, 
+                    "name": dish_name,
+                    # Safely convert to float, defaulting to 0.0 if the cell is completely empty
+                    "calories": float(cals) if cals and cals.strip() else 0.0,
+                    "protein": float(prot) if prot and prot.strip() else 0.0,
+                    "carbs": float(carb) if carb and carb.strip() else 0.0,
+                    "fat": float(fat) if fat and fat.strip() else 0.0,
+                    # Your CSV doesn't have a serving size column, so we assume 100g standard
+                    "serving_size": 100.0 
+                })
+                
+    print(f"✅ Successfully loaded {len(SEARCH_DB)} items from CSV.")
+    print(f"🔍 PEEK: {SEARCH_DB[0]['name']} -> {SEARCH_DB[0]['calories']} kcal, {SEARCH_DB[0]['protein']}g protein")
+    
+except Exception as e:
+    print(f"⚠️ Error loading CSV: {e}")
 # ---------------------------------------------------------
 # 1. ONBOARDING & BODY FAT CALCULATOR ROUTES
 # ---------------------------------------------------------
@@ -240,25 +276,84 @@ def save_onboarding():
     
 # 2. NUTRITION DASHBOARD ROUTES
 # ---------------------------------------------------------
-
-@app.route('/api/manual/log', methods=['POST'])
-def log_manual_meal():
-    data = request.json
-    print(f"DEBUG [Manual Log]: Received payload: {data}")
-    
-    # Grab the real user ID!
-    user_id = get_user_id_from_request(request)
-    if not user_id:
-        return jsonify({"error": "User ID is missing. Cannot log meal."}), 400
-
+@app.route('/api/scan/log', methods=['POST'])
+def log_scanned_meal():
     try:
-        tracker = DailyTracker(user_id=user_id)
-        updated_ui_payload = tracker.log_manual_macros(data)
-        return jsonify(updated_ui_payload)
+        data = request.json
+        # 1. Identity Check
+        session_data = data.get('thinkfit_session', {})
+        user_id = session_data.get('id')
+        
+        if not user_id:
+            return jsonify({"error": "User ID is missing."}), 400
+        
+        items_to_log = data.get('scanned_items', [])
+        if not items_to_log:
+            return jsonify({"error": "No items provided"}), 400
+
+        total_cals, total_prot, total_carb, total_fat, total_sat = 0, 0, 0, 0, 0
+
+        for item in items_to_log:
+            f_id = item.get('food_id', 'unknown').lower().strip().replace(" ", "-")
+            w = float(item.get('weight_g') or 0)
+            
+            # 1. Try to find the item in our rich SEARCH_DB
+            food_info = next((x for x in SEARCH_DB if x['id'] == f_id), None)
+
+            # 👇 ADD THIS PRINT STATEMENT 👇
+            print(f"🔍 DEBUG: Searched for ID '{f_id}'. Found match: {food_info is not None}")
+
+            if food_info:
+                # Math: Calculate based on the weight
+                mult = w / food_info.get('serving_size', 100.0)
+                
+                total_cals += (food_info.get('calories', 0) * mult)
+                # ... (rest of the math)
+
+        # 👇 ADD THIS PRINT STATEMENT RIGHT BEFORE THE SQL QUERY 👇
+        print(f"🛑 ABOUT TO SAVE TO DB -> Cals: {total_cals}, Prot: {total_prot}")
+
+        # 3. Database UPSERT to daily_logs
+        conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
+        cur = conn.cursor()
+
+        # REMOVED the 'updated_at' column to perfectly match your schema
+        upsert_query = """
+        INSERT INTO daily_logs (
+            user_id, consumed_calories, consumed_protein, 
+            consumed_carbs, consumed_fat, consumed_sat_fat
+        ) 
+        VALUES (%s, %s, %s, %s, %s, %s)
+        ON CONFLICT (user_id, log_date) 
+        DO UPDATE SET
+            consumed_calories = daily_logs.consumed_calories + EXCLUDED.consumed_calories,
+            consumed_protein = daily_logs.consumed_protein + EXCLUDED.consumed_protein,
+            consumed_carbs = daily_logs.consumed_carbs + EXCLUDED.consumed_carbs,
+            consumed_fat = daily_logs.consumed_fat + EXCLUDED.consumed_fat,
+            consumed_sat_fat = daily_logs.consumed_sat_fat + EXCLUDED.consumed_sat_fat;
+        """
+
+        cur.execute(upsert_query, (
+            user_id, 
+            int(total_cals), 
+            round(total_prot, 1), 
+            round(total_carb, 1), 
+            round(total_fat, 1),
+            round(total_sat, 1)
+        ))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({
+            "status": "success", 
+            "added_calories": int(total_cals),
+            "added_protein": round(total_prot, 1)
+        }), 200
+        
     except Exception as e:
-        print(f"🔥 CRASH IN MANUAL LOG: {str(e)}")
-        import traceback
-        traceback.print_exc()
+        print(f"🔥 Final Logging Error: {e}")
         return jsonify({"error": str(e)}), 500
     
 @app.route('/api/progress/update', methods=['POST'])
@@ -428,21 +523,6 @@ def get_progress_history():
 # ---------------------------------------------------------
 # 4. NUTRITION DATABASE & SEARCH
 # ---------------------------------------------------------
-SEARCH_DB = []
-try:
-    csv_path = os.path.join('core', 'indian_food_dataset.csv')
-    with open(csv_path, mode='r', encoding='utf-8-sig') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            dish_name = row.get('Dish Name', '').strip()
-            if dish_name:
-                SEARCH_DB.append({
-                    "id": dish_name, 
-                    "name": dish_name,
-                })
-    print(f"✅ Successfully loaded {len(SEARCH_DB)} items from Indian Food Database.")
-except Exception as e:
-    print(f"⚠️ Warning: Could not load indian_food_dataset.csv. Ensure it is in the core folder. Error: {e}")
 
 @app.route('/api/food/search', methods=['GET'])
 def search_food():
@@ -610,43 +690,7 @@ def get_weekly_progress():
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
     
-@app.route('/api/scan/log', methods=['POST'])
-def log_scanned_meal():
-    try:
-        data = request.json
-        print(f"DEBUG [Scan Log]: Received payload: {data}")
-        
-        user_id = get_user_id_from_request(request)
-        if not user_id:
-            return jsonify({"error": "User ID is missing. Cannot log scanned meal."}), 400
-        
-        items_to_log = data.get('scanned_items', []) if isinstance(data, dict) else data
-        
-        if not items_to_log:
-            return jsonify({"error": "No items provided"}), 400
 
-        normalized_items = []
-        for item in items_to_log:
-            normalized_items.append({
-                'food_id': item.get('food_id', 'unknown-item'),
-                'weight_g': item.get('weight_g', 0),
-                'calories': item.get('calories', 0),
-                'protein': item.get('protein_g', item.get('protein', 0)),
-                'carbs': item.get('carbs_g', item.get('carbs', 0)),
-                'fat': item.get('fat_g', item.get('fat', 0))
-            })
-
-        # THE FIX: Pass the real user_id instead of "user_123"
-        tracker = DailyTracker(user_id=user_id)
-        updated_payload = tracker.log_meal(normalized_items)
-        
-        return jsonify(updated_payload)
-        
-    except Exception as e:
-        print(f"🔥 CRASH IN /api/scan/log: {str(e)}")
-        import traceback
-        traceback.print_exc() 
-        return jsonify({"error": str(e)}), 500
 # ---------------------------------------------------------
 # 6. WORKOUT EXPERT ROUTES
 # ---------------------------------------------------------
