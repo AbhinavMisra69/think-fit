@@ -1,16 +1,19 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight } from 'lucide-react';
+import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight, Target, Plus } from 'lucide-react';
 import data from '@/data/exercises_enriched.json';
 
-// 1. Types
+// 1. Types (Updated with progression targets)
 export type ExerciseData = {
   exercise_id: string;
   exercise_name: string;
   youtube_id: string;
   description?: string;
   animation_frames?: string[];
+  target_sets?: number;          // NEW: From Progression Engine
+  target_reps?: number | string; // NEW: From Progression Engine
+  target_weight?: number | string; // NEW: From Progression Engine
   muscle_data: {
     primary_targets: string[];
     secondary_muscles: string[];
@@ -70,16 +73,16 @@ function ExerciseAnimation({ frames }: { frames: string[] }) {
 
 // 3. Main Exercise Card Component
 export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate }: ExerciseCardProps) {
-  const [sets, setSets] = useState([
-    { id: 1, reps: '', weight: '', isDropset: false, dropEndWeight: '' },
-    { id: 2, reps: '', weight: '', isDropset: false, dropEndWeight: '' },
-    { id: 3, reps: '', weight: '', isDropset: false, dropEndWeight: '' },
-  ]);
+  // NEW: Dynamically initialize the number of sets based on the engine's target
+  const initialSetsCount = exercise.target_sets || 3;
+  const [sets, setSets] = useState(() => 
+    Array.from({ length: initialSetsCount }, (_, i) => ({
+      id: i + 1, reps: '', weight: '', isDropset: false, dropEndWeight: ''
+    }))
+  );
 
-  // THE FIX: We use a ref to remember the last progress we reported
   const lastReportedProgress = useRef<number>(-1);
 
-  // --- STABILIZED PROGRESS TRACKER LOGIC ---
   useEffect(() => {
     if (onProgressUpdate) {
       const filled = sets.filter(s => {
@@ -90,14 +93,20 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
       
       const currentRatio = filled / sets.length;
 
-      // GUARD: Only call the parent if the ratio ACTUALLY changed. 
-      // This instantly breaks the infinite loop.
       if (currentRatio !== lastReportedProgress.current) {
         lastReportedProgress.current = currentRatio;
         onProgressUpdate(currentRatio);
       }
     }
   }, [sets, onProgressUpdate]);
+
+  const handleAddSet = () => {
+    setSets(prev => {
+      // Find the highest current ID so we don't get React key duplicates
+      const nextId = prev.length > 0 ? Math.max(...prev.map(s => s.id)) + 1 : 1;
+      return [...prev, { id: nextId, reps: '', weight: '', isDropset: false, dropEndWeight: '' }];
+    });
+  };
 
   const handleInputChange = (id: number, field: string, value: string) => {
     const numericValue = value.replace(/[^0-9.]/g, ''); 
@@ -120,7 +129,6 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
   const status = getStatus();
   const nameStr = exercise.exercise_name || "Unknown Exercise";
 
-  // --- BULLETPROOF JSON FALLBACK PARSER ---
   const getLocalFrames = () => {
     if (!data) return [];
     let exerciseList: any[] = [];
@@ -144,6 +152,10 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
   const finalAnimationFrames = (exercise.animation_frames && exercise.animation_frames.length === 2) 
     ? exercise.animation_frames 
     : getLocalFrames();
+
+  // Extract Targets with Safe Fallbacks
+  const targetReps = exercise.target_reps || '8-12';
+  const targetWeight = exercise.target_weight || 'Determine 1RM';
 
   return (
     <div className="w-full bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden font-sans">
@@ -188,18 +200,39 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
         </div>
 
         <div className="w-full md:w-2/3 flex flex-col">
-          {/* Biomechanics Warning */}
-          {exercise.biomechanics?.joint_stress?.length > 0 && (
-            <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6">
-              <div className="flex items-center gap-2 mb-1">
-                <Info className="w-4 h-4 text-blue-500" />
-                <h4 className="font-medium text-blue-900 text-sm">Form Warning</h4>
+          
+          {/* NEW: Side-by-Side Information Banners */}
+          <div className="flex flex-col xl:flex-row gap-4 mb-6">
+            {/* Biomechanics Warning */}
+            {exercise.biomechanics?.joint_stress?.length > 0 && (
+              <div className="flex-1 bg-blue-50/50 border border-blue-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Info className="w-4 h-4 text-blue-500" />
+                  <h4 className="font-medium text-blue-900 text-sm">Form Warning</h4>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed capitalize">
+                  Focus on: {exercise.biomechanics.joint_stress.join(', ').replace(/_/g, ' ')}.
+                </p>
               </div>
-              <p className="text-sm text-slate-600 leading-relaxed capitalize">
-                Focus on: {exercise.biomechanics.joint_stress.join(', ').replace(/_/g, ' ')}.
-              </p>
+            )}
+
+            {/* Target Goal Banner */}
+            <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-center">
+              <div className="flex items-center gap-2 mb-2 text-slate-500 font-semibold text-xs uppercase tracking-wider">
+                <Target className="w-4 h-4 text-blue-500" />
+                Target Goal
+              </div>
+              <div className="flex items-center flex-wrap gap-2 md:gap-3 font-bold text-slate-800 text-[15px]">
+                <span>{initialSetsCount} Sets</span>
+                <span className="text-slate-300">|</span>
+                <span>{targetReps} Reps</span>
+                <span className="text-slate-300">|</span>
+                <span className={typeof targetWeight === 'string' ? "text-blue-600 text-sm" : ""}>
+                  {typeof targetWeight === 'string' ? targetWeight : `${targetWeight} kg`}
+                </span>
+              </div>
             </div>
-          )}
+          </div>
 
           {/* Sets Tracking */}
           <div className="space-y-3 mb-6">
@@ -214,7 +247,8 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
               <div key={set.id} className="flex items-center bg-slate-50 border border-slate-100 rounded-lg p-2 focus-within:bg-white focus-within:border-blue-200 focus-within:shadow-sm">
                 <div className="w-10 flex justify-center"><span className="font-medium text-slate-500">{index + 1}</span></div>
                 <div className="w-20">
-                  <input type="text" inputMode="numeric" placeholder="0" value={set.reps} onChange={(e) => handleInputChange(set.id, 'reps', e.target.value)} className="w-full text-center bg-transparent font-semibold text-slate-700 outline-none" />
+                  {/* Notice the placeholder uses the target reps! */}
+                  <input type="text" inputMode="numeric" placeholder={targetReps.toString().split('-')[0]} value={set.reps} onChange={(e) => handleInputChange(set.id, 'reps', e.target.value)} className="w-full text-center bg-transparent font-semibold text-slate-700 outline-none" />
                 </div>
                 <div className="flex-1 flex items-center justify-center px-2">
                   <input type="text" inputMode="numeric" placeholder="kg" value={set.weight} onChange={(e) => handleInputChange(set.id, 'weight', e.target.value)} className="w-16 text-center bg-white border border-slate-200 rounded-md py-1 font-medium text-slate-700 outline-none" />
@@ -230,6 +264,14 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
                 </div>
               </div>
             ))}
+            <button
+              type="button"
+              onClick={handleAddSet}
+              className="w-full py-2.5 mt-2 border-2 border-dashed border-slate-200 text-slate-400 rounded-xl font-semibold text-sm hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add Another Set
+            </button>
           </div>
 
           <div className="mt-auto">

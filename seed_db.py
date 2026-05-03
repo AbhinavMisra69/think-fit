@@ -68,7 +68,7 @@ def seed_database():
             'user_123', 2103, 115, 298, 50, 23,
             72.0, 175.0, 15.0,
             81.5, 99.0, 35.0, 59.5,
-            ARRAY['fat_loss', 'muscle_gain'], '4_days', 'average', 'pro_gym'
+            ARRAY['fat_loss', ''], '4_days', 'average', 'pro_gym'
         );
         """
         cursor.execute(user_sql)

@@ -109,6 +109,7 @@ def save_onboarding():
         
         days_available = int(safe_float(data.get('workoutDays', 4)))
         duration_weeks = int(safe_float(data.get('durationWeeks', 12)))
+        print(f"\n\nduration_weeks : {duration_weeks}\n\n")
         
         # --- THE FIX: Keep it as a native Python list! ---
         selected_workout_days = data.get('selectedWorkoutDays', [])
@@ -183,6 +184,8 @@ def save_onboarding():
             goal_main, bf_pct, target_calories
         ))
 
+        print(f"\n\nduration_weeks : {duration_weeks}\n\n")
+
         cur.execute("""
         INSERT INTO measurement_logs 
         (user_id, weight_kg, body_fat_pct, waist_cm, chest_cm, arm_cm, log_date)
@@ -214,13 +217,14 @@ def save_onboarding():
         ON CONFLICT (user_id) DO UPDATE SET
             current_goal = EXCLUDED.current_goal,
             experience_level = EXCLUDED.experience_level,
+            preferred_duration_weeks = EXCLUDED.preferred_duration_weeks,
             active_phase = EXCLUDED.active_phase,
             updated_at = CURRENT_TIMESTAMP;
         """, (
             user_id, 
             goal_main, 
             experience_level,
-            16,               # Defaulting to 16-week cycle
+            duration_weeks,              
             1,                # Start at week 1
             starting_phase,   # The correct mapped phase!
             'full_body',      # Safe starting split
@@ -805,7 +809,7 @@ def generate_week():
             }
         
         cursor.execute("""
-            SELECT u.goal, u.experience_level as user_exp, u.workout_days, u.available_equipment, u.facility_type, u.injuries,
+            SELECT u.goal, u.experience_level as user_exp, u.workout_days, u.available_equipment, u.facility_type, u.injuries, u.duration_weeks,
                    e.weeks_in_program, e.active_phase, e.last_assigned_split, e.split_rotation_index, e.last_workout_date
             FROM users u
             JOIN exercise_state e ON u.id = e.user_id
@@ -831,6 +835,7 @@ def generate_week():
             "owned_equipment": row['available_equipment'] or [],
             "medical_issues": row['injuries'] or [],
             "schedule": user_schedule,
+            "preferred_duration_weeks": row['duration_weeks'], # <-- THE MISSING LINK!
             "weeks_in_program": row['weeks_in_program'],
             "active_phase": row['active_phase'],
             "last_assigned_split": row['last_assigned_split'],
@@ -898,12 +903,17 @@ def generate_week():
         ))
 
         # Optional but highly recommended: Keep the `users` table synced if the engine changes their goal or duration
-        cursor.execute("""
-            UPDATE users 
-            SET goal = %s, duration_weeks = %s 
-            WHERE id = %s
-        """, (working_memory.get('primary_goal'), working_memory.get('preferred_duration_weeks'), user_id))
+       # Optional but highly recommended: Keep the `users` table synced safely
+        updated_goal = working_memory.get('primary_goal')
+        updated_duration = working_memory.get('preferred_duration_weeks')
         
+        if updated_goal and updated_duration:
+            cursor.execute("""
+                UPDATE users 
+                SET goal = %s, duration_weeks = %s 
+                WHERE id = %s
+            """, (updated_goal, updated_duration, user_id))
+            
         conn.commit()
         return jsonify({"status": "success", "program": weekly_plan}), 201
 
