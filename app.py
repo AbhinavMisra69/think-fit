@@ -10,6 +10,7 @@ import pytesseract
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import math
+import datetime
 
 # Core Module Imports
 from core.db import get_db_connection, NutritionDatabase
@@ -820,6 +821,76 @@ def get_macrocycle_overview():
         cursor.close()
         conn.close()
 
+
+
+
+
+
+        
+
+@app.route('/api/workout/check_status', methods=['GET'])
+def check_workout_status():
+    user_id = request.args.get('user_id')
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+        # 1. What day was yesterday?
+        yesterday_idx = (datetime.datetime.today().weekday() - 1) % 7 + 1
+        day_key = f"Day_{yesterday_idx}"
+        
+        # 2. Get the current week's program
+        cursor.execute("""
+            SELECT e.weeks_in_program, g.workout_json 
+            FROM exercise_state e
+            JOIN generated_programs g ON e.user_id = g.user_id AND e.weeks_in_program = g.week_number
+            WHERE e.user_id = %s
+        """, (user_id,))
+        record = cursor.fetchone()
+        
+        if not record or day_key not in record['workout_json']:
+            return jsonify({"status": "clear", "message": "Yesterday was a rest day or no program found."})
+            
+        planned_workout = record['workout_json'][day_key]
+        
+        # 3. Check if they logged anything yesterday
+        # cursor.execute("""
+        #     SELECT COUNT(*) as exercises_logged 
+        #     FROM workout_history 
+        #     WHERE user_id = %s AND log_date = CURRENT_DATE - INTERVAL '1 day'
+        # """, (user_id,))
+
+        #TESTING
+        cursor.execute("""
+            SELECT COUNT(*) as exercises_logged 
+            FROM workout_history 
+            WHERE user_id = %s AND log_date = CURRENT_DATE 
+        """, (user_id,))
+        history = cursor.fetchone()
+        
+        logged_count = history['exercises_logged']
+        planned_count = len(planned_workout)
+        
+        # 4. Determine the Intervention State
+        if logged_count == 0:
+            return jsonify({
+                "status": "intervention_needed",
+                "type": "missed_completely",
+                "missed_day_key": day_key
+            })
+        elif logged_count < planned_count:
+            return jsonify({
+                "status": "intervention_needed",
+                "type": "partial_completion",
+                "missed_day_key": day_key
+            })
+            
+        return jsonify({"status": "clear", "message": "Workout completed successfully."})
+        
+    finally:
+        cursor.close()
+        conn.close()
+
 @app.route('/api/workout/generate_week', methods=['POST'])
 def generate_week():
     data = request.get_json(force=True)
@@ -957,9 +1028,99 @@ def generate_week():
                 SET goal = %s, duration_weeks = %s 
                 WHERE id = %s
             """, (updated_goal, updated_duration, user_id))
-            
+
         conn.commit()
         return jsonify({"status": "success", "program": weekly_plan}), 201
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+@app.route('/api/workout/resolve_intervention', methods=['POST'])
+def resolve_intervention():
+    data = request.json
+    user_id = data.get('user_id')
+    intervention_type = data.get('type') # 'slide', 'consolidate', or 'triage_partial'
+    missed_day_key = data.get('missed_day_key')
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+        # Fetch the current generated JSON
+        cursor.execute("SELECT weeks_in_program FROM exercise_state WHERE user_id = %s", (user_id,))
+        current_week = cursor.fetchone()['weeks_in_program']
+        
+        cursor.execute("SELECT workout_json FROM generated_programs WHERE user_id = %s AND week_number = %s", (user_id, current_week))
+        workout_json = cursor.fetchone()['workout_json']
+        
+        missed_workout = workout_json.get(missed_day_key, [])
+        today_idx = datetime.datetime.today().weekday() + 1
+        today_key = f"Day_{today_idx}"
+        next_workout_key = next((k for k in workout_json.keys() if int(k.split('_')[1]) >= today_idx), None)
+
+        # ---------------------------------------------------------
+        # SCENARIO 1 - OPTION A: THE SLIDE
+        # Push yesterday's workout to their next available training day.
+        # ---------------------------------------------------------
+        if intervention_type == 'slide':
+            if next_workout_key:
+                # Store the missed workout in the next slot, and shift the rest forward
+                # (You would write a quick loop here to shift days D3 -> D4, D4 -> D6, etc.)
+                workout_json[next_workout_key] = missed_workout 
+                message = "Schedule successfully pushed back."
+
+        # ---------------------------------------------------------
+        # SCENARIO 1 - OPTION B: CONSOLIDATE
+        # Extract ONLY primary compounds and shove them into the next workout.
+        # ---------------------------------------------------------
+        elif intervention_type == 'consolidate':
+            if next_workout_key:
+                primary_compounds = [
+                    ex for ex in missed_workout 
+                    if ex.get('muscle_data', {}).get('is_compound') == True
+                ]
+                # Prepend the missed heavy lifts to the start of their next session
+                workout_json[next_workout_key] = primary_compounds + workout_json[next_workout_key]
+                message = "Heavy lifts consolidated into your next session."
+
+        # ---------------------------------------------------------
+        # SCENARIO 2: SILENT TRIAGE (PARTIAL COMPLETION)
+        # Find exactly what they skipped yesterday, and move missed compounds.
+        # ---------------------------------------------------------
+        elif intervention_type == 'triage_partial':
+            # 1. Get what they actually did
+            cursor.execute("SELECT exercise_name FROM workout_history WHERE user_id = %s AND log_date = CURRENT_DATE - INTERVAL '1 day'", (user_id,))
+            done_exercises = [row['exercise_name'] for row in cursor.fetchall()]
+            
+            # 2. Find what they skipped
+            skipped_exercises = [ex for ex in missed_workout if ex['name'] not in done_exercises]
+            
+            # 3. Triage: Only rescue the primary compounds
+            rescued_compounds = [
+                ex for ex in skipped_exercises 
+                if ex.get('muscle_data', {}).get('is_compound') == True
+            ]
+            
+            if rescued_compounds and next_workout_key:
+                workout_json[next_workout_key] = rescued_compounds + workout_json[next_workout_key]
+            
+            message = "Partial workout triaged. Missing compounds added to next session."
+
+        # Save the surgically altered JSON back to the database
+        cursor.execute("""
+            UPDATE generated_programs 
+            SET workout_json = %s::jsonb 
+            WHERE user_id = %s AND week_number = %s
+        """, (json.dumps(workout_json), user_id, current_week))
+        
+        conn.commit()
+        return jsonify({"status": "success", "message": message, "updated_program": workout_json})
 
     except Exception as e:
         conn.rollback()
