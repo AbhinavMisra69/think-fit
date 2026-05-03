@@ -125,6 +125,41 @@ blueprint_library = {
             "glute_isolation": 1,
             "core_stabilization": 1
         }
+
+        # "upper_day_A": {
+        #     "horizontal_press": 1,
+        #     "vertical_pull": 1,
+        #     "vertical_press": 1,
+        #     "horizontal_pull": 1,
+        #     "chest_isolation": 1,
+        #     "bicep_isolation": 1,
+        #     "tricep_isolation": 1
+        # },
+        # "lower_day_A": {
+        #     "squat_pattern": 1,
+        #     "hinge_pattern": 1,
+        #     "unilateral_leg": 1,
+        #     "quad_isolation": 1,
+        #     "glute_isolation": 1,
+        #     "core_stabilization": 1
+        # },
+        #  "upper_day_B": {
+        #     "horizontal_press": 1,
+        #     "vertical_pull": 1,
+        #     "vertical_press": 1,
+        #     "horizontal_pull": 1,
+        #     "side_delt_isolation": 1,
+        #     "bicep_isolation": 1,
+        #     "tricep_isolation": 1
+        # },
+        # "lower_day_B": {
+        #     "squat_pattern": 1,
+        #     "hinge_pattern": 1,
+        #     "unilateral_leg": 1,
+        #     "quad_isolation": 1,
+        #     "glute_isolation": 1,
+        #     "calf_isolation": 1
+        # }
     },
 
     # ---------------------------------------------------------

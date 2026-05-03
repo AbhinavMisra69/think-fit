@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   ChevronLeft, ChevronRight, User, Dumbbell, BatteryCharging,
   X, Target, Activity, Settings2, Info, VideoOff,
-  Map, CalendarDays, Zap, Shield, TrendingUp, CheckCircle2 // <-- Added new icons here!
+  Map, CalendarDays, Zap, Shield, TrendingUp, CheckCircle2, AlertTriangle, ArrowRight, Merge, Loader2 // <-- Added new icons here!
 } from 'lucide-react';
+import { toast } from 'sonner';
 import StreakCalendar from "@/components/StreakCalendar";
 import ExerciseCard, { type ExerciseData } from "@/components/ExerciseCard";
 import RestDayCard from "@/components/RestDayCard";
@@ -40,6 +42,7 @@ type MacrocycleData = {
 };
 
 export default function Page() {
+  const router = useRouter();
   const { user } = useAuth(); // Assuming your context returns an object with 'user'
   const userId = user?.id;
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
@@ -60,9 +63,83 @@ export default function Page() {
   const [weeklyProgram, setWeeklyProgram] = useState<any>(null);
   const [activeExercise, setActiveExercise] = useState<ExerciseData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showInterventionModal, setShowInterventionModal] = useState(false);
+  const [interventionData, setInterventionData] = useState<any>(null);
+  const [isResolving, setIsResolving] = useState(false);
 
 
+  // 1. Define the function OUTSIDE the useEffect so everything can see it
+  const checkWorkoutStatus = async () => {
+    if (!userId) return;
+    try {
+      const res = await fetch(`http://localhost:5001/api/workout/check_status?user_id=${userId}`);
+      const data = await res.json();
+      console.log("Check Status Response:", data);
+
+      if (data.status === "intervention_needed") {
+        if (data.type === "missed_completely") {
+          setInterventionData(data);
+          setShowInterventionModal(true);
+        } else if (data.type === "partial_completion") {
+          await handleResolution('triage_partial', data.missed_day_key);
+          // Only show this toast for background triages!
+          toast.success("We noticed you couldn't finish your last session. We've optimized today's plan to keep you on track!");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to check workout status:", error);
+    }
+  };
+
+  // 2. The useEffect is now super clean. It just triggers the function on page load.
   useEffect(() => {
+    checkWorkoutStatus();
+  }, [userId]);
+
+const handleResolution = async (interventionType, specificMissedDay = null) => {
+    // If it's a silent triage, we pass the day directly. 
+    // If it's a modal button click, we grab the day from the saved state!
+    const targetDay = specificMissedDay || interventionData?.missed_day_key;
+
+    if (!targetDay) {
+      toast.error("Could not determine which day was missed.");
+      return;
+    }
+
+    try {
+      const res = await fetch('http://localhost:5001/api/workout/resolve_intervention', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          type: interventionType,
+          missed_day_key: targetDay
+        })
+      });
+      
+      const data = await res.json();
+
+      if (data.status === "success") {
+        toast.success(data.message);
+        setShowInterventionModal(false);
+        router.refresh();
+        checkWorkoutStatus(); // Reload the freshly fixed schedule!
+      } else if (data.status === "conflict") {
+        // THIS CATCHES THE SAFETY WARNING!
+        toast.error(data.message); 
+        // We do NOT close the modal here, forcing them to pick a safer option!
+      } else {
+        toast.error(data.error || "An error occurred while updating your schedule.");
+      }
+    } catch (error) {
+      console.error("Intervention Error:", error);
+      toast.error("Failed to connect to the server.");
+    }
+  };
+
+useEffect(() => {
     const fetchWeekData = async () => {
       if (!userId) return;
       setIsLoading(true);
@@ -262,7 +339,65 @@ export default function Page() {
 
         </div>
       </div>
-    </div>
+    {/* ... [Your existing Dashboard JSX] ... */}
+
+      {/* --- NEW: The Intervention Modal --- */}
+      {showInterventionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-300">
+            <div className="p-8 text-center">
+              <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <AlertTriangle className="w-10 h-10 text-amber-600" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-800 mb-3 tracking-tight">Life Happens!</h3>
+              <p className="text-slate-500 mb-8 text-sm leading-relaxed px-2">
+                We noticed you missed your last workout. How would you like the engine to adjust your schedule?
+              </p>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleResolution('slide')}
+                  disabled={isResolving}
+                  className="w-full flex items-center p-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-2xl transition-all text-left group hover:shadow-md active:scale-[0.98]"
+                >
+                  <div className="flex-1">
+                    <h4 className="font-bold text-blue-900 flex items-center gap-2 text-base">
+                      <ArrowRight className="w-5 h-5 text-blue-600" /> Shift Schedule <span className="text-[10px] bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full ml-2 uppercase tracking-wider">Recommended</span>
+                    </h4>
+                    <p className="text-xs text-blue-700/80 mt-1 font-medium">Push everything back one day. Keep the exact same workouts.</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleResolution('consolidate')}
+                  disabled={isResolving}
+                  className="w-full flex items-center p-4 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-2xl transition-all text-left group hover:shadow-md active:scale-[0.98]"
+                >
+                  <div className="flex-1">
+                    <h4 className="font-bold text-orange-900 flex items-center gap-2 text-base">
+                      <Merge className="w-5 h-5 text-orange-600" /> Consolidate Heavy Lifts
+                    </h4>
+                    <p className="text-xs text-orange-700/80 mt-1 font-medium">Merge your missed primary compounds into your next session.</p>
+                  </div>
+                </button>
+                <button 
+                    onClick={() => setShowInterventionModal(false)} 
+                    className="text-gray-500 underline mt-4"
+                >
+                    I'll figure it out later (Close)
+                </button>
+                </div>
+
+              {isResolving && (
+                <div className="mt-6 flex items-center justify-center gap-2 text-slate-400 text-sm font-medium animate-pulse">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Recalculating protocol...
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div> 
   );
 }
 

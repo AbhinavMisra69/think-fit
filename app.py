@@ -823,11 +823,6 @@ def get_macrocycle_overview():
 
 
 
-
-
-
-        
-
 @app.route('/api/workout/check_status', methods=['GET'])
 def check_workout_status():
     user_id = request.args.get('user_id')
@@ -835,9 +830,14 @@ def check_workout_status():
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     try:
+        
         # 1. What day was yesterday?
         yesterday_idx = (datetime.datetime.today().weekday() - 1) % 7 + 1
         day_key = f"Day_{yesterday_idx}"
+        #TESTING
+        # day_key = "Day_1"     # Force it to look at Monday's JSON
+        # planned_count_override = 5 
+        # logged_count_override = 2
         
         # 2. Get the current week's program
         cursor.execute("""
@@ -852,26 +852,24 @@ def check_workout_status():
             return jsonify({"status": "clear", "message": "Yesterday was a rest day or no program found."})
             
         planned_workout = record['workout_json'][day_key]
+
+        if len(planned_workout) == 0:
+            return jsonify({"status": "clear", "message": "Missed workout was successfully resolved."})
         
         # 3. Check if they logged anything yesterday
-        # cursor.execute("""
-        #     SELECT COUNT(*) as exercises_logged 
-        #     FROM workout_history 
-        #     WHERE user_id = %s AND log_date = CURRENT_DATE - INTERVAL '1 day'
-        # """, (user_id,))
-
-        #TESTING
         cursor.execute("""
             SELECT COUNT(*) as exercises_logged 
             FROM workout_history 
-            WHERE user_id = %s AND log_date = CURRENT_DATE 
+            WHERE user_id = %s AND log_date = CURRENT_DATE - INTERVAL '1 day'
         """, (user_id,))
+
+       
+
         history = cursor.fetchone()
-        
         logged_count = history['exercises_logged']
         planned_count = len(planned_workout)
-        
-        # 4. Determine the Intervention State
+
+        #4. Determine the Intervention State
         if logged_count == 0:
             return jsonify({
                 "status": "intervention_needed",
@@ -886,6 +884,22 @@ def check_workout_status():
             })
             
         return jsonify({"status": "clear", "message": "Workout completed successfully."})
+
+        #TESTING
+        # if logged_count_override == 0:
+        #     return jsonify({
+        #         "status": "intervention_needed",
+        #         "type": "missed_completely",
+        #         "missed_day_key": day_key
+        #     })
+        # elif logged_count_override < planned_count_override:
+        #     return jsonify({
+        #         "status": "intervention_needed",
+        #         "type": "partial_completion",
+        #         "missed_day_key": day_key
+        #     })  
+        # return jsonify({"status": "clear", "message": "Workout completed successfully."})
+
         
     finally:
         cursor.close()
@@ -1043,16 +1057,19 @@ def generate_week():
 
 @app.route('/api/workout/resolve_intervention', methods=['POST'])
 def resolve_intervention():
+    import json 
+    
     data = request.json
     user_id = data.get('user_id')
-    intervention_type = data.get('type') # 'slide', 'consolidate', or 'triage_partial'
+    intervention_type = data.get('type') 
     missed_day_key = data.get('missed_day_key')
     
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     try:
-        # Fetch the current generated JSON
+        message = "No schedule changes were required."
+        
         cursor.execute("SELECT weeks_in_program FROM exercise_state WHERE user_id = %s", (user_id,))
         current_week = cursor.fetchone()['weeks_in_program']
         
@@ -1060,59 +1077,166 @@ def resolve_intervention():
         workout_json = cursor.fetchone()['workout_json']
         
         missed_workout = workout_json.get(missed_day_key, [])
+
         today_idx = datetime.datetime.today().weekday() + 1
-        today_key = f"Day_{today_idx}"
-        next_workout_key = next((k for k in workout_json.keys() if int(k.split('_')[1]) >= today_idx), None)
+        #TESTING
+        # today_idx = 2
+        
+        occupied_days = sorted([
+            int(k.split('_')[1]) for k, v in workout_json.items() 
+            if k.startswith('Day_') and len(v) > 0 and k != missed_day_key
+        ])
+
+        # =========================================================
+        # 🧠 THE AI COACHING BRAIN (CNS & MUSCLE OVERLAP CHECKER)
+        # =========================================================
+        def get_workout_category(workout):
+            if not workout: return None
+            upper_muscles = {'chest', 'lats', 'back', 'triceps', 'biceps', 'front_delts', 'side_delts', 'rear_delts', 'traps', 'lower_chest', 'shoulders'}
+            lower_muscles = {'quads', 'hamstrings', 'glutes', 'calves'}
+            has_upper = has_lower = False
+            
+            for ex in workout:
+                targets = ex.get('muscle_data', {}).get('primary_targets', [])
+                for t in targets:
+                    if t in upper_muscles: has_upper = True
+                    if t in lower_muscles: has_lower = True
+                    
+            if has_upper and has_lower: return 'full_body'
+            if has_upper: return 'upper'
+            if has_lower: return 'lower'
+            return 'core'
+
+        def is_safe_day(target_day_idx, workout_to_check, check_target_day=False):
+            cat_to_check = get_workout_category(workout_to_check)
+            if not cat_to_check or cat_to_check == 'core': return True 
+            
+            prev_day = ((target_day_idx - 2) % 7) + 1
+            next_day = (target_day_idx % 7) + 1
+            
+            workouts_to_evaluate = [
+                workout_json.get(f"Day_{prev_day}", []),
+                workout_json.get(f"Day_{next_day}", [])
+            ]
+            
+            if check_target_day:
+                workouts_to_evaluate.append(workout_json.get(f"Day_{target_day_idx}", []))
+                
+            for w in workouts_to_evaluate:
+                adj_cat = get_workout_category(w)
+                if not adj_cat: continue
+                if adj_cat == cat_to_check or adj_cat == 'full_body' or cat_to_check == 'full_body':
+                    return False
+            return True
+        # =========================================================
 
         # ---------------------------------------------------------
-        # SCENARIO 1 - OPTION A: THE SLIDE
-        # Push yesterday's workout to their next available training day.
+        # SCENARIO 1: THE REST DAY SLIDE
         # ---------------------------------------------------------
         if intervention_type == 'slide':
-            if next_workout_key:
-                # Store the missed workout in the next slot, and shift the rest forward
-                # (You would write a quick loop here to shift days D3 -> D4, D4 -> D6, etc.)
-                workout_json[next_workout_key] = missed_workout 
-                message = "Schedule successfully pushed back."
+            rest_days = [d for d in range(1, 8) if d >= today_idx and d not in occupied_days]
+            safe_target_day = next((d for d in rest_days if is_safe_day(d, missed_workout, False)), None)
+                    
+            if safe_target_day:
+                workout_json[f"Day_{safe_target_day}"] = missed_workout
+                message = f"Workout safely moved to Day {safe_target_day}."
+            else:
+                return jsonify({"status": "conflict", "message": "Cannot shift safely without violating 48-hour muscle recovery rules."})
 
         # ---------------------------------------------------------
-        # SCENARIO 1 - OPTION B: CONSOLIDATE
-        # Extract ONLY primary compounds and shove them into the next workout.
+        # SCENARIO 2: CONSOLIDATE HEAVY LIFTS (UPGRADED)
         # ---------------------------------------------------------
         elif intervention_type == 'consolidate':
-            if next_workout_key:
-                primary_compounds = [
-                    ex for ex in missed_workout 
-                    if ex.get('muscle_data', {}).get('is_compound') == True
-                ]
-                # Prepend the missed heavy lifts to the start of their next session
-                workout_json[next_workout_key] = primary_compounds + workout_json[next_workout_key]
-                message = "Heavy lifts consolidated into your next session."
-
-        # ---------------------------------------------------------
-        # SCENARIO 2: SILENT TRIAGE (PARTIAL COMPLETION)
-        # Find exactly what they skipped yesterday, and move missed compounds.
-        # ---------------------------------------------------------
-        elif intervention_type == 'triage_partial':
-            # 1. Get what they actually did
-            cursor.execute("SELECT exercise_name FROM workout_history WHERE user_id = %s AND log_date = CURRENT_DATE - INTERVAL '1 day'", (user_id,))
-            done_exercises = [row['exercise_name'] for row in cursor.fetchall()]
-            
-            # 2. Find what they skipped
-            skipped_exercises = [ex for ex in missed_workout if ex['name'] not in done_exercises]
-            
-            # 3. Triage: Only rescue the primary compounds
-            rescued_compounds = [
-                ex for ex in skipped_exercises 
+            primary_compounds = [
+                ex for ex in missed_workout 
                 if ex.get('muscle_data', {}).get('is_compound') == True
             ]
             
-            if rescued_compounds and next_workout_key:
-                workout_json[next_workout_key] = rescued_compounds + workout_json[next_workout_key]
-            
-            message = "Partial workout triaged. Missing compounds added to next session."
+            if not primary_compounds:
+                message = "No primary compounds found. Missed workout cleared."
+            else:
+                safe_target_day = None
+                is_rest_day = False
+                
+                # Phase 1: Try to append to future EXISTING workout days safely
+                future_occupied = [d for d in occupied_days if d >= today_idx]
+                for o_day in future_occupied:
+                    if is_safe_day(o_day, primary_compounds, check_target_day=True):
+                        safe_target_day = o_day
+                        break
+                        
+                # Phase 2: Fallback to scanning empty REST DAYS
+                if not safe_target_day:
+                    rest_days = [d for d in range(1, 8) if d >= today_idx and d not in occupied_days]
+                    for r_day in rest_days:
+                        if is_safe_day(r_day, primary_compounds, check_target_day=False):
+                            safe_target_day = r_day
+                            is_rest_day = True
+                            break
+                            
+                # Execution
+                if safe_target_day:
+                    target_key = f"Day_{safe_target_day}"
+                    if is_rest_day:
+                        workout_json[target_key] = primary_compounds
+                        message = f"Compounds successfully rescued to a safe rest day (Day {safe_target_day})."
+                    else:
+                        workout_json[target_key] = primary_compounds + workout_json[target_key]
+                        message = f"Heavy lifts safely consolidated into your Day {safe_target_day} session."
+                else:
+                    return jsonify({"status": "conflict", "message": "Cannot consolidate safely without violating 48-hour muscle recovery rules."})
 
-        # Save the surgically altered JSON back to the database
+        # ---------------------------------------------------------
+        # SCENARIO 3: SILENT TRIAGE (PARTIAL COMPLETION)
+        # ---------------------------------------------------------
+        elif intervention_type == 'triage_partial':
+            cursor.execute("SELECT exercise_name FROM workout_history WHERE user_id = %s AND log_date = CURRENT_DATE - INTERVAL '1 day'", (user_id,))
+            done_exercises = [row['exercise_name'] for row in cursor.fetchall()]
+            
+            skipped_exercises = [ex for ex in missed_workout if ex.get('exercise_name', ex.get('name')) not in done_exercises]
+            rescued_compounds = [ex for ex in skipped_exercises if ex.get('muscle_data', {}).get('is_compound') == True]
+            
+            if not rescued_compounds:
+                message = "No primary compounds were missed. Partial workout resolved."
+            else:
+                safe_target_day = None
+                is_rest_day = False
+                
+                # Phase 1: Try to append to future EXISTING workout days safely
+                future_occupied = [d for d in occupied_days if d >= today_idx]
+                for o_day in future_occupied:
+                    if is_safe_day(o_day, rescued_compounds, check_target_day=True):
+                        safe_target_day = o_day
+                        break
+                        
+                # Phase 2: Fallback to scanning empty REST DAYS
+                if not safe_target_day:
+                    rest_days = [d for d in range(1, 8) if d >= today_idx and d not in occupied_days]
+                    for r_day in rest_days:
+                        if is_safe_day(r_day, rescued_compounds, check_target_day=False):
+                            safe_target_day = r_day
+                            is_rest_day = True
+                            break
+                            
+                # Execution
+                if safe_target_day:
+                    target_key = f"Day_{safe_target_day}"
+                    if is_rest_day:
+                        workout_json[target_key] = rescued_compounds
+                        message = f"Partial workout triaged. Compounds safely moved to a rest day (Day {safe_target_day})."
+                    else:
+                        workout_json[target_key] = rescued_compounds + workout_json[target_key]
+                        message = f"Partial workout triaged. Compounds safely added to Day {safe_target_day}."
+                else:
+                    # IMPORTANT: For automatic triage, we drop the volume but return SUCCESS, not CONFLICT.
+                    message = "Could not safely shift missed compounds without violating recovery rules. Volume dropped."
+
+        # ---------------------------------------------------------
+        # THE LOOP BREAKER
+        # ---------------------------------------------------------
+        if missed_day_key in workout_json:
+            workout_json[missed_day_key] = []
+
         cursor.execute("""
             UPDATE generated_programs 
             SET workout_json = %s::jsonb 
@@ -1124,6 +1248,7 @@ def resolve_intervention():
 
     except Exception as e:
         conn.rollback()
+        print(f"🔥 FATAL RESOLUTION ERROR: {str(e)}")
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
