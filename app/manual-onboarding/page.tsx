@@ -31,7 +31,7 @@ const formSchema = z.object({
   selectedWorkoutDays: z.array(z.string()).min(1, "Please select your training days"),
   workoutTime: z.string().min(1, "Select preferred time"),
   soreness: z.string().min(1, "Select recovery speed"),
-  durationWeeks: z.string().min(1, "Please select a program duration"), // <-- NEW FIELD
+  durationWeeks: z.string().min(1, "Please select a program duration"),
   medicalConditions: z.array(z.string()),
   workoutLocation: z.string().min(1, "Select a location"),
   availableEquipment: z.array(z.string()).optional(),
@@ -73,7 +73,6 @@ const goalOptions = [
   { id: "recomposition", label: "Body Recomposition (Both)" },
   { id: "maintenance", label: "Maintain / Performance" }
 ];
-// <-- NEW DURATION OPTIONS
 const durationOptions = [
   { id: "6", label: "6 Weeks (Short Term)" },
   { id: "8", label: "8 Weeks (Standard)" },
@@ -98,6 +97,8 @@ export default function ThinkFitMasterForm() {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [estimatedBF, setEstimatedBF] = useState<number | null>(null);
+  
+  // We use this state to show a loading spinner on the Next button
   const [isCalculating, setIsCalculating] = useState(false);
   
   const form = useForm<MultiFormSchema>({
@@ -105,7 +106,7 @@ export default function ThinkFitMasterForm() {
     defaultValues: {
       gender: "", weight: "", height: "", neck: "", waist: "", chest: "", arm: "", hip: "", bodyType: "",
       activityLevel: "", experienceLevel: "", workoutDays: "", selectedWorkoutDays: [], workoutTime: "", soreness: "",
-      durationWeeks: "", // <-- ADDED DEFAULT VALUE
+      durationWeeks: "", 
       medicalConditions: [], workoutLocation: "", availableEquipment: [],
       primaryGoals: [], 
     },
@@ -127,6 +128,7 @@ export default function ThinkFitMasterForm() {
     }
   }, [selectedFrequency, maxAllowedDays, form]);
 
+  // --- THE FIX: ALL API CALLS HAPPEN DURING "NEXT" CLICKS ---
   const handleNextButton = async () => {
     let fieldsToValidate: (keyof MultiFormSchema)[] = [];
     if (currentStep === 0) {
@@ -134,72 +136,85 @@ export default function ThinkFitMasterForm() {
       if (selectedGender === "female") fieldsToValidate.push("hip");
     }
     if (currentStep === 1) fieldsToValidate = ["activityLevel", "primaryGoals"];
-    // Add durationWeeks to Step 2 validation!
     if (currentStep === 2) fieldsToValidate = ["experienceLevel", "workoutDays", "selectedWorkoutDays", "workoutTime", "soreness", "durationWeeks"];
     if (currentStep === 3) fieldsToValidate = ["medicalConditions"];
     if (currentStep === 4) fieldsToValidate = ["workoutLocation"];
     
     const isValid = await form.trigger(fieldsToValidate);
     
-    if (isValid) {
-      if (currentStep === 0) {
-        setIsCalculating(true);
-        try {
-          const values = form.getValues();
-          const response = await fetch("http://127.0.0.1:5001/api/calculate_bf", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              gender: values.gender, height: values.height, weight: values.weight,
-              waist: values.waist, neck: values.neck, chest: values.chest,
-              arm: values.arm, hip: values.hip || "0"
-            }),
-          });
-          const data = await response.json();
-          if (data.body_fat_percentage) setEstimatedBF(data.body_fat_percentage);
-        } catch (error) {
-          console.error("Failed to calculate BF%", error);
-        } finally {
-          setIsCalculating(false);
-        }
-      }
-      setCurrentStep((prev) => prev + 1);
-    } else {
+    if (!isValid) {
       toast.error("Please complete all required fields correctly.");
+      return;
+    }
+
+    // Step 0: Calculate Body Fat
+    if (currentStep === 0) {
+      setIsCalculating(true);
+      try {
+        const values = form.getValues();
+        const response = await fetch("http://127.0.0.1:5001/api/calculate_bf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gender: values.gender, height: values.height, weight: values.weight,
+            waist: values.waist, neck: values.neck, chest: values.chest,
+            arm: values.arm, hip: values.hip || "0"
+          }),
+        });
+        const data = await response.json();
+        if (data.body_fat_percentage) setEstimatedBF(data.body_fat_percentage);
+      } catch (error) {
+        console.error("Failed to calculate BF%", error);
+      } finally {
+        setIsCalculating(false);
+      }
+      setCurrentStep(1);
+    } 
+    // Step 4: Push to Database BEFORE showing the final screen
+    else if (currentStep === 4) {
+      if (!user) {
+        toast.error("Authentication Error: Please log in again.");
+        return;
+      }
+
+      setIsCalculating(true);
+      try {
+        const values = form.getValues();
+        const payload = { 
+          ...values, 
+          userId: user.id,
+          estimatedBF: estimatedBF 
+        };
+        
+        const response = await fetch("http://127.0.0.1:5001/api/onboarding", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) throw new Error("Failed to save profile.");
+        
+        // Data is saved! Now let them see the glorious final page.
+        setCurrentStep(5);
+      } catch (error) {
+        toast.error("Failed to connect to database. Please try again.");
+      } finally {
+        setIsCalculating(false);
+      }
+    } 
+    // All other steps (1, 2, 3) just move forward
+    else {
+      setCurrentStep((prev) => prev + 1);
     }
   };
 
   const handleBackButton = () => { if (currentStep > 0) setCurrentStep((prev) => prev - 1); };
 
+  // --- THE FIX: FINAL BUTTON JUST REDIRECTS ---
   const handleFinalSubmit = async (values: MultiFormSchema) => {
-    if (!user) {
-      toast.error("Authentication Error: Please log in again.");
-      router.push("/login");
-      return;
-    }
-
-    toast.success("Profile Sent! Evaluating goals and generating protocol...");
-
-    try {
-      const payload = { 
-        ...values, 
-        userId: user.id,
-        estimatedBF: estimatedBF 
-      };
-      
-      const response = await fetch("http://127.0.0.1:5001/api/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) throw new Error("Failed to save profile.");
-      
-      router.push("/dashboard"); 
-
-    } catch (error) {
-      toast.error("Failed to connect to database. Please try again.");
-    }
+    // We already saved the data during Step 4!
+    toast.success("Generating your custom protocol...");
+    router.push("/dashboard"); 
   };
 
   const CurrentIcon = baseSteps[currentStep].icon;
@@ -307,9 +322,7 @@ export default function ThinkFitMasterForm() {
         return (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4">
             {renderRadioGrid("experienceLevel", experienceOptions, "Training Experience")}
-            {/* NEW: DURATION OPTIONS ADDED HERE */}
             {renderRadioGrid("durationWeeks", durationOptions, "Desired Program Duration")}
-
             {renderRadioGrid("workoutDays", daysOptions, "Workout Availability")}
             
             {selectedFrequency && (
@@ -408,7 +421,7 @@ export default function ThinkFitMasterForm() {
              </div>
 
              <div className="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-center">
-                <p className="text-slate-600 font-medium">Click <strong>Generate Protocol</strong> below to finalize your profile and calculate your daily macro targets.</p>
+                <p className="text-slate-600 font-medium">Click <strong>Generate Protocol</strong> below to jump right into your new dashboard.</p>
              </div>
           </div>
         );
