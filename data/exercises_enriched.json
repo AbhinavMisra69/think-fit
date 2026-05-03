@@ -135,7 +135,8 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "r_UZ5OLa--c",
-        "animation_frames": []
+        "animation_frames": ["https://gymvisual.com/img/p/3/2/4/5/3/32453.gif",
+        "https://gymvisual.com/img/p/3/2/4/5/3/32453.gif"]
     },
     "45_degree_back_extension": {
         "exercise_id": "EX_104",
@@ -179,7 +180,8 @@
         },
         "description": "The back extension is an exercise used to build lower back strength that also targets the hamstrings and glutes. It is often performed on a 45-degree bench with the feet anchored. Unweighted back extensions are often performed for high reps, such as 15-20 reps or more, but the movement can also be performed with added weight in lower rep ranges, such as 8-12 reps per set.",
         "youtube_id": "VH4Bqn1FUhM",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/1.jpg"]
     },
     "hack_squat": {
         "exercise_id": "EX_105",
@@ -271,8 +273,8 @@
         "description": "The barbell back squat to box is a popular version of a classic lower-body exercise that utilizes a box at the bottom position of the movement. This allows the lifter to customize the depth of the squat, as well as limit the stretch reflex at the bottom of the squat. The movement targets the quadriceps, glutes, and hamstrings. The squat to box can be performed for low reps to build strength or power, or for higher reps to build muscle.",
         "youtube_id": "4D8wjuk7IVk",
         "animation_frames": [
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hack_Squat/0.jpg",
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hack_Squat/1.jpg"
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg",
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/1.jpg"
         ]
     },
     "bulgarian_split_squat": {
@@ -490,7 +492,8 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "Rtor33qMmhQ",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/1.jpg"]
     },
     "cable_kickback": {
         "exercise_id": "EX_112",
@@ -889,7 +892,8 @@
         },
         "description": "The reverse lunge is a lower-body exercise targeting the quads, glutes, and hamstrings. The reverse lunge places more emphasis on the glutes than other lunge variations.",
         "youtube_id": "GtBxjoLlHyA",
-        "animation_frames": []
+        "animation_frames": ["https://www.kettlebellkings.com/cdn/shop/articles/nordic_curls.gif?v=1699444790&width=1500",
+        "https://www.kettlebellkings.com/cdn/shop/articles/nordic_curls.gif?v=1699444790&width=1500"]
     },
     "barbell_hip_thrust": {
         "exercise_id": "EX_121",
@@ -1055,7 +1059,8 @@
         },
         "description": "The curtsy lunge is a lower-body bodyweight movement that targets the muscles of the hips and glutes. It is usually performed for moderate to high reps, at least 8-12 reps per leg.",
         "youtube_id": "WAW-2ehQ1GM",
-        "animation_frames": []
+        "animation_frames": ["https://cdn.shopify.com/s/files/1/0618/9462/3460/files/1_2021-05.gif",
+        "https://cdn.shopify.com/s/files/1/0618/9462/3460/files/1_2021-05.gif"]
     },
     "conventional_deadlift": {
         "exercise_id": "EX_125",
@@ -1100,7 +1105,8 @@
         },
         "description": "The barbell deadlift is a compound exercise used to develop overall strength and size in the posterior chain. It is a competition lift in the sport of powerlifting, but is also considered a classic benchmark of overall strength. When performed with the hands outside the knees, it is often called a \"conventional\" deadlift. When the feet are wide and the hands are inside the knees, it is a sumo deadlift.",
         "youtube_id": "ZaTM37cfiDs",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/1.jpg"]
     },
     "sumo_deadlift": {
         "exercise_id": "EX_126",
@@ -1230,7 +1236,8 @@
         },
         "description": "The stationary bike is a popular cardio machine found in most commercial gyms. Along with burning a ton of calories, the stationary bike also helps develop the lower body. Stationary bikes come in multiple variations, ranging from ones that resemble riding a bike, to recumbent bikes, to fan bikes that work both the arms and the legs. No matter the variation, a stationary bike can work well at higher speeds for interval-style conditioning training, but also works well at slower paces for steady-state cardio.",
         "youtube_id": "1cS-6KsJW9g",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/1.jpg"]
     },
     "goblet_squat": {
         "exercise_id": "EX_129",
@@ -1444,8 +1451,8 @@
         "description": "The bench press is a popular barbell exercise that builds strength and muscle in the chest, triceps, and shoulders. It is a popular way to measure overall upper-body strength, and is contested in the sport of powerlifting. When many people think of lifting, the bench press is often the first exercise that comes to mind. It can be performed for low reps for strength, higher reps for muscle, or for higher reps to build or measure strength endurance, like in the 225-pound bench press rep test in the NFL combine.",
         "youtube_id": "hWbUlkb5Ms4",
         "animation_frames": [
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bench_Press/0.jpg",
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bench_Press/1.jpg"
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg",
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/1.jpg"
         ]
     },
     "incline_bench_press": {
@@ -1493,8 +1500,8 @@
         "description": "The incline bench press is a popular barbell exercise targeting the chest muscles, particularly the upper pectoral muscles. While it can be a strength-focused movement, it is usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of upper-body or chest-focused training.",
         "youtube_id": "98HWfiRonkE",
         "animation_frames": [
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Incline_Bench_Press/0.jpg",
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Incline_Bench_Press/1.jpg"
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg",
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/1.jpg"
         ]
     },
     "flat_db_press": {
@@ -1631,8 +1638,8 @@
         "description": "Description coming soon.",
         "youtube_id": "CrbIq-T-h8I",
         "animation_frames": [
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chest_Push_single_response/0.jpg",
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chest_Push_single_response/1.jpg"
+            "https://www.strengthlog.com/wp-content/uploads/2020/02/Dips.gif",
+            "https://www.strengthlog.com/wp-content/uploads/2020/02/Dips.gif"
         ]
     },
     "smith_machine_press_flat_incline": {
@@ -1674,8 +1681,8 @@
         "description": "The Smith machine leg press is a machine-based movement that targets the quads, glutes, and hamstrings. It can serve as a substitute for the leg press or be programmed similarly to the leg press. It is usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of lower-body training. If your Smith machine has safety bars, set them at a height that allows you a full range of motion while giving adequate protection from the weight potentially falling.",
         "youtube_id": "VXaBbUYMfIs",
         "animation_frames": [
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Leg_Press/0.jpg",
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Leg_Press/1.jpg"
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bench_Press/0.jpg",
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bench_Press/1.jpg"
         ]
     },
     "cable_crossover": {
@@ -1754,7 +1761,8 @@
         },
         "description": "The dip machine is a machine exercise that mimics a triceps dip, a bodyweight exercise performed on parallel bars or on a pull-up and dip station. It targets the triceps first, but also stretches and strengthens the chest and shoulders. Dips with a triceps focus are usually performed with an upright torso, the knees bent and crossed, and the arms close to the body. Dips can be performed for low reps for strength or higher reps for muscle growth.",
         "youtube_id": "fgXSA2-o0NM",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butterfly/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butterfly/1.jpg"]
     },
     "db_fly": {
         "exercise_id": "EX_211",
@@ -1876,7 +1884,8 @@
         },
         "description": "The standing calf raise is a popular movement to target the calf muscles of the lower leg, and in particular the gastrocnemius muscles. When unweighted, it is usually performed for high reps or for time.",
         "youtube_id": "HpWKCfbXsVk",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Chest_Press/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Chest_Press/1.jpg"]
     },
     "guillotine_press_db": {
         "exercise_id": "EX_214",
@@ -1959,8 +1968,8 @@
         "description": "Description coming soon.",
         "youtube_id": "a-UFQE4oxWY",
         "animation_frames": [
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bench_Press/0.jpg",
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bench_Press/1.jpg"
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press0.jpg",
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press/1.jpg"
         ]
     },
     "banded_push_up": {
@@ -2342,7 +2351,8 @@
         },
         "description": "The double-arm triceps kick-back is a popular movement to increase size and strength of the triceps. It is usually performed for moderate to high reps, at least 8-12 reps, as part of an upper-body or arm-focused workout.",
         "youtube_id": "7_C9_SWHZbo",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Dumbbell_Triceps_Extension/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Dumbbell_Triceps_Extension/1.jpg"]
     },
     "smith_machine_jm_press": {
         "exercise_id": "EX_225",
@@ -2468,7 +2478,8 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "u36jNfqh8_U",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Incline_Pushdown/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Incline_Pushdown/1.jpg"]
     },
     "db_french_press": {
         "exercise_id": "EX_228",
@@ -2598,7 +2609,8 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "ci5tcFgIntI",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Triceps_Version/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Triceps_Version/1.jpg"]
     },
     "diamond_push_up": {
         "exercise_id": "EX_231",
@@ -2680,7 +2692,8 @@
         },
         "description": "The chest dip is a bodyweight exercise performed on parallel bars or on a pull-up and dip station. It targets the chest, triceps, and shoulders. Dips with a chest focus are usually performed with the torso leaning forward and the elbows angled out from the torso. Dips can be performed for low reps for strength or higher reps for muscle growth.",
         "youtube_id": "LH9iZNaO7oU",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dip_Machine/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dip_Machine/1.jpg"]
     },
     "chest_supported_row": {
         "exercise_id": "EX_301",
@@ -2726,7 +2739,8 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "czoQ_ncuqqI",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Iso_Row/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Iso_Row/1.jpg"]
     },
     "wide_grip_lat_pull_down": {
         "exercise_id": "EX_302",
@@ -2814,7 +2828,8 @@
         },
         "description": "The neutral-grip lat pull-down is a variation on the lat pull-down that uses a handle with a neutral (palms facing in) grip. This arrangement helps to build lat width and target the upper lats. This movement is usually performed for moderate to high reps, such as 8-12 per set or higher, as part of an upper-body or back-focused workout.",
         "youtube_id": "bNmvKpJSWKM",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Front_Lat_Pulldown/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Front_Lat_Pulldown/1.jpg"]
     },
     "half_kneeling_one_arm_lat_pull_down": {
         "exercise_id": "EX_304",
@@ -2902,7 +2917,8 @@
         },
         "description": "The machine low row is an exercise targeting the back muscles.",
         "youtube_id": "uexTkvxwMGM",
-        "animation_frames": []
+        "animation_frames": ["https://i.pinimg.com/originals/22/66/d2/2266d28d56dc4967aa2b0a8f3da013d9.gif",
+        "https://i.pinimg.com/originals/22/66/d2/2266d28d56dc4967aa2b0a8f3da013d9.gif"]
     },
     "cable_row": {
         "exercise_id": "EX_306",
@@ -3038,7 +3054,8 @@
         },
         "description": "The neutral-grip pull-up is a multijoint bodyweight exercise in which the reps are performed with the palms facing one another. Like other pull-up variations, it builds strength and muscle in the upper back, biceps, and core. It can be used as a more shoulder-friendly alternative to straight-bar pull-ups, or to help perform more reps than you can perform overhand.",
         "youtube_id": "Ai4S1uzMP7A",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Rear_Pull-Up/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Rear_Pull-Up/1.jpg"]
     },
     "cross_body_lat_pull_around": {
         "exercise_id": "EX_309",
@@ -3074,7 +3091,8 @@
         },
         "description": "The cross-body plank march is an exercise targeting the entire core but especially the obliques. It\u2019s more difficult than a standard plank, with the extra stabilization challenge of bringing one knee at a time off the ground toward the opposing elbow. This will increase the challenge to the core and shoulder muscles, but also present a coordination and balance challenge.",
         "youtube_id": "W71cSJBEOTc",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Rear_Pull-Up/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Rear_Pull-Up/1.jpg"]
     },
     "deficit_pendlay_row": {
         "exercise_id": "EX_310",
@@ -3209,7 +3227,8 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "mUGCSDiIW9g",
-        "animation_frames": []
+        "animation_frames": ["https://gymvisual.com/img/p/3/9/0/4/5/39045.gif",
+        "https://gymvisual.com/img/p/3/9/0/4/5/39045.gif"]
     },
     "lying_or_seated_face_pull": {
         "exercise_id": "EX_313",
@@ -3296,7 +3315,8 @@
         },
         "description": "The straight-arm cable pull-over is an exercise that focuses on the muscles of the lats (latissimus dorsi) and chest using a cable stack and a flat bench. It is most commonly used for higher reps, such as 10-15 or more, in muscle-building workouts. It is also an effective substitute for dumbbell pull-overs or a pull-over machine, if you don't have access to them or they aggravate your shoulders.",
         "youtube_id": "KvaRVUq6I50",
-        "animation_frames": []
+        "animation_frames": ["https://i.makeagif.com/media/9-01-2023/CigHNh.gif","https://i.makeagif.com/media/9-01-2023/CigHNh.gif"
+    ]
     },
     "db_lat_pullover": {
         "exercise_id": "EX_315",
@@ -3435,7 +3455,8 @@
         },
         "description": "The barbell bent-over row is a compound exercise used to build strength and size in both the lower and upper back. It targets nearly all of the muscles in the back, but particularly the lats, rhomboids, and lower back. It is commonly utilized as an accessory movement for the deadlift in powerlifting, but is also popular in strength and muscle-focused upper-body workouts.",
         "youtube_id": "Nqh7q3zDCoQ",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/1.jpg"]
     },
     "pendlay_row": {
         "exercise_id": "EX_318",
@@ -3477,7 +3498,8 @@
         },
         "description": "The Pendlay row, named after the well-known strength coach Glenn Pendlay, is a bent-over row variation where each rep starts with the barbell resting on the ground. This eliminates the stretch reflex and forces the lifter to pull with power and a bent-over spine. The Pendlay row can be performed heavy for low reps, but is usually performed for moderate reps, such as 5-8 per set.",
         "youtube_id": "tYxEGi7ir4I",
-        "animation_frames": []
+        "animation_frames": ["https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg",
+        "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/1.jpg"]
     },
     "freestanding_t_bar_row": {
         "exercise_id": "EX_319",
@@ -3519,7 +3541,7 @@
         },
         "description": "The standing EZ-bar curl is a popular exercise targeting the biceps. It is commonly performed for moderate to high reps as part of an upper-body or arm-focused workout. Many gyms even have EZ-bars at fixed weights, allowing for easy weight changes.",
         "youtube_id": "8pR3JoZ0iBU",
-        "animation_frames": []
+        "animation_frames": ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjntsY-gfvew292jqdG-iXP04ubvWonJfqnQ&s","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjntsY-gfvew292jqdG-iXP04ubvWonJfqnQ&s"]
     },
     "standing_rope_face_pull": {
         "exercise_id": "EX_320",
@@ -3605,7 +3627,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "BaSd7C58L3o",
-        "animation_frames": []
+        "animation_frames": ["https://cdn.shopify.com/s/files/1/0870/1170/files/bayesian-curl_600x600.gif?v=1665397919","https://cdn.shopify.com/s/files/1/0870/1170/files/bayesian-curl_600x600.gif?v=1665397919"]
     },
     "45_degree_preacher_curl": {
         "exercise_id": "EX_322",
@@ -4068,7 +4090,7 @@
         },
         "description": "The lying leg curl is a popular machine-based exercise for the legs, particularly the hamstrings. It is similar to the seated leg curl, but the open hip angle in the lying leg curl may incorporate more glute and calf activation. It is usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of a leg pre-exhaust or as a muscle-building movement for lower-body training.",
         "youtube_id": "1bh7DdBB4l8",
-        "animation_frames": []
+        "animation_frames": ["https://api.smartworkout.app/asset/image/078b5851-96a1-4240-bd47-09912a6489de","https://api.smartworkout.app/asset/image/078b5851-96a1-4240-bd47-09912a6489de"]
     },
     "modified_21s": {
         "exercise_id": "EX_333",
@@ -4104,7 +4126,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "jgmESOA4J5E",
-        "animation_frames": []
+        "animation_frames": ["https://gymvisual.com/img/p/2/3/4/8/0/23480.gif","https://gymvisual.com/img/p/2/3/4/8/0/23480.gif"]
     },
     "cheat_curl": {
         "exercise_id": "EX_334",
@@ -4143,7 +4165,7 @@
         },
         "description": "The EZ-bar preacher curl is a classic exercise for building bigger biceps. This move is all about isolation. With the back of the upper arms against the pad, it\u2019s next to impossible to cheat. Go light, get a great pump, and build that peak!",
         "youtube_id": "7FOI7mPY96Q",
-        "animation_frames": []
+        "animation_frames": ["https://gymvisual.com/img/p/2/5/2/5/1/25251.gif","https://gymvisual.com/img/p/2/5/2/5/1/25251.gif"]
     },
     "barbell_curl": {
         "exercise_id": "EX_335",
@@ -4399,7 +4421,7 @@
         },
         "description": "The single-arm cable lateral raise is an isolation exercise targeting the shoulders, specifically the medial deltoid. This movement also hits the traps and upper back and allows you to focus on each side independently. Because grip is a limitation, it is usually performed for moderate to high reps, at least 8-12 reps per set, as part of an upper-body or shoulder-focused workout.",
         "youtube_id": "1wq4AySe2gg",
-        "animation_frames": []
+        "animation_frames": ["https://gymvisual.com/img/p/1/8/4/3/4/18434.gif","https://gymvisual.com/img/p/1/8/4/3/4/18434.gif"]
     },
     "reverse_pec_deck": {
         "exercise_id": "EX_405",
@@ -4441,7 +4463,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "-TKqxK7-ehc",
-        "animation_frames": []
+        "animation_frames": ["https://barbend.com/wp-content/uploads/2022/11/reverse-flye-on-peck-deck.gif","https://barbend.com/wp-content/uploads/2022/11/reverse-flye-on-peck-deck.gif"]
     },
     "machine_shoulder_press": {
         "exercise_id": "EX_406",
@@ -4521,7 +4543,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "ODV5FncMCy0",
-        "animation_frames": []
+        "animation_frames": ["https://musclemagfitness.com/wp-content/uploads/lever-lateral-raise-exercise.gif","https://musclemagfitness.com/wp-content/uploads/lever-lateral-raise-exercise.gif"]
     },
     "seated_db_shoulder_press": {
         "exercise_id": "EX_408",
@@ -4607,8 +4629,8 @@
         "description": "The seated dumbbell lateral raise is an exercise that targets the shoulder muscles, particularly the medial or middle head of the deltoids. Performing it on a bench helps enforce strict form and eliminate swinging or using momentum to move the weights. Lateral raise variations are usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of the upper-body or shoulder-focused portion of a workout.",
         "youtube_id": "HeovYNoZDRg",
         "animation_frames": [
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Calf_Raise/0.jpg",
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Calf_Raise/1.jpg"
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Incline_Lateral_Raise/0.jpg",
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Incline_Lateral_Raise/1.jpg"
         ]
     },
     "arnold_style_side_lying_db_raise": {
@@ -4793,8 +4815,8 @@
         "description": "The standing dumbbell calf raise is a popular exercise to target the calf muscles of the lower leg, and in particular the gastrocnemius muscles. It can be performed for time or for reps, either two dumbbells, or one if balance is a problem and you would like to use your free hand to hold a fixed object.",
         "youtube_id": "lnVEvYCBGDo",
         "animation_frames": [
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Calf_Raise/0.jpg",
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Calf_Raise/1.jpg"
+            "https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/DB_LAT_RAISE-1.gif",
+            "https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/DB_LAT_RAISE-1.gif"
         ]
     },
     "super_rom_lateral_raise": {
@@ -4923,7 +4945,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "LsT-bR_zxLo",
-        "animation_frames": []
+        "animation_frames": ["https://i0.wp.com/www.strengthlog.com/wp-content/uploads/2020/02/Reverse-dumbbell-flyes.gif?fit=600%2C600&ssl=1","https://i0.wp.com/www.strengthlog.com/wp-content/uploads/2020/02/Reverse-dumbbell-flyes.gif?fit=600%2C600&ssl=1"]
     },
     "seated_machine_lateral_raise": {
         "exercise_id": "EX_417",
@@ -5373,7 +5395,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "Fg4ryGff51M",
-        "animation_frames": []
+        "animation_frames": ["https://i.pinimg.com/originals/02/d0/f0/02d0f08afa8b28fc69e5d1f5fe34ec90.gif","https://i.pinimg.com/originals/02/d0/f0/02d0f08afa8b28fc69e5d1f5fe34ec90.gif"]
     },
     "candle_raise": {
         "exercise_id": "EX_511",
@@ -5412,7 +5434,7 @@
         },
         "description": "The plank leg raise is an isometric abdominal exercise that targets the muscles of the core, the deep core or transversus abdominis in particular. It also targets the muscles of the glutes and hips. It can be performed for time or reps in the ab-focused portion of any workout.",
         "youtube_id": "z0ZWLKckv9g",
-        "animation_frames": []
+        "animation_frames": ["https://i.makeagif.com/media/9-07-2022/i-HQO8.gif","https://i.makeagif.com/media/9-07-2022/i-HQO8.gif"]
     },
     "russian_twist": {
         "exercise_id": "EX_512",
@@ -5494,7 +5516,7 @@
         },
         "description": "The drag curl is a biceps exercise that attempts to remove the influence of the front deltoids on the classic curl. With the elbows kept back, the barbell \"drags\" up the torso. It is usually performed for moderate to high reps, such as 8-15 reps per set, as part of an upper-body or arms-focused workout.",
         "youtube_id": "pvz7k5gO-DE",
-        "animation_frames": []
+        "animation_frames": ["https://media.post.rvohealth.io/wp-content/uploads/sites/2/2022/01/GRT-12.01.DragonFlag.gif","https://media.post.rvohealth.io/wp-content/uploads/sites/2/2022/01/GRT-12.01.DragonFlag.gif"]
     },
     "rollout": {
         "exercise_id": "EX_514",
@@ -5747,8 +5769,8 @@
         "description": "The diamond push-up is an advanced variation of the push-up exercise performed with the hands in a diamond shape. It increases the challenge to the triceps, but also targets the chest and shoulders.",
         "youtube_id": "PPTj-MW2tcs",
         "animation_frames": [
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Push-Up/0.jpg",
-            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Push-Up/1.jpg"
+            "https://images.ctfassets.net/6ilvqec50fal/3hTY3FIEwYdNloN5V3HL7G/26e28de169b01e5e79332e5418803470/Diamond_Push-Up_GIF.gif",
+            "https://images.ctfassets.net/6ilvqec50fal/3hTY3FIEwYdNloN5V3HL7G/26e28de169b01e5e79332e5418803470/Diamond_Push-Up_GIF.gif"
         ]
     },
     "pike_push_ups": {
@@ -5851,7 +5873,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "HkGcKQ36Mfo",
-        "animation_frames": []
+        "animation_frames": ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVZ5cbihV2WzExMEV9-WGhj9jC5Rmi2ETx6Q&s","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVZ5cbihV2WzExMEV9-WGhj9jC5Rmi2ETx6Q&s"]
     },
     "inverted_table_rows": {
         "exercise_id": "EX_BW_201",
@@ -5953,7 +5975,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "FVxT8QuAU-0",
-        "animation_frames": []
+        "animation_frames": ["https://i.makeagif.com/media/11-26-2023/0A6Ngr.gif","https://i.makeagif.com/media/11-26-2023/0A6Ngr.gif"]
     },
     "wall_pull_holds": {
         "exercise_id": "EX_BW_203",
@@ -6000,7 +6022,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "UcyB912Uam4",
-        "animation_frames": []
+        "animation_frames": ["https://fitnessandfinanceoverforty.com/wp-content/uploads/2023/11/hangoverhandgrip-1504015458.gif","https://fitnessandfinanceoverforty.com/wp-content/uploads/2023/11/hangoverhandgrip-1504015458.gif"]
     },
     "reverse_snow_angels": {
         "exercise_id": "EX_BW_204",
@@ -6050,7 +6072,7 @@
         },
         "description": "The reverse lunge is a lower-body exercise targeting the quads, glutes, and hamstrings. The reverse lunge places more emphasis on the glutes than other lunge variations.",
         "youtube_id": "pheTWb7eSko",
-        "animation_frames": []
+        "animation_frames": ["https://sportcoaching.co.nz/wp-content/uploads/2021/02/Reverse-Snow-Angels.gif","https://sportcoaching.co.nz/wp-content/uploads/2021/02/Reverse-Snow-Angels.gif"]
     },
     "superman_holds": {
         "exercise_id": "EX_BW_205",
@@ -6313,7 +6335,7 @@
         },
         "description": "The single-arm inverted row is a bodyweight exercise targeting the muscles of the lats (latissimus dorsi) and upper back, using the bar of the Smith machine to hang and pull from. You can change the bar height to customize the difficulty level and desired angle of the row.",
         "youtube_id": "i9BJwVCK5VQ",
-        "animation_frames": []
+        "animation_frames": ["https://gymvisual.com/img/p/1/2/7/0/2/12702.gif","https://gymvisual.com/img/p/1/2/7/0/2/12702.gif"]
     },
     "feet_elevated_inverted_rows": {
         "exercise_id": "EX_BW_210",
@@ -6414,7 +6436,7 @@
         },
         "description": "Description coming soon.",
         "youtube_id": "Ow4KlswOrhU",
-        "animation_frames": []
+        "animation_frames": ["https://gymvisual.com/img/p/1/2/7/0/2/12702.gif","https://gymvisual.com/img/p/1/2/7/0/2/12702.gif"]
     },
     "isometric_row_hold_top": {
         "exercise_id": "EX_BW_212",
