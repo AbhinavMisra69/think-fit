@@ -68,7 +68,7 @@ const locationOptions = [{ id: "home", label: "Home Workout" }, { id: "basic_gym
 const homeEquipment = [{ id: "dumbbells", label: "Dumbbells" }, { id: "bands", label: "Resistance Bands" }, { id: "mat", label: "Yoga Mat" }, { id: "pullup", label: "Pull-up Bar" }];
 const basicGymEquipment = [{ id: "smith", label: "Smith Machine" }, { id: "cables", label: "Cable Machine" }, { id: "treadmill", label: "Cardio Machines" }, { id: "kettlebells", label: "Kettlebells" }];
 const goalOptions = [
-  { id: "muscle_gain", label: "Gain Muscle Mass" },
+  { id: "build_muscle", label: "Gain Muscle Mass" },
   { id: "fat_loss", label: "Lose Body Fat" },
   { id: "recomposition", label: "Body Recomposition (Both)" },
   { id: "maintenance", label: "Maintain / Performance" }

@@ -153,27 +153,26 @@ export default function Page() {
             onClose={() => setActiveExercise(null)} 
           />
         ) : (
-          <div className="h-full overflow-y-auto pt-8 pb-20">
+          <div className="h-full overflow-y-auto pt-24 pb-20">
             <h2 className="text-2xl font-semibold tracking-tight text-gray-800 mb-4 ml-6">
               Monthly Progress
             </h2>
             <div className="px-6 mb-10">
-            <StreakCalendar history={dayDataMap} />
+              <StreakCalendar history={dayDataMap} />
             </div>
             
-            {/* NEW: The integrated Macrocycle Overview right below the calendar! */}
             <MacrocycleSidebar userId={userId as string} />
-            
           </div>
         )}
       </section>
 
       <div className="fixed top-0 left-0 w-full md:w-2/3 h-screen bg-white overflow-y-auto font-sans shadow-sm">
-        <div className="p-8 max-w-4xl mx-auto">
+        {/* FIX 2: Changed p-8 to px-8 pt-24 pb-8 to clear the global navbar */}
+        <div className="px-8 pt-24 pb-8 max-w-4xl mx-auto">
           
           <div className="flex items-center justify-between mb-10">
             <div className="flex items-center gap-6">
-              <span className="font-semibold text-3xl text-slate-800">0</span>
+              {/* FIX 3: The hardcoded <span className="font-semibold text-3xl...">0</span> was deleted from right here! */}
               <div className="flex items-center space-x-3 bg-slate-50 p-1.5 rounded-full border border-slate-100">
                 <button onClick={handlePrevWeek} className="p-2 bg-white shadow-sm rounded-full hover:bg-slate-100 transition-colors active:scale-95">
                   <ChevronLeft className="w-5 h-5 text-slate-700" />
@@ -188,9 +187,6 @@ export default function Page() {
                 </button>
               </div>
             </div>
-            <button className="p-3 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
-              <User className="w-6 h-6 text-slate-700" />
-            </button>
           </div>
 
           <div className="flex justify-between w-full px-2 sm:px-4 select-none mb-10 overflow-x-auto pb-4">
@@ -270,26 +266,48 @@ export default function Page() {
   );
 }
 
-// --- NEW MACROCYCLE SIDEBAR COMPONENT ---
-function MacrocycleSidebar({ userId }: { userId: string }) {
+// --- NEW BULLETPROOF MACROCYCLE SIDEBAR ---
+function MacrocycleSidebar({ userId }: { userId?: string }) {
   const [data, setData] = useState<MacrocycleData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchMacrocycle = async () => {
-      // --- Add Guard Here Too ---
-      if (!userId) return;
+    // 1. If we don't have a userId yet, just wait. Don't freeze!
+    if (!userId) {
+      console.log("Macrocycle: Waiting for userId...");
+      return;
+    }
 
+    const fetchMacrocycle = async () => {
+      setIsLoading(true);
+      setErrorMsg(null);
+      
       try {
+        console.log(`Macrocycle: Fetching data for user ${userId}...`);
         const res = await fetch(`http://127.0.0.1:5001/api/workout/macrocycle?user_id=${userId}`);
+        
+        // 2. Catch actual server crashes (like that 500 error we saw earlier)
+        if (!res.ok) {
+          throw new Error(`Server crashed with status: ${res.status}`);
+        }
+
         const result = await res.json();
-        if (result.status === "success") setData(result);
-      } catch (err) {
-        console.error("Failed to fetch macrocycle data", err);
+        console.log("Macrocycle: Data received:", result);
+
+        if (result.status === "success" && result.phases) {
+          setData(result);
+        } else {
+          setErrorMsg(result.message || "Invalid data format received.");
+        }
+      } catch (err: any) {
+        console.error("Macrocycle: Failed to fetch:", err.message);
+        setErrorMsg("Failed to connect to the ThinkFit engine.");
       } finally {
         setIsLoading(false);
       }
     };
+
     fetchMacrocycle();
   }, [userId]);
 
@@ -315,8 +333,37 @@ function MacrocycleSidebar({ userId }: { userId: string }) {
     }
   };
 
-  if (isLoading || !data) return null;
+  // UI STATE 1: Still waiting for Auth or fetching data (Shows a sleek pulsing skeleton)
+  if (isLoading) {
+    return (
+      <div className="px-6 pb-8 border-t border-zinc-200 pt-8 mt-2">
+        <div className="animate-pulse">
+          <div className="h-6 w-48 bg-slate-200 rounded mb-2"></div>
+          <div className="h-4 w-32 bg-slate-100 rounded mb-8"></div>
+          <div className="h-24 w-full bg-slate-100 rounded-xl mb-6"></div>
+          <div className="space-y-4">
+            <div className="h-16 w-full bg-slate-50 rounded-lg border border-slate-100"></div>
+            <div className="h-16 w-full bg-slate-50 rounded-lg border border-slate-100"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
+  // UI STATE 2: Backend failed or returned empty data (Shows an error card)
+  if (errorMsg || !data) {
+    return (
+      <div className="px-6 pb-8 border-t border-zinc-200 pt-8 mt-2 text-center">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
+          <Map className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+          <p className="text-sm font-semibold text-slate-700 mb-1">Roadmap Unavailable</p>
+          <p className="text-xs text-slate-500">{errorMsg || "No phase data found for this user."}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // UI STATE 3: Success! Render the actual roadmap
   const progressPercentage = Math.round((data.current_week / data.total_weeks) * 100);
 
   return (
@@ -326,7 +373,7 @@ function MacrocycleSidebar({ userId }: { userId: string }) {
           <Map className="w-5 h-5 text-blue-600" /> Program Roadmap
         </h3>
         <p className="text-sm text-slate-500">
-          Optimized for <span className="font-semibold text-slate-700 capitalize">{data.goal.replace(/_/g, ' ')}</span>
+          Optimized for <span className="font-semibold text-slate-700 capitalize">{data.goal?.replace(/_/g, ' ') || 'Recomposition'}</span>
         </p>
       </div>
 
@@ -343,7 +390,6 @@ function MacrocycleSidebar({ userId }: { userId: string }) {
         </div>
       </div>
 
-      {/* Compact Vertical Timeline */}
       <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[15px] before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
         {data.phases.map((phase, index) => {
           const isPast = data.current_week > phase.end_week;
@@ -366,7 +412,7 @@ function MacrocycleSidebar({ userId }: { userId: string }) {
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-current"></span>
                   </span>}
                 </div>
-                <h4 className={`text-sm font-bold mb-1 ${isPast ? 'text-slate-500' : 'text-slate-800'}`}>{phase.phase}</h4>
+                <h4 className={`text-sm font-bold mb-1 ${isPast ? 'text-slate-500' : 'text-slate-800'}`}>{phase.phase?.replace(/_/g, ' ')}</h4>
                 <p className={`text-xs leading-relaxed ${isPast ? 'text-slate-400' : 'text-slate-600'}`}>{phase.focus}</p>
               </div>
             </div>
