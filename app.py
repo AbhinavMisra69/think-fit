@@ -1147,5 +1147,115 @@ def complete_workout():
         cursor.close()
         conn.close()
 
+# ---------------------------------------------------------
+# STRENGTH ANALYTICS ROUTE
+# ---------------------------------------------------------
+@app.route('/api/progress/strength', methods=['GET'])
+def get_strength_progression():
+    user_id = get_user_id_from_request(request)
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+        
+    try:
+        import psycopg2
+        from psycopg2.extras import RealDictCursor
+        conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get workout history ordered by date
+        cursor.execute("""
+            SELECT log_date, exercise_name, weight_used, reps_achieved
+            FROM workout_history
+            WHERE user_id = %s
+            ORDER BY log_date ASC
+        """, (user_id,))
+        
+        history = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        # --- Advanced Benchmark Proxy Engine ---
+        # Formula: Proxy 1RM * Multiplier = Benchmark 1RM
+        PROXY_MAP = {
+            "bench": {
+                "barbell bench": 1.0, "bench press": 1.0, "machine chest press": 1.0,
+                "dumbbell bench press": 2.2, "incline bench": 1.2, "chest press": 1.0,
+            },
+            "squat": {
+                "barbell squat": 1.0, "hack squat": 0.8, "leg press": 0.5,
+                "goblet squat": 1.5, "split squat": 2.0, "lunges": 2.2
+            },
+            "deadlift": {
+                "deadlift": 1.0, "romanian deadlift": 1.1, "rdl": 1.1,
+                "rack pull": 0.9, "back extension": 2.5, "good morning": 2.0
+            },
+            "ohp": {
+                "overhead press": 1.0, "military press": 1.0,
+                "dumbbell shoulder press": 2.2, "machine shoulder press": 1.0,
+                "shoulder press": 1.0, "arnold press": 2.2
+            }
+        }
+        
+        daily_strength = {}
+        for entry in history:
+            # Safely handle dates
+            log_date = entry['log_date']
+            date_str = log_date.strftime('%Y-%m-%d') if hasattr(log_date, 'strftime') else str(log_date)[:10]
+            
+            ex_name = str(entry['exercise_name']).lower()
+            weight = float(entry['weight_used'] or 0)
+            reps = float(entry['reps_achieved'] or 0)
+            
+            if weight <= 0 or reps <= 0:
+                continue
+                
+            # Brzycki / Epley 1RM formula
+            calc_1rm = weight * (1 + reps / 30.0)
+            
+            if date_str not in daily_strength:
+                daily_strength[date_str] = {"bench": None, "squat": None, "deadlift": None, "ohp": None}
+                
+            for benchmark, proxies in PROXY_MAP.items():
+                for proxy_name, multiplier in proxies.items():
+                    if proxy_name in ex_name:
+                        est_benchmark_1rm = calc_1rm * multiplier
+                        curr_est = daily_strength[date_str][benchmark]
+                        # Save the highest estimate for the day
+                        if curr_est is None or est_benchmark_1rm > curr_est:
+                            daily_strength[date_str][benchmark] = round(est_benchmark_1rm, 1)
+                        break 
+        
+        formatted_data = []
+        last_known = {"bench": 0, "squat": 0, "deadlift": 0, "ohp": 0}
+        
+        for date_str in sorted(daily_strength.keys()):
+            day_data = daily_strength[date_str]
+            
+            # Forward Fill missing data so the line charts don't break visually
+            for bench_key in last_known.keys():
+                if day_data[bench_key] is not None:
+                    last_known[bench_key] = day_data[bench_key]
+                else:
+                    day_data[bench_key] = last_known[bench_key] if last_known[bench_key] > 0 else None
+                    
+            from datetime import datetime
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+            
+            formatted_data.append({
+                "short_date": date_obj.strftime('%d %b'),
+                "bench": day_data["bench"],
+                "squat": day_data["squat"],
+                "deadlift": day_data["deadlift"],
+                "ohp": day_data["ohp"]
+            })
+            
+        return jsonify({"strength_history": formatted_data})
+        
+    except Exception as e:
+        print(f"🔥 STRENGTH PROGRESSION CRASH: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

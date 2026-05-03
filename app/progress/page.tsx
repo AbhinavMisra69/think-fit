@@ -28,6 +28,7 @@ const mockStrengthHistory = [
 
 export default function ProgressDashboard() {
   const [history, setHistory] = useState<MeasurementLog[]>([]);
+  const [strengthHistory, setStrengthHistory] = useState<any[]>(mockStrengthHistory); // Uses mock as fallback
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -39,6 +40,7 @@ export default function ProgressDashboard() {
     try {
       const sessionStr = localStorage.getItem("thinkfit_session");
       
+      // 1. Fetch Measurement History
       const res = await fetch("http://127.0.0.1:5001/api/progress", {
         headers: {
           "Content-Type": "application/json",
@@ -46,16 +48,32 @@ export default function ProgressDashboard() {
         }
       });
       
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
-      
-      const processedHistory = data.history.map((entry: MeasurementLog) => ({
-        ...entry,
-        lean_mass: Number((entry.weight_kg * (1 - (entry.body_fat_pct / 100))).toFixed(1)),
-        short_date: new Date(entry.log_date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })
-      }));
-      
-      setHistory(processedHistory);
+      if (res.ok) {
+        const data = await res.json();
+        const processedHistory = data.history.map((entry: MeasurementLog) => ({
+          ...entry,
+          lean_mass: Number((entry.weight_kg * (1 - (entry.body_fat_pct / 100))).toFixed(1)),
+          short_date: new Date(entry.log_date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })
+        }));
+        setHistory(processedHistory);
+      }
+
+      // 2. Fetch Strength Inference Engine History
+      const strengthRes = await fetch("http://127.0.0.1:5001/api/progress/strength", {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session": sessionStr || "" 
+        }
+      });
+
+      if (strengthRes.ok) {
+        const strData = await strengthRes.json();
+        // Only replace mock data if real data exists
+        if (strData.strength_history && strData.strength_history.length > 0) {
+          setStrengthHistory(strData.strength_history);
+        }
+      }
+
     } catch (error) {
       console.error("Failed to fetch history", error);
       toast.error("Failed to load dashboard data.");
@@ -122,7 +140,6 @@ export default function ProgressDashboard() {
     );
   }
 
-  // UX Fix: If there is only 1 baseline entry, duplicate it locally so the charts draw a flat starting line!
   const chartData = history.length === 1 
     ? [ { ...history[0], short_date: "Day 1" }, { ...history[0], short_date: "Current" } ]
     : history;
@@ -215,7 +232,6 @@ export default function ProgressDashboard() {
             </div>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                {/* Changed data={history} to data={chartData} */}
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
@@ -245,7 +261,6 @@ export default function ProgressDashboard() {
             </div>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                {/* Changed data={history} to data={chartData} */}
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorBF" x1="0" y1="0" x2="0" y2="1">
@@ -279,10 +294,10 @@ export default function ProgressDashboard() {
         <div>
           <h2 className="text-lg font-bold text-slate-900 mb-4 px-1 mt-4">Estimated 1RM Strength Progression</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StrengthChart title="Bench Press (kg)" dataKey="bench" color="#3b82f6" data={mockStrengthHistory} />
-            <StrengthChart title="Squat (kg)" dataKey="squat" color="#8b5cf6" data={mockStrengthHistory} />
-            <StrengthChart title="Deadlift (kg)" dataKey="deadlift" color="#ec4899" data={mockStrengthHistory} />
-            <StrengthChart title="Overhead Press (kg)" dataKey="ohp" color="#f97316" data={mockStrengthHistory} />
+            <StrengthChart title="Bench Press (kg)" dataKey="bench" color="#3b82f6" data={strengthHistory} />
+            <StrengthChart title="Squat (kg)" dataKey="squat" color="#8b5cf6" data={strengthHistory} />
+            <StrengthChart title="Deadlift (kg)" dataKey="deadlift" color="#ec4899" data={strengthHistory} />
+            <StrengthChart title="Overhead Press (kg)" dataKey="ohp" color="#f97316" data={strengthHistory} />
           </div>
         </div>
 

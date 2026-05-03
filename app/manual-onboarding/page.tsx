@@ -24,7 +24,7 @@ const formSchema = z.object({
   arm: z.string().min(1, "Arm circumference is required"),
   hip: z.string().optional(),
   bodyType: z.string().min(1, "Please select a body shape"),
-  primaryGoals: z.array(z.string()).min(1, "Please select at least one goal"), 
+  primaryGoal: z.string().min(1, "Please select your primary goal"), // <-- CHANGED TO STRING
   activityLevel: z.string().min(1, "Please select your daily activity level"),
   experienceLevel: z.string().min(1, "Select your training experience"),
   workoutDays: z.string().min(1, "Select availability"),
@@ -66,7 +66,29 @@ const recoveryOptions = [{ id: "fast", label: "Fast (Rarely sore)" }, { id: "ave
 const medicalOptions = [{ id: "none", label: "None / Perfectly Healthy" }, { id: "lower_back", label: "Lower Back Pain" }, { id: "joint_pain", label: "Knee / Joint Pain" }, { id: "shoulder", label: "Shoulder Issues" }, { id: "hypertension", label: "High Blood Pressure" }, { id: "asthma", label: "Asthma / Breathing" }];
 const locationOptions = [{ id: "home", label: "Home Workout" }, { id: "basic_gym", label: "Basic Gym (Apartment/Hotel)" }, { id: "pro_gym", label: "Professional Gym" }, { id: "outdoor", label: "Outdoor / Park" }];
 const homeEquipment = [{ id: "dumbbells", label: "Dumbbells" }, { id: "bands", label: "Resistance Bands" }, { id: "mat", label: "Yoga Mat" }, { id: "pullup", label: "Pull-up Bar" }];
-const basicGymEquipment = [{ id: "smith", label: "Smith Machine" }, { id: "cables", label: "Cable Machine" }, { id: "treadmill", label: "Cardio Machines" }, { id: "kettlebells", label: "Kettlebells" }];
+
+// <-- NEW COMPREHENSIVE EQUIPMENT LIST
+const basicGymEquipment = [
+  { id: "barbell", label: "Barbell" },
+  { id: "dumbbells", label: "Dumbbells" },
+  { id: "bench", label: "Flat Bench" },
+  { id: "incline_bench", label: "Incline Bench" },
+  { id: "squat_rack", label: "Squat Rack" },
+  { id: "cable_machine", label: "Cable Machine" },
+  { id: "pullup_bar", label: "Pull-up Bar" },
+  { id: "weight_plates", label: "Weight Plates" },
+  { id: "ez_bar", label: "EZ Bar" },
+  { id: "kettlebells", label: "Kettlebells" },
+  { id: "step_platform", label: "Step Platform" },
+  { id: "plyo_box", label: "Plyo Box" },
+  { id: "leg_press_machine", label: "Leg Press Machine" },
+  { id: "leg_extension_machine", label: "Leg Extension Machine" },
+  { id: "chest_press_machine", label: "Chest Press Machine" },
+  { id: "pec_deck_machine", label: "Pec Deck Machine" },
+  { id: "ankle_strap", label: "Ankle Strap" },
+  { id: "rope_attachment", label: "Rope Attachment" }
+];
+
 const goalOptions = [
   { id: "build_muscle", label: "Gain Muscle Mass" },
   { id: "fat_loss", label: "Lose Body Fat" },
@@ -98,7 +120,6 @@ export default function ThinkFitMasterForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [estimatedBF, setEstimatedBF] = useState<number | null>(null);
   
-  // We use this state to show a loading spinner on the Next button
   const [isCalculating, setIsCalculating] = useState(false);
   
   const form = useForm<MultiFormSchema>({
@@ -108,7 +129,7 @@ export default function ThinkFitMasterForm() {
       activityLevel: "", experienceLevel: "", workoutDays: "", selectedWorkoutDays: [], workoutTime: "", soreness: "",
       durationWeeks: "", 
       medicalConditions: [], workoutLocation: "", availableEquipment: [],
-      primaryGoals: [], 
+      primaryGoal: "", // <-- CHANGED TO SINGLE STRING
     },
     mode: "onChange",
   });
@@ -128,14 +149,13 @@ export default function ThinkFitMasterForm() {
     }
   }, [selectedFrequency, maxAllowedDays, form]);
 
-  // --- THE FIX: ALL API CALLS HAPPEN DURING "NEXT" CLICKS ---
   const handleNextButton = async () => {
     let fieldsToValidate: (keyof MultiFormSchema)[] = [];
     if (currentStep === 0) {
       fieldsToValidate = ["gender", "weight", "height", "neck", "waist", "chest", "arm", "bodyType"];
       if (selectedGender === "female") fieldsToValidate.push("hip");
     }
-    if (currentStep === 1) fieldsToValidate = ["activityLevel", "primaryGoals"];
+    if (currentStep === 1) fieldsToValidate = ["activityLevel", "primaryGoal"]; // <-- VALIDATING SINGLE GOAL
     if (currentStep === 2) fieldsToValidate = ["experienceLevel", "workoutDays", "selectedWorkoutDays", "workoutTime", "soreness", "durationWeeks"];
     if (currentStep === 3) fieldsToValidate = ["medicalConditions"];
     if (currentStep === 4) fieldsToValidate = ["workoutLocation"];
@@ -147,7 +167,6 @@ export default function ThinkFitMasterForm() {
       return;
     }
 
-    // Step 0: Calculate Body Fat
     if (currentStep === 0) {
       setIsCalculating(true);
       try {
@@ -170,7 +189,6 @@ export default function ThinkFitMasterForm() {
       }
       setCurrentStep(1);
     } 
-    // Step 4: Push to Database BEFORE showing the final screen
     else if (currentStep === 4) {
       if (!user) {
         toast.error("Authentication Error: Please log in again.");
@@ -180,8 +198,12 @@ export default function ThinkFitMasterForm() {
       setIsCalculating(true);
       try {
         const values = form.getValues();
+        
+        // --- PAYLOAD TRICK ---
+        // Pass primaryGoal as an array to primaryGoals so app.py doesn't crash
         const payload = { 
           ...values, 
+          primaryGoals: [values.primaryGoal], 
           userId: user.id,
           estimatedBF: estimatedBF 
         };
@@ -194,7 +216,6 @@ export default function ThinkFitMasterForm() {
 
         if (!response.ok) throw new Error("Failed to save profile.");
         
-        // Data is saved! Now let them see the glorious final page.
         setCurrentStep(5);
       } catch (error) {
         toast.error("Failed to connect to database. Please try again.");
@@ -202,7 +223,6 @@ export default function ThinkFitMasterForm() {
         setIsCalculating(false);
       }
     } 
-    // All other steps (1, 2, 3) just move forward
     else {
       setCurrentStep((prev) => prev + 1);
     }
@@ -210,9 +230,7 @@ export default function ThinkFitMasterForm() {
 
   const handleBackButton = () => { if (currentStep > 0) setCurrentStep((prev) => prev - 1); };
 
-  // --- THE FIX: FINAL BUTTON JUST REDIRECTS ---
   const handleFinalSubmit = async (values: MultiFormSchema) => {
-    // We already saved the data during Step 4!
     toast.success("Generating your custom protocol...");
     router.push("/dashboard"); 
   };
@@ -312,7 +330,8 @@ export default function ThinkFitMasterForm() {
         case 1:
           return (
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4">
-              {renderCheckboxGrid("primaryGoals", goalOptions, "Select Your Primary Objectives")}
+              {/* <-- CHANGED FROM CHECKBOX TO RADIO --> */}
+              {renderRadioGrid("primaryGoal", goalOptions, "Select Your Primary Objective")}
               <div className="pt-6 border-t border-slate-100">
                 {renderRadioGrid("activityLevel", activityOptions, "Daily Activity Level (Non-Exercise)")}
               </div>
@@ -378,7 +397,7 @@ export default function ThinkFitMasterForm() {
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4">
             {renderRadioGrid("workoutLocation", locationOptions, "Where will you train?")}
             {selectedLocation === "home" && <div className="pt-6 border-t border-slate-100 animate-in fade-in">{renderCheckboxGrid("availableEquipment", homeEquipment, "Available Home Equipment")}</div>}
-            {selectedLocation === "basic_gym" && <div className="pt-6 border-t border-slate-100 animate-in fade-in">{renderCheckboxGrid("availableEquipment", basicGymEquipment, "Available Gym Machines")}</div>}
+            {selectedLocation === "basic_gym" && <div className="pt-6 border-t border-slate-100 animate-in fade-in">{renderCheckboxGrid("availableEquipment", basicGymEquipment, "Available Gym Equipment")}</div>}
             {selectedLocation === "pro_gym" && <div className="p-6 bg-emerald-50 border border-emerald-100 rounded-2xl mt-6 animate-in fade-in"><p className="text-emerald-800 text-base font-semibold">Great! A professional gym gives us access to all standard equipment for maximum optimization.</p></div>}
           </div>
         );

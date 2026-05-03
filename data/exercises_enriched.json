@@ -1590,7 +1590,7 @@
     },
     "dips": {
         "exercise_id": "EX_207",
-        "exercise_name": "Chest Dips (Leaning Forward)",
+        "exercise_name": "Chest Dips ",
         "muscle_data": {
             "primary_targets": [
                 "chest",
@@ -1637,7 +1637,7 @@
     },
     "smith_machine_press_flat_incline": {
         "exercise_id": "EX_208",
-        "exercise_name": "Smith Machine Press (Flat & Incline)",
+        "exercise_name": "Smith Machine Press ",
         "muscle_data": {
             "primary_targets": [
                 "chest"
@@ -1880,7 +1880,7 @@
     },
     "guillotine_press_db": {
         "exercise_id": "EX_214",
-        "exercise_name": "Guillotine Press (Dumbbell Version)",
+        "exercise_name": "Dumbell Guillotine Press ",
         "muscle_data": {
             "primary_targets": [
                 "upper_chest"
@@ -1916,11 +1916,14 @@
         },
         "description": "The incline dumbbell row is an upper-body exercise targeting the lats (latissimus dorsi) and upper-back muscles, as well as the biceps. Performing it on an incline bench helps target the lower lats in particular. Dumbbell row variations are usually performed for moderate to high reps, such as 8-12 reps per set or more, as part of the upper-body or back-focused portion of a workout.",
         "youtube_id": "0lD_IhpSWfE",
-        "animation_frames": []
+        "animation_frames": [
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Guillotine_Bench_Press/0.jpg",
+            "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Guillotine_Bench_Press/1.jpg"
+        ]
     },
     "decline_bench_press": {
         "exercise_id": "EX_215",
-        "exercise_name": "Decline Bench Press (Barbell & Dumbbell)",
+        "exercise_name": "Decline Bench Press ",
         "muscle_data": {
             "primary_targets": [
                 "lower_chest"
@@ -2556,7 +2559,7 @@
     },
     "close_grip_dip": {
         "exercise_id": "EX_230",
-        "exercise_name": "Close Grip Dip (Upright Torso)",
+        "exercise_name": "Close Grip Dip ",
         "muscle_data": {
             "primary_targets": [
                 "triceps"
