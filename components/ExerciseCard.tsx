@@ -39,6 +39,7 @@ export type ExerciseData = {
 type ExerciseCardProps = {
   exercise: ExerciseData;
   onOpenDetails: () => void;
+  dateStr: string;
   onLog: (status: 'complete' | 'partial') => void;
   onProgressUpdate?: (ratio: number) => void; 
   onSwapClick: () => void;
@@ -77,7 +78,7 @@ function ExerciseAnimation({ frames }: { frames: string[] }) {
 
 // 3. Main Exercise Card Component
 // FIX: Added onLog and onSwapClick here!
-export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate, onLog, onSwapClick }: ExerciseCardProps) {
+export default function ExerciseCard({ exercise,dateStr, onOpenDetails, onProgressUpdate, onLog, onSwapClick }: ExerciseCardProps) {
   const { user } = useAuth(); 
 
   // 1. Safely grab sets whether it's named target_sets or sets. 
@@ -110,7 +111,7 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
 
   // --- THE MAGIC: Create a unique browser storage key for THIS user, THIS exercise, TODAY ---
   const todayStr = new Date().toISOString().split('T')[0];
-  const storageKey = `thinkfit_${user?.id}_${exercise.exercise_id || exercise.exercise_name}_${todayStr}`;
+  const storageKey = `thinkfit_${user?.id}_${exercise.exercise_id || exercise.exercise_name}_${dateStr}`;
 
   // 1. REHYDRATE FROM LOCAL STORAGE ON REFRESH
   useEffect(() => {

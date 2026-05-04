@@ -32,19 +32,7 @@ export default function RestDayCard() {
         </p>
         
         {/* Action Buttons */}
-        <div className="w-full max-w-md flex flex-col sm:flex-row gap-4 mt-auto">
-          
-          <button className="flex-1 py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 font-semibold text-emerald-700 bg-white border-2 border-emerald-100 hover:border-emerald-200 hover:bg-emerald-50 transition-all duration-200 shadow-sm active:scale-[0.98]">
-            <ArrowRightLeft className="w-5 h-5 opacity-80" />
-            Shift Workout
-          </button>
-          
-          <button className="flex-1 py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 shadow-sm shadow-emerald-200 active:scale-[0.98]">
-            <Plus className="w-5 h-5" />
-            Additional Workout
-          </button>
-
-        </div>
+        
       </div>
     </div>
   );

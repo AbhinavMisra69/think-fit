@@ -23,9 +23,11 @@ const toDateString = (date: Date) => {
   return d.toISOString().split('T')[0];
 };
 
+// Find this at the top of your file
 type DayData = {
   type: 'workout' | 'rest';
   progress: number; 
+  loggedExercises?: string[]; // <-- ADD THIS LINE
 };
 
 type PhaseData = {
@@ -201,12 +203,14 @@ export default function Page() {
     const fetchWeekData = async () => {
       if (!userId) return;
       setIsLoading(true);
+      
       try {
         const dayIndex = selectedDate.getDay();
         const dayKey = `Day_${dayIndex === 0 ? 7 : dayIndex}`;
 
         let res = await fetch(`http://127.0.0.1:5001/api/workout/today?user_id=${userId}&day_key=${dayKey}`);
         
+        // Auto-generate if it doesn't exist
         if (res.status === 404) {
           await fetch(`http://127.0.0.1:5001/api/workout/generate_week`, {
             method: 'POST',
@@ -219,19 +223,27 @@ export default function Page() {
         const data = await res.json();
         
         if (data.status === "success" || data.is_rest_day) {
+           // 1. Save the actual exercises for the day
            setWeeklyProgram((prev: any) => ({ ...prev, [dayKey]: data.today_workout }));
            
            const dateStr = toDateString(selectedDate);
-           setDayDataMap(prevMap => ({
-             ...prevMap,
-             [dateStr]: {
-               type: data.is_rest_day ? 'rest' : 'workout',
-               progress: prevMap[dateStr]?.progress || 0 
-             }
-           }));
+           
+           // 2. Safely update the DayDataMap without wiping the loggedExercises memory!
+           setDayDataMap(prevMap => {
+             // Grab everything we already know about this day
+             const existingData = prevMap[dateStr] || { progress: 0, loggedExercises: [] };
+             
+             return {
+               ...prevMap,
+               [dateStr]: {
+                 ...existingData, // <--- Preserves the loggedExercises array and current progress
+                 type: data.is_rest_day ? 'rest' : 'workout'
+               }
+             };
+           });
         }
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch week data:", err);
       } finally {
         setIsLoading(false);
       }
@@ -241,24 +253,38 @@ export default function Page() {
   }, [selectedDate, userId]);
 
   // --- THE NEW LOG PROGRESS FUNCTION ---
-  const handleLogExercise = (status: 'complete' | 'partial') => {
-    const dateStr = toDateString(selectedDate);
-    const increment = status === 'complete' ? 20 : 10;
-    
-    setDayDataMap(prev => {
-      const currentDay = prev[dateStr] || { type: 'workout', progress: 0 };
-      const newProgress = Math.min(currentDay.progress + increment, 100);
-      
-      if (newProgress === 100) toast.success("Daily Protocol 100% Complete! 🔥");
-      
-      return {
-        ...prev,
-        [dateStr]: { ...currentDay, progress: newProgress }
-      };
-    });
+ // Replace your existing handleLogExercise with this:
+ const handleLogExercise = (exerciseId: string, status: 'complete' | 'partial', totalExercises: number) => {
+  const dateStr = toDateString(selectedDate);
+  // Dynamically calculate the percentage!
+  const increment = status === 'complete' ? (100 / totalExercises) : (50 / totalExercises);
+  
+  setDayDataMap(prev => {
+    const currentDay = prev[dateStr] || { type: 'workout', progress: 0, loggedExercises: [] };
+    const loggedList = currentDay.loggedExercises || [];
 
-    // Optional: Add fetch call here if you want to save the % progress directly to the DB!
-  };
+    // STOP: If we already counted this exact exercise today, ignore the remount!
+    if (loggedList.includes(exerciseId)) {
+      return prev;
+    }
+
+    const newProgress = Math.min(Math.round(currentDay.progress + increment), 100);
+    
+    // Only toast when hitting exactly 100 for the first time
+    if (newProgress === 100 && currentDay.progress < 100) {
+      toast.success("Daily Protocol 100% Complete! 🔥");
+    }
+    
+    return {
+      ...prev,
+      [dateStr]: { 
+        ...currentDay, 
+        progress: newProgress,
+        loggedExercises: [...loggedList, exerciseId] // Mark as counted
+      }
+    };
+  });
+};
 
   const handlePrevWeek = () => setCurrentWeekStart(prev => new Date(prev.setDate(prev.getDate() - 7)));
   const handleNextWeek = () => setCurrentWeekStart(prev => new Date(prev.setDate(prev.getDate() + 7)));
@@ -401,7 +427,7 @@ export default function Page() {
           <div className="flex justify-end mt-4 pr-4">
          <button 
               onClick={() => setIsEditModalOpen(true)}
-              className="flex items-center text-sm font-semibold text-slate-700 bg-white border border-slate-200 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 px-4 py-2 rounded-full transition-all"
+              className="flex items-center text-sm font-semibold text-white bg-blue-500 border border-slate-200 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 px-4 py-2 rounded-full transition-all"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -442,13 +468,13 @@ export default function Page() {
                       <ExerciseCard 
                         key={`${uniqueName}-${index}`} 
                         exercise={exerciseData} 
+                        dateStr={toDateString(selectedDate)} // <--- YOU JUST NEED TO ADD THIS LINE
                         onOpenDetails={() => setActiveExercise(exerciseData)} 
-                        onLog={(status: 'complete' | 'partial') => handleLogExercise(status)} // <-- PASSING THE PROP HERE
+                        onLog={(status: 'complete' | 'partial') => handleLogExercise(uniqueName, status, currentDayExercises.length)}
                         onSwapClick={() => {
                           setExerciseToSwap(exerciseData.exercise_name || exerciseData.exercise);
                           setSwapModalOpen(true);
                         }}
-
                       />
                     );
                   })
