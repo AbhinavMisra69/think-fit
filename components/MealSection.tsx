@@ -104,7 +104,6 @@ export default function MealSection() {
     }
   };
 
-  // 1. FIXED MANUAL SUBMIT
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFood || !servingQty) return;
@@ -115,7 +114,7 @@ export default function MealSection() {
     if (servingUnit === "pieces") weight_g = weight_g * 50;  
 
     const payload = { 
-      thinkfit_session: user, // Tells Python whose DB row to update
+      thinkfit_session: user,
       scanned_items: [{ food_id: selectedFood.id, weight_g: weight_g }] 
     };
 
@@ -132,7 +131,6 @@ export default function MealSection() {
     } catch (error) { toast.error("Failed to save."); }
   };
 
-  // 2. FIXED PACKAGED UPLOAD (OCR)
   const handlePackagedUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -158,17 +156,21 @@ export default function MealSection() {
     }
   };
   
-  // 3. FIXED OCR FINAL SUBMIT
+  // FIXED: Added sat_fat to the payload output
   const submitOcrFinal = async () => {
     if (!user) { toast.error("Please log in first."); return; }
-    const factor = consumptionMode === 'percent' ? parseFloat(amount) / 100 : parseFloat(amount);
+    
+    // Default to 1 if amount is blank to prevent NaN crashes
+    const safeAmount = amount ? parseFloat(amount) : 1;
+    const factor = consumptionMode === 'percent' ? safeAmount / 100 : safeAmount;
     
     const payload = {
-      thinkfit_session: user, // Tells Python whose DB row to update
+      thinkfit_session: user, 
       calories: (detectedNutrition.calories || 0) * factor,
       protein: (detectedNutrition.protein || 0) * factor,
       carbs: (detectedNutrition.carbs || 0) * factor,
       fat: (detectedNutrition.fat || 0) * factor,
+      sat_fat: (detectedNutrition.sat_fat || 0) * factor, // <-- ADDED THIS FIX
     };
   
     try {
@@ -196,7 +198,6 @@ export default function MealSection() {
       const formData = new FormData();
       formData.append('image', file);
 
-      // ⚠️ UPDATE THIS NGROK URL WITH YOUR ACTIVE ONE
       const colabUrl = 'https://trout-happiest-antennae.ngrok-free.dev/api/scan/thali';
       
       const colabRes = await fetch(colabUrl, {
@@ -221,7 +222,6 @@ export default function MealSection() {
     }
   };
 
-  // 4. FIXED THALI FINAL SUBMIT
   const handleThaliConfirmAndSave = async () => {
     if (!detectedThaliInfo) return;
     if (!user) { toast.error("Please log in first."); return; }
@@ -230,7 +230,7 @@ export default function MealSection() {
 
     try {
       const payload = {
-        thinkfit_session: user, // Tells Python whose DB row to update
+        thinkfit_session: user, 
         scanned_items: detectedThaliInfo.scanned_items
       };
 
@@ -415,10 +415,11 @@ export default function MealSection() {
 
             <div className="p-8 space-y-6">
               <div className="grid grid-cols-2 gap-3">
+                {/* Format the OCR raw numbers so they display cleanly */}
                 {Object.entries(detectedNutrition || {}).map(([key, val]: any) => (
                   <div key={key} className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">{key}</p>
-                    <p className="text-lg font-bold text-slate-700">{val}g</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">{key.replace('_', ' ')}</p>
+                    <p className="text-lg font-bold text-slate-700">{Math.round(val * 10) / 10}g</p>
                   </div>
                 ))}
               </div>

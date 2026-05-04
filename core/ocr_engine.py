@@ -5,19 +5,31 @@ import re
 from rapidfuzz import fuzz
 
 class PackagedFoodEngine:
+    
     @staticmethod
     def preprocess_image(image_path):
         img = cv2.imread(image_path)
-        img = cv2.resize(img, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        
+        # 1. Grayscale and Resize
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
         
-        # Slightly lighter denoising to preserve thin fonts
-        gray = cv2.bilateralFilter(gray, 9, 15, 15) 
+        # 2. Create a "Shadow Map" using a massive blur. 
+        # This blurs away all the text, leaving ONLY the uneven lighting gradients.
+        bg = cv2.GaussianBlur(gray, (91, 91), 0)
         
-        thresh = cv2.adaptiveThreshold(
-            gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-            cv2.THRESH_BINARY, 11, 2
-        )
+        # 3. Divide the original image by the Shadow Map. 
+        # This mathematically flattens the lighting across the entire cylinder.
+        flat = cv2.divide(gray, bg, scale=255)
+        
+        # 4. Now that the lighting is perfectly flat, a standard Otsu threshold 
+        # will cleanly separate the dark ink from the white background without noise.
+        _, thresh = cv2.threshold(flat, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        
+        # Optional: A tiny morphological close to reconnect any broken letter strokes
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+
         return thresh
 
     @staticmethod

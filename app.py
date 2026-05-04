@@ -171,11 +171,20 @@ def save_onboarding():
                 sex=gender, age=age, height_cm=height, weight_kg=weight,
                 activity_level=activity_level, body_fat_pct=bf_pct, experience_level=experience_level
             )
+            
+            # Extract EVERYTHING instead of just calories
             target_calories = nutrition_profile["results"]["daily_calories"]
+            macs = nutrition_profile["results"]["macros"]
+            target_protein = macs["protein_g"]
+            target_carbs = macs["carbs_g"]
+            target_fat = macs["fat_g"]
+            target_sat_fat = macs["sat_fat_limit_g"]
+            
         except Exception as e:
-            print(f"⚠️ Nutrition Engine Failed: {e}. Falling back to 2000.")
-            target_calories = 2000
+            print(f"⚠️ Nutrition Engine Failed: {e}. Falling back to defaults.")
+            target_calories, target_protein, target_carbs, target_fat, target_sat_fat = 2000, 150, 200, 65, 20
 
+        # Database Insertion
         # Database Insertion
         conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
         cur = conn.cursor()
@@ -185,9 +194,10 @@ def save_onboarding():
             id, gender, weight_kg, height_cm, neck, waist_cm, chest_cm, arm_cm, hip, 
             body_type, activity_level, experience_level, days_available, workout_days, 
             duration_weeks, facility_type, soreness_recovery, medical_conditions, available_equipment, 
-            goal, body_fat_pct, target_calories
+            goal, body_fat_pct, target_calories,
+            target_protein, target_carbs, target_fat, sat_fat_limit
         ) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (id) DO UPDATE SET
             gender = EXCLUDED.gender,
             weight_kg = EXCLUDED.weight_kg,
@@ -210,15 +220,19 @@ def save_onboarding():
             available_equipment = EXCLUDED.available_equipment,
             goal = EXCLUDED.goal,
             target_calories = EXCLUDED.target_calories,
+            target_protein = EXCLUDED.target_protein,
+            target_carbs = EXCLUDED.target_carbs,
+            target_fat = EXCLUDED.target_fat,
+            sat_fat_limit = EXCLUDED.sat_fat_limit,
             updated_at = CURRENT_TIMESTAMP;
         """
         
-        # Pass the selected_workout_days array directly!
         cur.execute(insert_query, (
             user_id, gender, weight, height, neck, waist, chest, arm, hip,
             body_type, activity_level, experience_level, days_available, selected_workout_days, 
             duration_weeks, facility_type, soreness_recovery, medical_conditions, available_equipment, 
-            goal_main, bf_pct, target_calories
+            goal_main, bf_pct, target_calories, 
+            target_protein, target_carbs, target_fat, target_sat_fat
         ))
 
         print(f"\n\nduration_weeks : {duration_weeks}\n\n")
@@ -552,7 +566,7 @@ def scan_packaged_food():
 
     try:
         processed_img = PackagedFoodEngine.preprocess_image(filepath)
-        raw_text = pytesseract.image_to_string(processed_img, config=r'--oem 3 --psm 4')
+        raw_text = pytesseract.image_to_string(processed_img, config=r'--oem 3 --psm 6')
         clean_text = PackagedFoodEngine.normalize_text(raw_text)
         
         print("\n" + "="*40)
@@ -576,6 +590,68 @@ def scan_packaged_food():
         return jsonify({"error": str(e)}), 500
 # Helper to reliably grab the user_id from either the JSON body or the X-Session header
 # Helper to reliably grab the user_id from the thinkfit_session key
+@app.route('/api/manual/log', methods=['POST', 'OPTIONS'])
+def log_manual_meal():
+    # --- CORS PREFLIGHT CATCH ---
+    # The browser sends an 'OPTIONS' request first to check permissions. 
+    # We must say "Yes, go ahead" (200 OK) before it will send the actual POST data.
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    try:
+        data = request.json
+        print(f"DEBUG [Manual Log]: Received payload: {data}")
+        
+        # 1. The Identity Check
+        session_data = data.get('thinkfit_session', {})
+        user_id = session_data.get('id')
+        
+        if not user_id:
+            return jsonify({"error": "User ID is missing. Cannot log meal."}), 400
+
+        # 2. Extract Macros
+        cals = int(float(data.get('calories') or 0))
+        prot = float(data.get('protein') or 0)
+        carb = float(data.get('carbs') or 0)
+        fat  = float(data.get('fat') or 0)
+        sat_fat = float(data.get('sat_fat') or 0)
+
+        # 3. Database UPSERT
+        conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
+        cur = conn.cursor()
+
+        upsert_query = """
+        INSERT INTO daily_logs (
+            user_id, consumed_calories, consumed_protein, 
+            consumed_carbs, consumed_fat, consumed_sat_fat
+        ) 
+        VALUES (%s, %s, %s, %s, %s, %s)
+        ON CONFLICT (user_id, log_date) 
+        DO UPDATE SET
+            consumed_calories = daily_logs.consumed_calories + EXCLUDED.consumed_calories,
+            consumed_protein = daily_logs.consumed_protein + EXCLUDED.consumed_protein,
+            consumed_carbs = daily_logs.consumed_carbs + EXCLUDED.consumed_carbs,
+            consumed_fat = daily_logs.consumed_fat + EXCLUDED.consumed_fat,
+            consumed_sat_fat = daily_logs.consumed_sat_fat + EXCLUDED.consumed_sat_fat;
+        """
+
+        cur.execute(upsert_query, (user_id, cals, prot, carb, fat, sat_fat))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({
+            "status": "success", 
+            "message": "Manual macros added to daily log",
+            "added": {"calories": cals, "protein": prot, "carbs": carb, "fat": fat}
+        }), 200
+
+    except Exception as e:
+        print(f"🔥 CRASH IN MANUAL LOG: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    
+
 def get_user_id_from_request(req):
     import json
     import urllib.parse
@@ -626,19 +702,82 @@ def get_user_id_from_request(req):
 # ---------------------------------------------------------
 # 2. NUTRITION DASHBOARD ROUTES
 # ---------------------------------------------------------
+import psycopg2
 @app.route('/api/nutrition/today', methods=['GET'])
-def get_todays_nutrition():
-    # THE FIX: Grab the real user ID instead of "user_123"
-    user_id = get_user_id_from_request(request)
-    if not user_id:
-        return jsonify({"error": "Unauthorized. Missing User ID."}), 401
-        
-    try:
-        tracker = DailyTracker(user_id=user_id)
-        return jsonify(tracker.get_ui_payload())
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+def get_today_nutrition():
+    user_id = request.args.get('userId')
+    if not user_id: return jsonify({"error": "User ID is required"}), 400
 
+    try:
+        conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
+        cur = conn.cursor()
+
+        # 1. FIXED: Explicitly asking for 'sat_fat_limit' instead of 'target_sat_fat'
+        cur.execute("""
+            SELECT target_calories, target_protein, target_carbs, sat_fat_limit 
+            FROM users WHERE id = %s
+        """, (user_id,))
+        target_row = cur.fetchone()
+        
+        # Fallback values just in case onboarding failed
+        t_cal = target_row[0] if target_row and target_row[0] else 2000
+        t_prot = target_row[1] if target_row and target_row[1] else 150
+        t_carb = target_row[2] if target_row and target_row[2] else 250
+        t_sat = target_row[3] if target_row and target_row[3] else 25
+
+        # 2. Fetch today's consumed totals from daily_logs
+        cur.execute("""
+            SELECT consumed_calories, consumed_protein, consumed_carbs, consumed_sat_fat 
+            FROM daily_logs 
+            WHERE user_id = %s AND log_date = CURRENT_DATE
+        """, (user_id,))
+        log_row = cur.fetchone()
+
+        cals_current = float(log_row[0]) if log_row and log_row[0] else 0
+        prot_current = float(log_row[1]) if log_row and log_row[1] else 0
+        carb_current = float(log_row[2]) if log_row and log_row[2] else 0
+        sat_current  = float(log_row[3]) if log_row and log_row[3] else 0
+
+        cur.close()
+        conn.close()
+
+        # 3. Build the React Payload using the dynamic targets
+        payload = {
+            "calories": {
+                "current": cals_current,
+                "target": t_cal
+            },
+            "macros": {
+                "carbs": {
+                    "current": carb_current,
+                    "target": t_carb,
+                    "unit": "g",
+                    "colorClass": "bg-indigo-500",
+                    "bgClass": "bg-indigo-50"
+                },
+                "protein": {
+                    "current": prot_current,
+                    "target": t_prot,
+                    "unit": "g",
+                    "colorClass": "bg-emerald-500",
+                    "bgClass": "bg-emerald-50"
+                },
+                "satFat": {
+                    "current": sat_current,
+                    "target": t_sat,
+                    "unit": "g",
+                    "colorClass": "bg-red-500",
+                    "bgClass": "bg-red-50"
+                }
+            }
+        }
+
+        return jsonify(payload), 200
+
+    except Exception as e:
+        print(f"🔥 GET Today Nutrition Error: {e}")
+        return jsonify({"error": str(e)}), 500
+    
 @app.route('/api/nutrition/weekly', methods=['GET'])
 def get_weekly_progress():
     user_id = get_user_id_from_request(request)
