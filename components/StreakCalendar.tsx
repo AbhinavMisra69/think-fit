@@ -25,7 +25,7 @@ export default function StreakCalendar({ history = {} }: { history: any }) {
     const checkDate = new Date(year, month, day);
     
     // Logic: 80% or 100% completion (Rest days are auto-100)
-    const isFulfilled = dayData && dayData.progress >= 80;
+    const isFulfilled = dayData && dayData.progress >= 70;
     const isPast = checkDate < today;
     const isToday = checkDate.getTime() === today.getTime();
 

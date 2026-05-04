@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight, Target, Plus, Loader2, RefreshCw } from 'lucide-react';
+import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight, Target, Plus, Loader2, RefreshCw, ArrowRightLeft } from 'lucide-react';
 import data from '@/data/exercises_enriched.json';
 import { useAuth } from "app/context/AuthContext"; 
-import { toast } from "sonner"; // For success popups
+import { toast } from "sonner"; 
 
 // 1. Types
 export type ExerciseData = {
@@ -76,8 +76,8 @@ function ExerciseAnimation({ frames }: { frames: string[] }) {
 }
 
 // 3. Main Exercise Card Component
-export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate }: ExerciseCardProps) {
-  // NEW: Dynamically initialize the number of sets based on the engine's target
+// FIX: Added onLog and onSwapClick here!
+export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate, onLog, onSwapClick }: ExerciseCardProps) {
   const { user } = useAuth(); 
 
   // 1. Safely grab sets whether it's named target_sets or sets. 
@@ -272,26 +272,26 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
           <div className="flex items-center gap-2">
             
             {/* SWAP BUTTON */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation(); 
-                onSwapClick();
-              }}
-              // CHANGED: text-sm, px-4, py-2, gap-1.5
-              className="text-sm font-semibold text-slate-600 hover:text-blue-600 bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50 px-4 py-2 rounded-full transition-colors flex items-center gap-1.5 shadow-sm"
-              title="Swap Exercise"
-            >
-              <RefreshCw className="w-4 h-4" /> {/* CHANGED: w-4 h-4 */}
-              Swap
-            </button>
+            {!isLogged && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  onSwapClick();
+                }}
+                className="text-sm font-semibold text-slate-600 hover:text-blue-600 bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50 px-4 py-2 rounded-full transition-colors flex items-center gap-1.5 shadow-sm"
+                title="Swap Exercise"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Swap
+              </button>
+            )}
 
             {/* VIEW DETAILS BUTTON */}
             <button 
               onClick={onOpenDetails}
-              // CHANGED: text-sm, px-4, py-2, gap-1.5
               className="text-sm font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-full transition-colors flex items-center gap-1.5"
             >
-              <Info className="w-4 h-4" /> {/* CHANGED: w-4 h-4 */}
+              <Info className="w-4 h-4" />
               View Details
             </button>
             

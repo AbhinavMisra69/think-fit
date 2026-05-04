@@ -1,15 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
-export const hasConsecutiveDays = (daysArray) => {
+// 1. Define the exact shape of your component's props
+interface EditWeekModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  initialDays: string[];
+  activePhase: string;
+  onSave: (days: string[]) => void;
+}
+
+// 2. Define the exact type for the day mapping dictionary
+const dayMap: Record<string, number> = {
+  "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4,
+  "Friday": 5, "Saturday": 6, "Sunday": 7
+};
+
+// 3. Add string[] type to the parameter
+export const hasConsecutiveDays = (daysArray: string[]) => {
   if (!daysArray || daysArray.length < 2) return false;
 
-  const dayMap = {
-    "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4,
-    "Friday": 5, "Saturday": 6, "Sunday": 7
-  };
-
-  const nums = daysArray.map(d => dayMap[d]).sort((a, b) => a - b);
-  const extendedNums = [...nums, ...nums.map(n => n + 7)].sort((a, b) => a - b);
+  // 4. Added type annotations to the map and sort callbacks
+  const nums = daysArray.map((d: string) => dayMap[d]).sort((a: number, b: number) => a - b);
+  const extendedNums = [...nums, ...nums.map((n: number) => n + 7)].sort((a: number, b: number) => a - b);
 
   for (let i = 0; i <= extendedNums.length - 2; i++) {
     if (extendedNums[i] + 1 === extendedNums[i+1]) {
@@ -19,8 +31,9 @@ export const hasConsecutiveDays = (daysArray) => {
   return false;
 };
 
-export default function EditWeekModal({ isOpen, onClose, initialDays, activePhase, onSave }) {
-  const [selectedDays, setSelectedDays] = useState(initialDays || []);
+// 5. Apply the interface to the component signature
+export default function EditWeekModal({ isOpen, onClose, initialDays, activePhase, onSave }: EditWeekModalProps) {
+  const [selectedDays, setSelectedDays] = useState<string[]>(initialDays || []);
   const [showWarning, setShowWarning] = useState(false);
 
   const fullBodyPhases = ["foundation", "strength_foundation", "active_lifestyle"];
@@ -39,9 +52,10 @@ export default function EditWeekModal({ isOpen, onClose, initialDays, activePhas
     setShowWarning(isFullBodyPhase && hasConsecutive);
   }, [selectedDays, activePhase]);
 
-  const toggleDay = (day) => {
-    setSelectedDays(prev => 
-      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+  // 6. Added string type to the day parameter and prev state
+  const toggleDay = (day: string) => {
+    setSelectedDays((prev: string[]) => 
+      prev.includes(day) ? prev.filter((d: string) => d !== day) : [...prev, day]
     );
   };
 
@@ -92,7 +106,7 @@ export default function EditWeekModal({ isOpen, onClose, initialDays, activePhas
           )}
         </div>
 
-        {/* 🚨 THE CNS WARNING POPUP (Unchanged) */}
+        {/* 🚨 THE CNS WARNING POPUP */}
         {showWarning && (
            <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl mb-6">
              <p className="font-bold flex items-center text-sm">

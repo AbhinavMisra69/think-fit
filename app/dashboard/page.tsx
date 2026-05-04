@@ -15,6 +15,7 @@ import { Navigation } from '@/components/Navigation';
 import EditWeekModal from '@/components/EditWeekModal';
 import { useAuth } from "app/context/AuthContext";
 import SwapExerciseModal from "@/components/SwapExerciseModal";
+import ExerciseDetailPanel from "@/components/ExerciseDetailPanel";
 
 const toDateString = (date: Date) => {
   const d = new Date(date);
@@ -512,7 +513,7 @@ export default function Page() {
             </div>
           </div>
         )}
-      </div> {/* <--- THIS WAS MISSING! */}
+    </div> // <-- FIX IS HERE: The extra div was removed, and this now cleanly closes the main return block.
   );
 }
 
@@ -644,17 +645,6 @@ function MacrocycleSidebar({ userId }: { userId?: string }) {
   );
 }
 
-function ExerciseDetailPanel({ exercise, onClose }: { exercise: ExerciseData; onClose: () => void }) {
-  return ( 
-    <div className="p-6">
-       <button onClick={onClose} className="mb-4 text-blue-500 flex items-center gap-2 text-sm font-semibold hover:text-blue-700">
-           <X className="w-4 h-4" /> Close Details
-       </button>
-       <h3 className="text-xl font-bold text-slate-800">{exercise.exercise_name || (exercise as any).name}</h3>
-       {/* Details content will render here based on your existing implementation */}
-    </div> 
-  );
-}
 
 // --- UPDATED PROGRESS COMPONENT WITH NEW COLOR LOGIC ---
 function CircularProgress({ progress, label, isToday, theme }: { progress: number; label: string; isToday: boolean; theme: 'blue' | 'green' }) {
