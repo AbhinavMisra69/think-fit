@@ -1,21 +1,21 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight, Target, Plus, Loader2 } from 'lucide-react';
 import data from '@/data/exercises_enriched.json';
-import { useAuth } from "app/context/AuthContext"; // Import your auth hook!
-import { toast } from "sonner"; // For success popups
+import { useAuth } from "app/context/AuthContext"; 
+import { toast } from "sonner"; 
 
-// 1. Types (Updated with progression targets)
+// 1. Types
 export type ExerciseData = {
   exercise_id: string;
   exercise_name: string;
   youtube_id: string;
   description?: string;
   animation_frames?: string[];
-  target_sets?: number;          // NEW: From Progression Engine
-  target_reps?: number | string; // NEW: From Progression Engine
-  target_weight?: number | string; // NEW: From Progression Engine
+  target_sets?: number;          
+  target_reps?: number | string; 
+  target_weight?: number | string; 
   muscle_data: {
     primary_targets: string[];
     secondary_muscles: string[];
@@ -39,7 +39,7 @@ export type ExerciseData = {
 type ExerciseCardProps = {
   exercise: ExerciseData;
   onOpenDetails: () => void;
-  onProgressUpdate?: (ratio: number) => void; 
+  onLog: (status: 'complete' | 'partial') => void;
 };
 
 // 2. Animation Component
@@ -74,10 +74,10 @@ function ExerciseAnimation({ frames }: { frames: string[] }) {
 }
 
 // 3. Main Exercise Card Component
-export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate }: ExerciseCardProps) {
-  // NEW: Dynamically initialize the number of sets based on the engine's target
+export default function ExerciseCard({ exercise, onOpenDetails, onLog }: ExerciseCardProps) {
   const { user } = useAuth(); 
   const initialSetsCount = exercise.target_sets || 3;
+  
   const [sets, setSets] = useState(() => 
     Array.from({ length: initialSetsCount }, (_, i) => ({
       id: i + 1, reps: '', weight: '', isDropset: false, dropEndWeight: ''
@@ -86,28 +86,52 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
-  const lastReportedProgress = useRef<number>(-1);
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  // --- THE MAGIC: Create a unique browser storage key for THIS user, THIS exercise, TODAY ---
+  const todayStr = new Date().toISOString().split('T')[0];
+  const storageKey = `thinkfit_${user?.id}_${exercise.exercise_id || exercise.exercise_name}_${todayStr}`;
+
+  // 1. REHYDRATE FROM LOCAL STORAGE ON REFRESH
   useEffect(() => {
-    if (onProgressUpdate) {
-      const filled = sets.filter(s => {
-        const hasBasic = s.reps !== '' && s.weight !== '';
-        const hasDropset = s.isDropset ? s.dropEndWeight !== '' : true;
-        return hasBasic && hasDropset;
-      }).length;
-      
-      const currentRatio = filled / sets.length;
+    const savedSets = localStorage.getItem(`${storageKey}_sets`);
+    const savedLogged = localStorage.getItem(`${storageKey}_logged`);
+    const savedStatus = localStorage.getItem(`${storageKey}_status`); // Remembers if it was partial or complete
 
-      if (currentRatio !== lastReportedProgress.current) {
-        lastReportedProgress.current = currentRatio;
-        onProgressUpdate(currentRatio);
+    if (savedSets) {
+      try { setSets(JSON.parse(savedSets)); } catch (e) {}
+    }
+    
+    if (savedLogged === 'true') {
+      setIsLogged(true); // Instantly locks the card so it can't be logged again
+      
+      // Ping the dashboard to restore the progress ring! (Small delay prevents React rendering clashes)
+      if (savedStatus) {
+        setTimeout(() => onLog(savedStatus as 'complete' | 'partial'), 100);
       }
     }
-  }, [sets, onProgressUpdate]);
+    
+    setIsLoaded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); 
 
+  // 2. SAVE TO LOCAL STORAGE EVERY TIME YOU TYPE OR LOG
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem(`${storageKey}_sets`, JSON.stringify(sets));
+      localStorage.setItem(`${storageKey}_logged`, isLogged.toString());
+    }
+  }, [sets, isLogged, isLoaded, storageKey]);
+
+
+  const getStatus = () => {
+    const filled = sets.filter(s => s.reps !== '' && s.weight !== '').length;
+    if (filled === 0) return { label: 'Not Done', style: 'bg-zinc-100 text-zinc-500', icon: <CircleDashed className="w-4 h-4" /> };
+    if (filled < sets.length) return { label: 'Partially Done', style: 'bg-amber-100 text-amber-700', icon: <CircleDashed className="w-4 h-4" /> };
+    return { label: 'Completed', style: 'bg-blue-600 text-white shadow-md', icon: <CheckCircle2 className="w-4 h-4" /> };
+  };
 
   const handleLogExercise = async () => {
-    // 1. Filter out empty sets
     const validSets = sets.filter(s => s.reps !== '' && s.weight !== '');
     if (validSets.length === 0) {
       toast.error("Please fill out at least one set!");
@@ -115,13 +139,11 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
     }
 
     setIsSubmitting(true);
-
-    // 2. Aggregate the data for your Postgres Schema
     const setsCompleted = validSets.length;
-    // Find the highest weight lifted
     const maxWeight = Math.max(...validSets.map(s => parseFloat(s.weight)));
-    // Calculate the average reps across all valid sets
     const avgReps = Math.round(validSets.reduce((sum, s) => sum + parseInt(s.reps), 0) / setsCompleted);
+
+    const currentStatus = getStatus();
 
     try {
       const payload = {
@@ -143,7 +165,19 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
       if (!res.ok) throw new Error("Failed to save to database");
 
       toast.success("Exercise logged successfully!");
-      setIsLogged(true); // Lock the card so they know it's saved
+      setIsLogged(true); // Locks the card
+      
+      // Determine if they get +20% or +10%
+      let loggedStatus = 'complete';
+      if (currentStatus.label === 'Partially Done') {
+        loggedStatus = 'partial';
+      }
+      
+      // Save the status to memory so it survives a refresh
+      localStorage.setItem(`${storageKey}_status`, loggedStatus);
+      
+      // Ping Dashboard Ring
+      onLog(loggedStatus as 'complete' | 'partial');
       
     } catch (error) {
       console.error(error);
@@ -154,29 +188,24 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
   };
 
   const handleAddSet = () => {
+    if (isLogged) return; // Prevention check
     setSets(prev => {
-      // Find the highest current ID so we don't get React key duplicates
       const nextId = prev.length > 0 ? Math.max(...prev.map(s => s.id)) + 1 : 1;
       return [...prev, { id: nextId, reps: '', weight: '', isDropset: false, dropEndWeight: '' }];
     });
   };
 
   const handleInputChange = (id: number, field: string, value: string) => {
+    if (isLogged) return; // Prevention check
     const numericValue = value.replace(/[^0-9.]/g, ''); 
     setSets(prev => prev.map(s => s.id === id ? { ...s, [field]: numericValue } : s));
   };
 
   const toggleDropset = (id: number) => {
+    if (isLogged) return; // Prevention check
     setSets(prev => prev.map(s => 
       s.id === id ? { ...s, isDropset: !s.isDropset, dropEndWeight: '' } : s
     ));
-  };
-
-  const getStatus = () => {
-    const filled = sets.filter(s => s.reps !== '' && s.weight !== '').length;
-    if (filled === 0) return { label: 'Not Done', style: 'bg-zinc-100 text-zinc-500', icon: <CircleDashed className="w-4 h-4" /> };
-    if (filled < sets.length) return { label: 'Partially Done', style: 'bg-amber-100 text-amber-700', icon: <CircleDashed className="w-4 h-4" /> };
-    return { label: 'Completed', style: 'bg-blue-600 text-white shadow-md', icon: <CheckCircle2 className="w-4 h-4" /> };
   };
 
   const status = getStatus();
@@ -206,19 +235,18 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
     ? exercise.animation_frames 
     : getLocalFrames();
 
-  // Extract Targets with Safe Fallbacks
   const targetReps = exercise.target_reps || '8-12';
   const targetWeight = exercise.target_weight || 'Determine 1RM';
 
   return (
-    <div className="w-full bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden font-sans">
+    <div className={`w-full bg-white border rounded-2xl shadow-sm overflow-hidden font-sans transition-all duration-300 ${isLogged ? 'border-emerald-200' : 'border-zinc-200'}`}>
       
       {/* Header */}
-      <div className="bg-slate-50 border-b border-zinc-100 px-5 py-4 flex flex-col gap-2">
+      <div className={`${isLogged ? 'bg-emerald-50' : 'bg-slate-50'} border-b border-zinc-100 px-5 py-4 flex flex-col gap-2 transition-colors`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Dumbbell className="w-5 h-5 text-blue-600" />
+            <div className={`p-2 rounded-lg ${isLogged ? 'bg-emerald-100' : 'bg-blue-100'}`}>
+              <Dumbbell className={`w-5 h-5 ${isLogged ? 'text-emerald-600' : 'text-blue-600'}`} />
             </div>
             <h3 className="font-semibold text-lg text-slate-800 tracking-tight">{nameStr}</h3>
           </div>
@@ -254,7 +282,6 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
 
         <div className="w-full md:w-2/3 flex flex-col">
           
-          {/* NEW: Side-by-Side Information Banners */}
           <div className="flex flex-col xl:flex-row gap-4 mb-6">
             {/* Biomechanics Warning */}
             {exercise.biomechanics?.joint_stress?.length > 0 && (
@@ -297,36 +324,38 @@ export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate
             </div>
 
             {sets.map((set, index) => (
-              <div key={set.id} className="flex items-center bg-slate-50 border border-slate-100 rounded-lg p-2 focus-within:bg-white focus-within:border-blue-200 focus-within:shadow-sm">
+              <div key={set.id} className={`flex items-center bg-slate-50 border border-slate-100 rounded-lg p-2 transition-colors ${!isLogged && 'focus-within:bg-white focus-within:border-blue-200 focus-within:shadow-sm'}`}>
                 <div className="w-10 flex justify-center"><span className="font-medium text-slate-500">{index + 1}</span></div>
                 <div className="w-20">
-                  {/* Notice the placeholder uses the target reps! */}
-                  <input type="text" inputMode="numeric" placeholder={targetReps.toString().split('-')[0]} value={set.reps} onChange={(e) => handleInputChange(set.id, 'reps', e.target.value)} className="w-full text-center bg-transparent font-semibold text-slate-700 outline-none" />
+                  <input type="text" disabled={isLogged} inputMode="numeric" placeholder={targetReps.toString().split('-')[0]} value={set.reps} onChange={(e) => handleInputChange(set.id, 'reps', e.target.value)} className={`w-full text-center bg-transparent font-semibold text-slate-700 outline-none ${isLogged ? 'cursor-not-allowed opacity-70' : ''}`} />
                 </div>
                 <div className="flex-1 flex items-center justify-center px-2">
-                  <input type="text" inputMode="numeric" placeholder="kg" value={set.weight} onChange={(e) => handleInputChange(set.id, 'weight', e.target.value)} className="w-16 text-center bg-white border border-slate-200 rounded-md py-1 font-medium text-slate-700 outline-none" />
+                  <input type="text" disabled={isLogged} inputMode="numeric" placeholder="kg" value={set.weight} onChange={(e) => handleInputChange(set.id, 'weight', e.target.value)} className={`w-16 text-center bg-white border border-slate-200 rounded-md py-1 font-medium text-slate-700 outline-none ${isLogged ? 'cursor-not-allowed opacity-70' : ''}`} />
                   {set.isDropset && (
                     <div className="flex items-center animate-in fade-in slide-in-from-left-2 duration-200">
                       <ChevronRight className="w-4 h-4 mx-1 text-slate-400" />
-                      <input type="text" inputMode="numeric" placeholder="End" value={set.dropEndWeight} onChange={(e) => handleInputChange(set.id, 'dropEndWeight', e.target.value)} className="w-16 text-center bg-white border border-orange-200 rounded-md py-1 font-medium text-orange-700 outline-none" />
+                      <input type="text" disabled={isLogged} inputMode="numeric" placeholder="End" value={set.dropEndWeight} onChange={(e) => handleInputChange(set.id, 'dropEndWeight', e.target.value)} className={`w-16 text-center bg-white border border-orange-200 rounded-md py-1 font-medium text-orange-700 outline-none ${isLogged ? 'cursor-not-allowed opacity-70' : ''}`} />
                     </div>
                   )}
                 </div>
                 <div className="w-20 flex justify-center">
-                  <input type="checkbox" checked={set.isDropset} onChange={() => toggleDropset(set.id)} className="w-4 h-4 text-blue-600 rounded border-slate-300 cursor-pointer" />
+                  <input type="checkbox" disabled={isLogged} checked={set.isDropset} onChange={() => toggleDropset(set.id)} className={`w-4 h-4 text-blue-600 rounded border-slate-300 ${isLogged ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`} />
                 </div>
               </div>
             ))}
-            <button
-              type="button"
-              onClick={handleAddSet}
-              className="w-full py-2.5 mt-2 border-2 border-dashed border-slate-200 text-slate-400 rounded-xl font-semibold text-sm hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add Another Set
-            </button>
+            
+            {/* Lock out the Add Set button once logged */}
+            {!isLogged && (
+              <button
+                type="button"
+                onClick={handleAddSet}
+                className="w-full py-2.5 mt-2 border-2 border-dashed border-slate-200 text-slate-400 rounded-xl font-semibold text-sm hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Another Set
+              </button>
+            )}
           </div>
-
 
           <div className="mt-auto">
             <button 
