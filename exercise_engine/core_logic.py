@@ -314,44 +314,66 @@ def determine_weekly_split(working_memory, phase_base_split):
     schedule = working_memory.get("schedule", ["Monday", "Thursday"])
     days_count = len(schedule)
     
-    # Initialize a warnings array in memory so the frontend app can display alerts
     if "system_warnings" not in working_memory:
         working_memory["system_warnings"] = []
     
     # 1. Full Body & Circuits 
     if phase_base_split in ["full_body", "full_body_circuit", "mixed_modal_circuit"]:
-        return phase_base_split
-        
+        if days_count <= 3:
+            return phase_base_split
+        elif days_count == 4:
+            # THE 4-DAY OVERRIDE
+            working_memory["system_warnings"].append(
+                "Doing Full Body 4 days a week limits recovery. We automatically upgraded you to an Upper/Lower split for optimal growth and joint health."
+            )
+            return "upperA_lowerA_upperB_lowerB"
+        elif days_count == 5:
+            # THE 5-DAY OVERRIDE
+            working_memory["system_warnings"].append(
+                "Doing Full Body 5+ days a week causes severe central nervous system fatigue. We upgraded you to a 5-Day Push/Pull/Legs/Upper/Lower hybrid."
+            )
+            return "push_pull_legs_upper_lower"
+        elif days_count >= 6:
+            working_memory["system_warnings"].append(
+                "Doing Full Body 6 days a week causes severe central nervous system fatigue. We upgraded you to a 6-Day Push/Pull/Legs hybrid to optimize recovery and growth."
+            )
+            # Switch them to PPLx2 instead of U/Lx3!
+            return "push_pull_legs_repeated"
+            
     # 2. Adapting Upper/Lower Blocks
     if phase_base_split == "upper_lower":
         if days_count <= 2:
-            # THE OVERRIDE
             working_memory["system_warnings"].append(
-                "This phase is optimized for at least 3 days. To ensure you hit every muscle twice a week for better results, we have temporarily switched your 2 days to Full Body."
+                "This phase is optimized for at least 3 days. To ensure you hit every muscle twice a week, we have temporarily switched your 2 days to Full Body."
             )
             return "full_body"
         elif days_count == 3:
             return "upper_lower_full" 
         elif days_count == 4:
-            return "upper_lower_repeated" 
-        elif days_count >= 5:
-            return "upper_lower_upper_lower_full" 
+            return "upperA_lowerA_upperB_lowerB" 
+        elif days_count == 5:
+            return "upperA_lowerA_upperB_lowerB_full" 
+        elif days_count >= 6:
+            return "upperA_lowerA_upperB_lowerB"
             
     # 3. Adapting Push/Pull/Legs Blocks
     if phase_base_split == "push_pull_legs":
         if days_count <= 2:
-            # THE OVERRIDE
             working_memory["system_warnings"].append(
-                "This phase requires at least 3 days to complete a full Push/Pull/Legs cycle. To prevent muscle imbalances, we have temporarily switched your 2 days to Full Body."
+                "This phase requires at least 3 days to complete a full Push/Pull/Legs cycle. We temporarily switched your 2 days to Full Body."
             )
             return "full_body"
         elif days_count == 3:
-            return "push_pull_legs" 
+            # 🎯 THE NEW 3-DAY PPL OVERRIDE
+            working_memory["system_warnings"].append(
+                "Standard PPL on 3 days only hits muscles once a week. We upgraded your split to Push/Pull/Full Body to double your muscle growth stimulus."
+            )
+            return "push_pull_full" 
         elif days_count == 4:
             return "push_pull_repeated" 
         elif days_count == 5:
-            return "upper_lower_push_pull_legs" 
-        elif days_count == 6:
+            return "push_pull_legs_upper_lower" # Changed this to match your new 5-day naming!
+        elif days_count >= 6:
             return "push_pull_legs_repeated" 
 
     # Fallback safety
@@ -369,13 +391,14 @@ def schedule_weekly_blueprints(working_memory, assigned_split):
     
     split_sequences = {
         "full_body": ["full_body_A", "full_body_B", "full_body_C"],
-        "upper_lower": ["upper_day", "lower_day"],
+        "upper_lower": ["upper_day_A", "lower_day_A"],
         "push_pull_legs": ["push_day", "pull_day", "leg_day"],
-        "upper_lower_full": ["upper_day", "lower_day", "full_body_A"],
-        "upper_lower_repeated": ["upper_day", "lower_day"],
+        "push_pull_full": ["push_day", "pull_day", "full_body_A"], 
+        "upper_lower_full": ["upper_day_A", "lower_day_A", "full_body_A"],
+        "upperA_lowerA_upperB_lowerB" : ["upper_day_A", "lower_day_A", "upper_day_B", "lower_day_B"],
         "push_pull_repeated": ["push_day", "pull_day"], 
-        "upper_lower_upper_lower_full": ["upper_day", "lower_day", "upper_day", "lower_day", "full_body_A"],
-        "upper_lower_push_pull_legs": ["upper_day", "lower_day", "push_day", "pull_day", "leg_day"],
+        "upperA_lowerA_upperB_lowerB_full": ["upper_day_A", "lower_day_A", "upper_day_B", "lower_day_B", "full_body_A"],
+        "push_pull_legs_upper_lower": ["push_day", "pull_day", "leg_day", "upper_day_A", "lower_day_A"], #PHAT training
         "push_pull_legs_repeated": ["push_day", "pull_day", "leg_day"],
     }
     

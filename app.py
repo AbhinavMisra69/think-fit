@@ -184,6 +184,19 @@ def save_onboarding():
             print(f"⚠️ Nutrition Engine Failed: {e}. Falling back to defaults.")
             target_calories, target_protein, target_carbs, target_fat, target_sat_fat = 2000, 150, 200, 65, 20
 
+        MASTER_EQUIPMENT_LIST = [
+            "dumbbells", "barbell", "kettlebell", "pullup_bar", "resistance_bands",
+            "cable_machine", "smith_machine", "squat_rack", "bench", "leg_press_machine",
+            "leg_extension_machine", "leg_curl_machine", "lat_pulldown", "pec_deck", 
+            "ez_bar", "trap_bar", "step_up_box", "dip_station", "calf_raise_machine"
+        ]
+        
+        if facility_type == 'pro_gym':
+            available_equipment = MASTER_EQUIPMENT_LIST
+        elif available_equipment is None:
+            # Safe fallback
+            available_equipment = []
+
         # Database Insertion
         # Database Insertion
         conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
@@ -961,6 +974,123 @@ def get_macrocycle_overview():
         conn.close()
 
 
+@app.route('/api/workout/swap_options', methods=['GET'])
+def get_swap_options():
+    user_id = request.args.get('user_id')
+    original_exercise_name = request.args.get('exercise')
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+        cursor.execute("SELECT available_equipment FROM users WHERE id = %s", (user_id,))
+        user_equipment = cursor.fetchone()['available_equipment'] or []
+        
+        original_ex = next((ex for ex in exercise_dataset.values() if ex.get('exercise_name') == original_exercise_name or ex.get('name') == original_exercise_name), None)
+        
+        if not original_ex:
+            return jsonify({"error": "Original exercise not found in database."}), 404
+            
+        target_muscles = set(original_ex.get('muscle_data', {}).get('primary_targets', []))
+        mechanic = original_ex.get('muscle_data', {}).get('is_compound') # Using your exact JSON structure
+        
+        valid_swaps = []
+        
+        for ex in exercise_dataset.values():
+            ex_name = ex.get('exercise_name', ex.get('name'))
+            if ex_name == original_exercise_name: 
+                continue
+            
+            ex_targets = set(ex.get('muscle_data', {}).get('primary_targets', []))
+            ex_mechanic = ex.get('muscle_data', {}).get('is_compound')
+            ex_tools = ex.get('facility_requirements', {}).get('specific_tools', [])
+            
+            # 1. Biomechanics Match (Must hit the same primary muscles and be the same compound/isolation type)
+            if bool(target_muscles & ex_targets) and ex_mechanic == mechanic:
+                
+                # 2. Equipment Match (Using your brilliant specific_tools logic!)
+                is_bodyweight = len(ex_tools) == 0
+                
+                # Check if the user has ALL the tools required for this specific exercise
+                has_equipment = all(tool in user_equipment for tool in ex_tools)
+                
+                if is_bodyweight or has_equipment:
+                    valid_swaps.append(ex)
+                    
+        return jsonify({"status": "success", "options": valid_swaps[:5]})
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc() # This will print exact errors to your Flask terminal!
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/workout/apply_swap', methods=['POST'])
+def apply_swap():
+    data = request.json
+    user_id = data.get('user_id')
+    day_key = data.get('day_key') # e.g., "Day_1"
+    old_exercise_name = data.get('old_exercise')
+    new_exercise_data = data.get('new_exercise') # The full dict of the new exercise
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+        cursor.execute("SELECT weeks_in_program FROM exercise_state WHERE user_id = %s", (user_id,))
+        current_week = cursor.fetchone()['weeks_in_program']
+        
+        cursor.execute("SELECT workout_json FROM generated_programs WHERE user_id = %s AND week_number = %s", (user_id, current_week))
+        workout_json = cursor.fetchone()['workout_json']
+        
+        # Swap it out inside the JSON
+        day_workout = workout_json.get(day_key, [])
+        for i, ex in enumerate(day_workout):
+            # Sticking to your original name-based matching!
+            if ex.get('exercise_name') == old_exercise_name or ex.get('exercise') == old_exercise_name:
+                
+                # Check specific_tools to see if we are crossing the Bodyweight vs Weighted boundary
+                old_tools = ex.get('facility_requirements', {}).get('specific_tools', [])
+                new_tools = new_exercise_data.get('facility_requirements', {}).get('specific_tools', [])
+                
+                # If the tools list is totally empty, it's a pure bodyweight movement
+                is_old_bw = (len(old_tools) == 0)
+                is_new_bw = (len(new_tools) == 0)
+                
+                if is_old_bw == is_new_bw:
+                    # They are both weighted, or both bodyweight. Keep the AI's prescribed reps!
+                    new_exercise_data['sets'] = ex.get('sets')
+                    new_exercise_data['reps'] = ex.get('reps')
+                else:
+                    # There is a load mismatch! Fall back to the new exercise's native default guidelines
+                    new_exercise_data['sets'] = new_exercise_data.get('execution_guidelines', {}).get('sets', '3')
+                    new_exercise_data['reps'] = new_exercise_data.get('execution_guidelines', {}).get('reps', '10-15')
+                
+                # Retain the name key matching your frontend expectation
+                new_exercise_data['exercise_name'] = new_exercise_data.get('exercise_name', new_exercise_data.get('name')) 
+                
+                day_workout[i] = new_exercise_data
+                break
+                
+        workout_json[day_key] = day_workout
+        
+        cursor.execute("""
+            UPDATE generated_programs SET workout_json = %s::jsonb 
+            WHERE user_id = %s AND week_number = %s
+        """, (json.dumps(workout_json), user_id, current_week))
+        
+        conn.commit()
+        return jsonify({"status": "success", "message": "Exercise swapped successfully!"})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
 
 @app.route('/api/workout/edit_week', methods=['POST'])
 def edit_week():
@@ -983,6 +1113,10 @@ def edit_week():
         # Map string days to numbers
         day_map = { "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6, "Sunday": 7 }
         new_day_indices = sorted([day_map[d] for d in new_days_names])
+
+        # 🎯 Force the days into chronological order so the rolling queue assigns properly!
+        day_map_rev = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
+        chronological_days = [day_map_rev[idx] for idx in new_day_indices]
         
         # Get current state
         cursor.execute("SELECT active_phase, weeks_in_program FROM exercise_state WHERE user_id = %s", (user_id,))
@@ -1034,7 +1168,7 @@ def edit_week():
                 "facility_type": row['facility_type'],
                 "owned_equipment": row['available_equipment'] or [],
                 "medical_issues": row['injuries'] or [],
-                "schedule": new_days_names, # <-- THIS TRIGGER THE NEW AI CALENDAR
+                "schedule": chronological_days, # <-- THIS TRIGGER THE NEW AI CALENDAR
                 "preferred_duration_weeks": row['duration_weeks'], 
                 "weeks_in_program": row['weeks_in_program'],
                 "active_phase": row['active_phase'],
@@ -1078,13 +1212,18 @@ def edit_week():
             
             # 5. Generate and assign the daily workouts directly into proposed_json
             for day_name, day_type in calendar.items():
-                if day_type == "rest_day":
+                if day_type == "rest_day" or not day_type:
                     continue # Skip empty days
                     
-                library_category = assigned_split.replace("_repeated", "").replace("_full", "")
-                if day_type in ["upper_day", "lower_day"]: library_category = "upper_lower"
-                elif day_type in ["push_day", "pull_day", "leg_day"]: library_category = "push_pull_legs"
-                elif "full_body" in day_type: library_category = "full_body"
+                # 🎯 The flexible string matching!
+                if "upper_day" in day_type or "lower_day" in day_type: 
+                    library_category = "upper_lower"
+                elif "push_day" in day_type or "pull_day" in day_type or "leg_day" in day_type: 
+                    library_category = "push_pull_legs"
+                elif "full_body" in day_type: 
+                    library_category = "full_body"
+                else:
+                    library_category = assigned_split.replace("_repeated", "").replace("_full", "")
                 
                 blueprint = blueprint_library[library_category][day_type]
                 
@@ -1093,46 +1232,96 @@ def edit_week():
                     exercise_dataset, 
                     blueprint, 
                     phase_params, 
-                    user_workout_history # Make sure this variable is defined!
+                    user_workout_history
                 )
                 
                 day_index = {"Sunday":7, "Monday":1, "Tuesday":2, "Wednesday":3, "Thursday":4, "Friday":5, "Saturday":6}.get(day_name, 1)
-                
-                # Assign it directly to the master output
                 proposed_json[f"Day_{day_index}"] = daily_plan
                 
-        # ---------------------------------------------------------
+            # 🎯 Print with flush=True so it bypasses Flask's buffer and shows up instantly
+            print("\n--- GENERATED WEEKLY PLAN ---", flush=True)
+            for d, plan in proposed_json.items():
+                print(f"{d}: {len(plan)} exercises", flush=True)
+            print("-----------------------------\n", flush=True)
+                
         # ---------------------------------------------------------
 
+       # ---------------------------------------------------------
+        # 🧠 FULL-WEEK CNS SAFETY AUDIT (Runs on BOTH cases!)
         # ---------------------------------------------------------
+       # ---------------------------------------------------------
         # 🧠 FULL-WEEK CNS SAFETY AUDIT (Runs on BOTH cases!)
         # ---------------------------------------------------------
         def get_workout_category(workout):
             if not workout: return None
-            upper = {'chest', 'lats', 'back', 'triceps', 'biceps', 'front_delts', 'side_delts', 'rear_delts', 'traps', 'shoulders'}
-            lower = {'quads', 'hamstrings', 'glutes', 'calves'}
-            has_u = has_l = False
+            
+            # Substrings! This catches "latissimus", "biceps_brachii", "rear_deltoid", etc.
+            push_keys = ['chest', 'pec', 'tricep', 'delt', 'shoulder']
+            pull_keys = ['lat', 'back', 'bicep', 'trap', 'rear', 'rhomboid', 'erector', 'pull']
+            lower_keys = ['quad', 'ham', 'glute', 'calf', 'calv', 'leg']
+            
+            push_count = 0
+            pull_count = 0
+            lower_count = 0
+            
             for ex in workout:
-                targets = ex.get('muscle_data', {}).get('primary_targets', [])
-                for t in targets:
-                    if t in upper: has_u = True
-                    if t in lower: has_l = True
-            if has_u and has_l: return 'full_body'
-            if has_u: return 'upper'
-            if has_l: return 'lower'
+                # Safely grab both primary and secondary targets to ensure we don't miss anything
+                primary = ex.get('muscle_data', {}).get('primary_targets', [])
+                secondary = ex.get('muscle_data', {}).get('secondary_muscles', [])
+                all_targets = primary + secondary
+                
+                for t in all_targets:
+                    t_str = t.lower()
+                    if any(k in t_str for k in push_keys): push_count += 1
+                    if any(k in t_str for k in pull_keys): pull_count += 1
+                    if any(k in t_str for k in lower_keys): lower_count += 1
+                    
+            total_upper = push_count + pull_count
+            
+           # VOLUME-BASED CLASSIFICATION
+            # 1. True Full Body (At least 2 upper and 2 lower matches)
+            if lower_count >= 2 and total_upper >= 2: 
+                return 'full_body'
+                
+            # 2. Overwhelmingly Upper Body
+            if total_upper > lower_count:
+                # 🎯 THE FIX: The Dominance Ratio
+                # One mechanic must outweigh the other by at least 1.5x to claim the day
+                if push_count >= (pull_count * 1.5): 
+                    return 'push'
+                elif pull_count >= (push_count * 1.5): 
+                    return 'pull'
+                else:
+                    return 'upper' # Only triggers if volume is a truly balanced 50/50 mix!
+                
+            # 3. Overwhelmingly Lower Body
+            if lower_count > total_upper:
+                return 'lower'
+                
             return 'core'
 
         for day_idx in new_day_indices:
             cat = get_workout_category(proposed_json[f"Day_{day_idx}"])
             if not cat or cat == 'core': continue
             
-            for adj in [((day_idx - 2) % 7) + 1, (day_idx % 7) + 1]:
+            yesterday = ((day_idx - 2) % 7) + 1
+            tomorrow = (day_idx % 7) + 1
+            
+            for adj in [yesterday, tomorrow]:
                 adj_cat = get_workout_category(proposed_json[f"Day_{adj}"])
-                if adj_cat and (adj_cat == cat or adj_cat == 'full_body' or cat == 'full_body'):
-                    return jsonify({
-                        "status": "conflict", 
-                        "message": "This layout violates the 48-hour recovery rule. Heavy/Full-body days cannot be back-to-back."
-                    })
+                if not adj_cat: continue
+                
+                # Rule 1: Block back-to-back exact matches (Lower/Lower, Push/Push)
+                if adj_cat == cat:
+                    return jsonify({"status": "conflict", "message": f"Violation: Back-to-back {cat} days without recovery."})
+                
+                # Rule 2: Full Body must always have an adjacent rest day
+                if adj_cat == 'full_body' or cat == 'full_body':
+                    return jsonify({"status": "conflict", "message": "Violation: Full-body days require a 48-hour recovery."})
+                
+                # Rule 3: Upper day adjacent to specific Push/Pull day
+                if (cat == 'upper' and adj_cat in ['push', 'pull']) or (adj_cat == 'upper' and cat in ['push', 'pull']):
+                    return jsonify({"status": "conflict", "message": "Violation: Upper body day adjacent to specific Push/Pull day."})
         # ---------------------------------------------------------
 
         # Update the Database

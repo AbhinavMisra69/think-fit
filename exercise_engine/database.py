@@ -81,52 +81,35 @@ blueprint_library = {
     # 1. FULL BODY SPLITS (Used in Foundation & Active Lifestyle)
     # ---------------------------------------------------------
     "full_body": {
-        "full_body_A": {
+         "full_body_A": {
+            "unilateral_leg": 1,
+            "horizontal_press": 1,
+            "vertical_pull": 1,
+            "side_delt_isolation": 1,
+            "core_stabilization": 1
+        },
+        "full_body_B": {
             "squat_pattern": 1,
             "horizontal_press": 1,
             "horizontal_pull": 1,
             "bicep_isolation": 1,
             "core_stabilization": 1
         },
-        "full_body_B": {
+        "full_body_C": {
             "hinge_pattern": 1,
             "vertical_press": 1,
             "vertical_pull": 1,
             "tricep_isolation": 1,
             "core_stabilization": 1
-        },
-        "full_body_C": {
-            "unilateral_leg": 1,
-            "horizontal_press": 1,
-            "vertical_pull": 1,
-            "side_delt_isolation": 1,
-            "core_stabilization": 1
         }
+       
     },
 
     # ---------------------------------------------------------
     # 2. UPPER / LOWER SPLITS (Used in Recomposition & Volume Surge)
     # ---------------------------------------------------------
     "upper_lower": {
-        "upper_day": {
-            "horizontal_press": 1,
-            "vertical_pull": 1,
-            "vertical_press": 1,
-            "horizontal_pull": 1,
-            "chest_isolation": 1,
-            "bicep_isolation": 1,
-            "tricep_isolation": 1
-        },
-        "lower_day": {
-            "squat_pattern": 1,
-            "hinge_pattern": 1,
-            "unilateral_leg": 1,
-            "quad_isolation": 1,
-            "glute_isolation": 1,
-            "core_stabilization": 1
-        }
-
-        # "upper_day_A": {
+        # "upper_day": {
         #     "horizontal_press": 1,
         #     "vertical_pull": 1,
         #     "vertical_press": 1,
@@ -135,31 +118,49 @@ blueprint_library = {
         #     "bicep_isolation": 1,
         #     "tricep_isolation": 1
         # },
-        # "lower_day_A": {
+        # "lower_day": {
         #     "squat_pattern": 1,
         #     "hinge_pattern": 1,
         #     "unilateral_leg": 1,
         #     "quad_isolation": 1,
         #     "glute_isolation": 1,
         #     "core_stabilization": 1
-        # },
-        #  "upper_day_B": {
-        #     "horizontal_press": 1,
-        #     "vertical_pull": 1,
-        #     "vertical_press": 1,
-        #     "horizontal_pull": 1,
-        #     "side_delt_isolation": 1,
-        #     "bicep_isolation": 1,
-        #     "tricep_isolation": 1
-        # },
-        # "lower_day_B": {
-        #     "squat_pattern": 1,
-        #     "hinge_pattern": 1,
-        #     "unilateral_leg": 1,
-        #     "quad_isolation": 1,
-        #     "glute_isolation": 1,
-        #     "calf_isolation": 1
         # }
+
+        "upper_day_A": {
+            "horizontal_press": 1,
+            "vertical_pull": 1,
+            "vertical_press": 1,
+            "horizontal_pull": 1,
+            "chest_isolation": 1,
+            "bicep_isolation": 1,
+            "tricep_isolation": 1
+        },
+        "lower_day_A": {
+            "squat_pattern": 1,
+            "hinge_pattern": 1,
+            "unilateral_leg": 1,
+            "quad_isolation": 1,
+            "glute_isolation": 1,
+            "core_stabilization": 1
+        },
+         "upper_day_B": {
+            "horizontal_press": 1,
+            "vertical_pull": 1,
+            "vertical_press": 1,
+            "horizontal_pull": 1,
+            "side_delt_isolation": 1,
+            "bicep_isolation": 1,
+            "tricep_isolation": 1
+        },
+        "lower_day_B": {
+            "squat_pattern": 1,
+            "hinge_pattern": 1,
+            "unilateral_leg": 1,
+            "quad_isolation": 1,
+            "glute_isolation": 1,
+            "calf_isolation": 1
+        }
     },
 
     # ---------------------------------------------------------

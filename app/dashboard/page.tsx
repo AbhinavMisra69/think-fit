@@ -14,6 +14,7 @@ import RestDayCard from "@/components/RestDayCard";
 import { Navigation } from '@/components/Navigation';
 import EditWeekModal from '@/components/EditWeekModal';
 import { useAuth } from "app/context/AuthContext";
+import SwapExerciseModal from "@/components/SwapExerciseModal";
 
 const toDateString = (date: Date) => {
   const d = new Date(date);
@@ -70,6 +71,8 @@ export default function Page() {
   const [currentWeekDays, setCurrentWeekDays] = useState<string[]>([]); 
   const [userActivePhase, setUserActivePhase] = useState(""); 
   const [isDashboardLoading, setIsDashboardLoading] = useState(true);
+  const [swapModalOpen, setSwapModalOpen] = useState(false);
+  const [exerciseToSwap, setExerciseToSwap] = useState<string>("");
 
 
   useEffect(() => {
@@ -110,6 +113,12 @@ export default function Page() {
       if (data.status === "success") {
         toast.success(data.message);
         setIsEditModalOpen(false);
+        
+        // 3. RELOAD THE UI! 
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+        
         router.refresh(); 
       } else if (data.status === "conflict" || data.status === "error") {
         toast.error(data.message);
@@ -172,6 +181,10 @@ export default function Page() {
         setShowInterventionModal(false);
         router.refresh();
         checkWorkoutStatus(); 
+        setTimeout(() => {
+            window.location.reload();
+          }, 800);
+        checkWorkoutStatus(); // Reload the freshly fixed schedule!
       } else if (data.status === "conflict") {
         toast.error(data.message); 
       } else {
@@ -385,24 +398,32 @@ export default function Page() {
           </div>
 
           <div className="flex justify-end mt-4 pr-4">
-            <button 
+         <button 
               onClick={() => setIsEditModalOpen(true)}
-              className="flex items-center text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors"
+              className="flex items-center text-sm font-semibold text-slate-700 bg-white border border-slate-200 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 px-4 py-2 rounded-full transition-all"
             >
-              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
               Edit Week
             </button>
           </div>
 
-          <EditWeekModal 
-            isOpen={isEditModalOpen}
-            onClose={() => setIsEditModalOpen(false)}
-            initialDays={currentWeekDays}       
-            activePhase={userActivePhase}       
-            onSave={handleSaveNewSchedule}
-          />
+      <EditWeekModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        initialDays={currentWeekDays}       // <--- Now perfectly dynamic!
+        activePhase={userActivePhase}       // <--- Now perfectly dynamic!
+        onSave={handleSaveNewSchedule}
+      />
+    
+      <SwapExerciseModal 
+        isOpen={swapModalOpen}
+        onClose={() => setSwapModalOpen(false)}
+        userId={userId as string}
+        dayKey={getDayKey(selectedDate)} // e.g. "Day_3"
+        originalExerciseName={exerciseToSwap}
+      />
 
           <div className="mt-12 border-t border-zinc-100 pt-8">
             <h3 className="text-xl font-bold text-zinc-900 mb-6">{protocolTitle}</h3>
@@ -422,6 +443,11 @@ export default function Page() {
                         exercise={exerciseData} 
                         onOpenDetails={() => setActiveExercise(exerciseData)} 
                         onLog={(status: 'complete' | 'partial') => handleLogExercise(status)} // <-- PASSING THE PROP HERE
+                        onSwapClick={() => {
+                          setExerciseToSwap(exerciseData.exercise_name || exerciseData.exercise);
+                          setSwapModalOpen(true);
+                        }}
+
                       />
                     );
                   })
@@ -431,15 +457,62 @@ export default function Page() {
 
         </div>
       </div>
+    
+     {/* --- NEW: The Intervention Modal --- */}
+        {showInterventionModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+            <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-300">
+              
+              {/* Header */}
+              <div className="p-6 border-b border-orange-100 flex items-center gap-4 bg-orange-50/50">
+                <div className="p-2 bg-orange-100 rounded-full">
+                  <AlertTriangle className="w-6 h-6 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800 tracking-tight">Missed Workout</h3>
+                  <p className="text-xs font-semibold text-orange-600 uppercase tracking-wider">Intervention Required</p>
+                </div>
+              </div>
+              
+              {/* Body */}
+              <div className="p-6">
+                <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                  It looks like you missed your last scheduled workout. How would you like the AI engine to adjust your macrocycle to keep you on track?
+                </p>
+                
+                <div className="flex flex-col gap-3">
+                  {/* 🎯 Trigger handleResolution with 'shift' */}
+                  <button 
+                    onClick={() => {
+                      setIsResolving(true);
+                      handleResolution('shift');
+                    }}
+                    disabled={isResolving}
+                    className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all flex justify-center items-center gap-2 shadow-sm"
+                  >
+                    {isResolving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Merge className="w-5 h-5" />}
+                    Shift Schedule (Recommended)
+                  </button>
+                  
+                  {/* 🎯 Trigger handleResolution with 'skip' */}
+                  <button 
+                    onClick={() => {
+                      setIsResolving(true);
+                      handleResolution('skip');
+                    }}
+                    disabled={isResolving}
+                    className="w-full py-3 px-4 bg-white border-2 border-slate-200 hover:border-red-200 hover:bg-red-50 text-slate-600 hover:text-red-600 font-semibold rounded-xl transition-all flex justify-center items-center gap-2"
+                  >
+                    <X className="w-5 h-5" />
+                    Skip Workout
+                  </button>
+                </div>
+              </div>
 
-      {showInterventionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-300">
-            {/* ... Intervention Modal content stays the same ... */}
+            </div>
           </div>
-        </div>
-      )}
-    </div> 
+        )}
+      </div> {/* <--- THIS WAS MISSING! */}
   );
 }
 
@@ -572,8 +645,15 @@ function MacrocycleSidebar({ userId }: { userId?: string }) {
 }
 
 function ExerciseDetailPanel({ exercise, onClose }: { exercise: ExerciseData; onClose: () => void }) {
-  // ... [Content identical to original] ...
-  return ( <div> {/* Code truncated here for brevity, keep what you had */} </div> );
+  return ( 
+    <div className="p-6">
+       <button onClick={onClose} className="mb-4 text-blue-500 flex items-center gap-2 text-sm font-semibold hover:text-blue-700">
+           <X className="w-4 h-4" /> Close Details
+       </button>
+       <h3 className="text-xl font-bold text-slate-800">{exercise.exercise_name || (exercise as any).name}</h3>
+       {/* Details content will render here based on your existing implementation */}
+    </div> 
+  );
 }
 
 // --- UPDATED PROGRESS COMPONENT WITH NEW COLOR LOGIC ---

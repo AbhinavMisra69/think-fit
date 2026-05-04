@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight, Target, Plus, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Dumbbell, Info, CheckCircle2, CircleDashed, ChevronRight, Target, Plus, Loader2, RefreshCw } from 'lucide-react';
 import data from '@/data/exercises_enriched.json';
 import { useAuth } from "app/context/AuthContext"; 
-import { toast } from "sonner"; 
+import { toast } from "sonner"; // For success popups
 
 // 1. Types
 export type ExerciseData = {
@@ -40,6 +40,8 @@ type ExerciseCardProps = {
   exercise: ExerciseData;
   onOpenDetails: () => void;
   onLog: (status: 'complete' | 'partial') => void;
+  onProgressUpdate?: (ratio: number) => void; 
+  onSwapClick: () => void;
 };
 
 // 2. Animation Component
@@ -74,16 +76,34 @@ function ExerciseAnimation({ frames }: { frames: string[] }) {
 }
 
 // 3. Main Exercise Card Component
-export default function ExerciseCard({ exercise, onOpenDetails, onLog }: ExerciseCardProps) {
+export default function ExerciseCard({ exercise, onOpenDetails, onProgressUpdate }: ExerciseCardProps) {
+  // NEW: Dynamically initialize the number of sets based on the engine's target
   const { user } = useAuth(); 
-  const initialSetsCount = exercise.target_sets || 3;
-  
+
+  // 1. Safely grab sets whether it's named target_sets or sets. 
+  // If it's a string like "3-5" (from bodyweight guidelines), parse the first number!
+  const rawSets = exercise.target_sets || (exercise as any).sets || 3;
+  const initialSetsCount = typeof rawSets === 'string' ? (parseInt(rawSets.split('-')[0]) || 3) : rawSets;
+
+  // 2. Safely grab reps whether it's named target_reps or reps.
+  const targetReps = exercise.target_reps || (exercise as any).reps || '8-12';
+  const targetWeight = exercise.target_weight || (exercise as any).weight || 'Determine 1RM';
+
+  // 3. Initialize State
   const [sets, setSets] = useState(() => 
     Array.from({ length: initialSetsCount }, (_, i) => ({
       id: i + 1, reps: '', weight: '', isDropset: false, dropEndWeight: ''
     }))
   );
 
+  // 4. Force React to redraw the input rows if the exercise or sets change!
+  useEffect(() => {
+    setSets(Array.from({ length: initialSetsCount }, (_, i) => ({
+      id: i + 1, reps: '', weight: '', isDropset: false, dropEndWeight: ''
+    })));
+  }, [initialSetsCount, exercise.exercise_name]);
+
+  const exerciseName = exercise.exercise_name || (exercise as any).name || "Unknown Exercise";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -235,9 +255,6 @@ export default function ExerciseCard({ exercise, onOpenDetails, onLog }: Exercis
     ? exercise.animation_frames 
     : getLocalFrames();
 
-  const targetReps = exercise.target_reps || '8-12';
-  const targetWeight = exercise.target_weight || 'Determine 1RM';
-
   return (
     <div className={`w-full bg-white border rounded-2xl shadow-sm overflow-hidden font-sans transition-all duration-300 ${isLogged ? 'border-emerald-200' : 'border-zinc-200'}`}>
       
@@ -250,13 +267,37 @@ export default function ExerciseCard({ exercise, onOpenDetails, onLog }: Exercis
             </div>
             <h3 className="font-semibold text-lg text-slate-800 tracking-tight">{nameStr}</h3>
           </div>
-          <button 
-            onClick={onOpenDetails}
-            className="text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
-          >
-            <Info className="w-3.5 h-3.5" />
-            View Details
-          </button>
+          
+          {/* --- MODIFIED HEADER BUTTONS START --- */}
+          <div className="flex items-center gap-2">
+            
+            {/* SWAP BUTTON */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); 
+                onSwapClick();
+              }}
+              // CHANGED: text-sm, px-4, py-2, gap-1.5
+              className="text-sm font-semibold text-slate-600 hover:text-blue-600 bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50 px-4 py-2 rounded-full transition-colors flex items-center gap-1.5 shadow-sm"
+              title="Swap Exercise"
+            >
+              <RefreshCw className="w-4 h-4" /> {/* CHANGED: w-4 h-4 */}
+              Swap
+            </button>
+
+            {/* VIEW DETAILS BUTTON */}
+            <button 
+              onClick={onOpenDetails}
+              // CHANGED: text-sm, px-4, py-2, gap-1.5
+              className="text-sm font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-full transition-colors flex items-center gap-1.5"
+            >
+              <Info className="w-4 h-4" /> {/* CHANGED: w-4 h-4 */}
+              View Details
+            </button>
+            
+          </div>
+          {/* --- MODIFIED HEADER BUTTONS END --- */}
+
         </div>
         
         {/* Badges */}
